@@ -1,0 +1,122 @@
+.signup{
+    width: 100%;
+    height: 100%;
+    background-color: red;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  font-family: "Poppins", sans-serif;
+
+}
+.signupLeft{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+}
+.signupRight{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+}
+.signupForm{
+    width: 60%;
+    height:80%;
+    overflow-y: scroll;
+    display: flex;
+    align-items: flex-start;
+    justify-content:flex-start;
+    flex-direction: column;
+    color: white;
+    gap: 10px;
+}
+.signupForm::-webkit-scrollbar{
+    display: none;
+}
+.signupForm h1{
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+.forminput{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap:8px;
+}
+.forminput h4{
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+}
+.forminput input{
+    width: 100%;
+    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: transparent;
+    color: white;
+}
+.forminput input::placeholder{
+    font-size: 13px;
+    color: white;
+}
+.forminput p{
+    font-size: 13px;
+    font-weight: 400;
+}
+.formButtons{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+.formButtons button{
+    width: 100%;
+    padding: 10px;
+    border-radius: 7px;
+    border: none;
+    outline: none;
+    background-color: #00316E;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 1s;
+}
+.formButtons button:hover{
+    border: 1px solid white;
+}
+.formContent{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+.formContent .p{
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    gap: 10px;
+}
+.formContent .pname{
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+}
