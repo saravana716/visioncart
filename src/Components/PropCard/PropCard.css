@@ -20,6 +20,11 @@
     object-fit: contain;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+    transition: all 0.3s ease-in-out;
+
+}
+.propcardimg img:hover{
+    transform: scale(1.1);
 }
 .propcontent{
     width: 100%;
@@ -58,4 +63,51 @@
 .rate p img{
     width: 20px;
     margin-right: 6px;
+}
+
+/* Default (Desktop) - Hide Buttons, Show Colors (already shown) */
+.prop-buttons {
+    display: none; /* Hidden on desktop */
+    gap: 10px;
+    margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+    .prop-buttons {
+        display: flex; /* Show on mobile */
+    }
+
+    /* Optional: Hide color info on mobile if it clutters, or keep it. 
+       Image 2 (Mobile) shows buttons. It's hard to see if colors are there. 
+       Usually buttons replace secondary info or stack. 
+       Let's keep color info for now unless it breaks layout, 
+       but strictly following "2nd image based ui" which highlights buttons. 
+    */
+    .rate p {
+        display: none; /* Hide colors on mobile to match "buttons-focused" UI if needed, or ensure space. */
+    }
+}
+
+.add-to-cart-btn {
+    flex: 2;
+    background-color: #002366; /* Blue */
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.view-btn {
+    flex: 1;
+    background-color: #FF0075; /* Pink */
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
 }

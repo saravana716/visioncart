@@ -19,8 +19,11 @@ const PropCard = (props) => {
             <p><img src={data.rating} alt="" /> ({data.ratingcount} reviews)</p>
             <div className='rate'>
                 <h6>{data.price} <del>{data.mrpprice}</del></h6>
-            <p><img src={data.color} alt="" /> {data.colorcount} +</p>
-
+             <p><img src={data.color} alt="" /> {data.colorcount} +</p> 
+            </div>
+            <div className="prop-buttons">
+                <button className="add-to-cart-btn">+ Add to Cart</button>
+                <button className="view-btn">View</button>
             </div>
         </div>
     </div>

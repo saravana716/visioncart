@@ -76,3 +76,88 @@
     align-items: flex-end;
     justify-content: flex-end;
 }
+
+@media (max-width: 768px) {
+    .slider {
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        padding: 40px 20px 50px 20px; /* Added bottom space */
+        background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+        justify-content: flex-start;
+        gap: 20px;
+        text-align: left;
+    }
+
+    .sliderleft {
+        width: 100%;
+        align-items: flex-start;
+        padding: 0;
+    }
+
+    .sliderleft h1 {
+        font-size: 36px;
+        line-height: 1.2;
+        display: block;
+        color: #FF0075; /* Pink for Look */
+        margin-bottom: 10px;
+    }
+
+    .sliderleft h1 span {
+        font-size: 36px;
+        color: #002366; /* Dark Blue for Better */
+        font-weight: 800;
+    }
+
+    .sliderleft h3 {
+        font-size: 18px;
+        color: #002366;
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: block; /* Ensure visible */
+    }
+
+    .sliderleft .para {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .sliderleft .para p {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+        text-align: left;
+    }
+
+    .sliderbtn {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        gap: 10px;
+    }
+
+    .sliderbtnleft {
+        width: auto;
+        padding: 12px 20px;
+        background-color: #FF0075; /* Pink */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+    }
+
+    .sliderbtnright {
+        display: block; /* Show second button */
+        width: auto;
+        padding: 12px 20px;
+        background-color: #002366; /* Blue */
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+    }
+
+    .sliderright {
+        display: none; /* Turn off the lady image on mobile as requested */
+    }
+}

@@ -1,0 +1,62 @@
+.mobile-tryon {
+    display: none; /* Hidden by default (Desktop) */
+    flex-direction: column;
+    padding: 40px 20px;
+    background-color: #002366; /* Blue background */
+    text-align: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.mobile-tryon-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.mobile-tryon .title {
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.mobile-tryon .description {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.5;
+    max-width: 90%;
+}
+
+.try-btn {
+    width: 100%;
+    background-color: #FF0075; /* Pink */
+    color: white;
+    border: none;
+    font-weight: 600;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.mobile-tryon-image {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.mobile-tryon-image img {
+    width: 80%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .mobile-tryon {
+        display: flex; /* Show on mobile */
+    }
+}

@@ -129,8 +129,8 @@ const TrendyCollection = () => {
     <>
     <div className='trendymain'>
         <div className='trendymaintitle'>
-            <h1>Trendy Eyewear 2025</h1>
-            <h1>Shop <span>Now</span></h1>
+            <h1>Premium Optical Frames</h1>
+            <h1 style={{borderBottom: "1px solid black", paddingBottom: "2px", cursor: "pointer"}}>Shop Now</h1>
         </div>
 
  <div className='trendy'>

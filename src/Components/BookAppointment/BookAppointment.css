@@ -1,0 +1,108 @@
+.book{
+    width: 100%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* padding: 20px 60px; */
+    color: white;
+    background-color: #002366; /* Deep Blue base */
+    gap: 50px;
+}
+.bookleft{
+   display: flex;
+   width: 100%;
+   height: 100%;
+   align-items: flex-start;
+   justify-content: center;
+   flex-direction: column;
+   gap: 20px;
+    padding: 20px 60px;
+}
+.bookleft h1{
+    font-size: 32px;
+    font-weight: 700;
+}
+.bookleft p{
+    font-family: 16px;
+    font-weight:500;
+    line-height: 25px;
+}
+.bookleft button{
+    padding: 13px 50px;
+    background-color: #FF0075; /* Pink button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 20px;
+}
+.bookright{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    /* background-color: red; Remove debug color */
+}
+.bookright img{
+    width: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .book {
+        height: auto;
+        flex-direction: column; /* Stack vertically */
+        padding: 40px 20px; 
+        background-color: #002366; /* Blue background */
+        gap: 30px;
+        display: flex; /* Restore flex */
+    }
+
+    .bookleft {
+        width: 100%;
+        align-items: center;
+        text-align: center;
+        padding: 0;
+        order: 1; 
+    }
+
+    .bookright {
+        width: 100%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        order: 2;
+    }
+    
+    .bookright img {
+        width: 80%;
+        height: auto;
+        object-fit: contain;
+        border-radius: 10px; 
+    }
+    
+    .bookleft h1 {
+        font-size: 32px;
+        color: white;
+        margin-bottom: 15px;
+    }
+    
+    .bookleft div p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 25px;
+    }
+    
+    .bookleft button {
+        background-color: #FF0075; /* Pink button */
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        width: 100%; /* Full width button on mobile */
+    }
+}

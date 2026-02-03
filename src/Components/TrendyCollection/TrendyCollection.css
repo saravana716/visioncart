@@ -35,3 +35,20 @@
     background-color: var(--primary-color);
 
 }
+
+@media (max-width: 768px) {
+    .trendy {
+        grid-template-columns: repeat(2, 1fr); /* 2 columns */
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .trendymain {
+        display: block; /* Restore visibility */
+        padding: 40px 0;
+    }
+
+    .trendymaintitle {
+        padding: 0 20px;
+    }
+}
