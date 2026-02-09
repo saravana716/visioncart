@@ -18,6 +18,10 @@ input, textarea, [contenteditable="true"] {
     caret-color: auto; /* Show caret only where needed */
 }
 
+.no-scroll {
+    overflow: hidden;
+}
+
 body{
   width: 100vw;
   height: 100vh;

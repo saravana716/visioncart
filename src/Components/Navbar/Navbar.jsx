@@ -12,6 +12,19 @@ const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
+  // Manage background scroll lock
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+
+    return () => {
+      document.body.classList.remove('no-scroll');
+    };
+  }, [isSidebarOpen]);
+
   const togglePopup = () => {
     setShowPopup(!showPopup);
   };
@@ -20,11 +33,13 @@ const Navbar = () => {
         navigate(path);
         setShowPopup(false);
         setIsSidebarOpen(false);
+        document.body.classList.remove('no-scroll');
     };
 
     const handleCategoryClick = (category) => {
         navigate(`/products?category=${category}`);
         setIsSidebarOpen(false);
+        document.body.classList.remove('no-scroll');
     };
 
     const toggleSidebar = () => {
