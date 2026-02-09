@@ -6,7 +6,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import "./Navbar.css"
-
+import { useEffect } from 'react';
 const Navbar = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
