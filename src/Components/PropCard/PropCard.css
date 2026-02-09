@@ -1,113 +1,163 @@
 .propcard{
     width: 100%;
-    height:300px;
     display: flex;
     flex-direction: column;
     border-radius: 8px;
-    /* box-shadow: 0 8px 12px 0 gainsboro; */
+    background: white;
+    transition: transform 0.2s ease;
 }
+
+.propcard:hover {
+    transform: translateY(-5px);
+}
+
 .propcardimg{
     width: 100%;
-    height: 70%;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #F2F4F8;
+    border-radius: 8px;
+    overflow: hidden;
 }
-.propcardimg img{
-    width: 70%;
-    height: 50%;
-    object-fit: contain;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    transition: all 0.3s ease-in-out;
 
+.propcardimg img{
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    transition: all 0.3s ease-in-out;
 }
+
 .propcardimg img:hover{
     transform: scale(1.1);
 }
+
 .propcontent{
     width: 100%;
-    padding: 12px 0px;
+    padding: 12px 5px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
+
 .propcontent h5{
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
-    color: var(--primary-color);
+    color: #1a1a1a;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
+
 .propcontent p{
     font-size: 12px;
     font-weight: 400;
-    color: rgba(105, 105, 105, 1);
+    color: #666;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
+
+.propcontent p img {
+    width: 70px; /* Assuming rating star image width */
+    object-fit: contain;
+}
+
 .propcontent .rate{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
-}
-.rate h6{
-    font-size: 16px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-}
-.rate h6 del{
-    font-size: 12px;
-    color: gray;
-    margin-left: 10px;
-}
-.rate p img{
-    width: 20px;
-    margin-right: 6px;
-}
-
-/* Default (Desktop) - Hide Buttons, Show Colors (already shown) */
-.prop-buttons {
-    display: none; /* Hidden on desktop */
     gap: 10px;
     margin-top: 5px;
 }
 
+.rate h6{
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    color: #000;
+    margin: 0;
+}
+
+.rate h6 del{
+    font-size: 12px;
+    color: #999;
+    margin-left: 8px;
+    font-weight: 400;
+}
+
+.rate p img{
+    width: 18px;
+    margin-right: 4px;
+}
+
+.prop-buttons {
+    display: none;
+    gap: 8px;
+    margin-top: 10px;
+}
+
 @media (max-width: 768px) {
     .prop-buttons {
-        display: flex; /* Show on mobile */
+        display: flex;
+        width: 100%;
     }
 
-    /* Optional: Hide color info on mobile if it clutters, or keep it. 
-       Image 2 (Mobile) shows buttons. It's hard to see if colors are there. 
-       Usually buttons replace secondary info or stack. 
-       Let's keep color info for now unless it breaks layout, 
-       but strictly following "2nd image based ui" which highlights buttons. 
-    */
+    .propcardimg {
+        height: 150px;
+    }
+
+    .propcontent h5 {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .add-to-cart-btn {
+        flex: 2;
+        padding: 10px 4px;
+        font-size: 10px;
+    }
+
+    .view-btn {
+        flex: 1;
+        padding: 10px 4px;
+        font-size: 10px;
+    }
+    
     .rate p {
-        display: none; /* Hide colors on mobile to match "buttons-focused" UI if needed, or ensure space. */
+        display: none;
     }
 }
 
 .add-to-cart-btn {
-    flex: 2;
-    background-color: #002366; /* Blue */
+    background-color: #001f54;
     color: white;
     border: none;
-    padding: 8px;
-    border-radius: 5px;
+    padding: 10px;
+    border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
+    transition: opacity 0.2s;
 }
 
 .view-btn {
-    flex: 1;
-    background-color: #FF0075; /* Pink */
+    background-color: #ff007f;
     color: white;
     border: none;
-    padding: 8px;
-    border-radius: 5px;
+    padding: 10px;
+    border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.add-to-cart-btn:hover, .view-btn:hover {
+    opacity: 0.9;
 }
