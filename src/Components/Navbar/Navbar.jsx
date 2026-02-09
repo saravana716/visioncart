@@ -9,6 +9,7 @@ import "./Navbar.css"
 
 const Navbar = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   const togglePopup = () => {
@@ -18,10 +19,16 @@ const Navbar = () => {
     const handleNavigation = (path) => {
         navigate(path);
         setShowPopup(false);
+        setIsSidebarOpen(false);
     };
 
     const handleCategoryClick = (category) => {
         navigate(`/products?category=${category}`);
+        setIsSidebarOpen(false);
+    };
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
     };
 
     return (
@@ -82,7 +89,7 @@ const Navbar = () => {
                         <IoCartOutline className='mobile-icon'/>
                         <span className='badge'>1</span>
                     </div>
-                    <div className='mobile-menu-icon'>
+                    <div className='mobile-menu-icon' onClick={toggleSidebar}>
                         <div className='bar'></div>
                         <div className='bar'></div>
                         <div className='bar'></div>
@@ -95,6 +102,30 @@ const Navbar = () => {
                     <IoIosSearch className='mobile-search-icon'/>
                 </div>
                 <button className='mobile-try-on-btn'>3D Try-On</button>
+            </div>
+        </div>
+
+        {/* Mobile Sidebar */}
+        <div className={`mobile-sidebar-overlay ${isSidebarOpen ? 'active' : ''}`} onClick={toggleSidebar}></div>
+        <div className={`mobile-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+            <div className="sidebar-header">
+                <img src={logo} alt="Logo" className="sidebar-logo" />
+                <button className="close-sidebar" onClick={toggleSidebar}>✕</button>
+            </div>
+            <div className="sidebar-content">
+                <ul className="sidebar-nav">
+                    <li onClick={() => handleNavigation('/')}>Home</li>
+                    <li onClick={() => handleNavigation('/products')}>All Products</li>
+                    <li className="sidebar-section-title">Categories</li>
+                    <li onClick={() => handleCategoryClick('Spectacles')}>Spectacles</li>
+                    <li onClick={() => handleCategoryClick('Sunglasses')}>Sunglasses</li>
+                    <li onClick={() => handleCategoryClick('Contact Lenses')}>Contact Lenses</li>
+                    <li onClick={() => handleCategoryClick('Computer Glasses')}>Computer Glasses</li>
+                    <li onClick={() => handleCategoryClick('Kids Collection')}>Kids Collection</li>
+                    <li className="sidebar-section-title">Others</li>
+                    <li>Blogs</li>
+                    <li>Contact Us</li>
+                </ul>
             </div>
         </div>
 
