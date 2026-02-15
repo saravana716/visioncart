@@ -7,9 +7,12 @@ import { IoIosSearch } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import "./Navbar.css"
 import { useEffect } from 'react';
+import MegaMenu from './MegaMenu';
+
 const Navbar = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null); // State for mega menu
   const navigate = useNavigate();
 
   // Manage background scroll lock
@@ -40,11 +43,31 @@ const Navbar = () => {
         navigate(`/products?category=${category}`);
         setIsSidebarOpen(false);
         document.body.classList.remove('no-scroll');
+        setActiveCategory(null); // Close menu on click
     };
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
+
+    // Mega Menu Handlers
+    const handleMouseEnter = (category) => {
+        setActiveCategory(category);
+    };
+
+    const handleMouseLeave = () => {
+        setActiveCategory(null);
+    };
+
+    // Categories List
+    const categories = [
+        'Spectacles', 
+        'Sunglasses', 
+        'Contact Lenses', 
+        'Computer Glasses', 
+        'Kids Collection', 
+        'Reading Glasses'
+    ];
 
     return (
         <>
@@ -52,6 +75,7 @@ const Navbar = () => {
             <img src={logo} alt="" onClick={() => navigate('/')} style={{cursor: 'pointer'}} />
             <div className='navtext'>
                 <li onClick={() => navigate('/')}>Home</li>
+                <li onClick={() => navigate('/about')}>About</li>
                 <li onClick={() => navigate('/products')}>Products</li>
                 <li>Blogs</li>
                 <li>Contact</li>
@@ -132,11 +156,9 @@ const Navbar = () => {
                     <li onClick={() => handleNavigation('/')}>Home</li>
                     <li onClick={() => handleNavigation('/products')}>All Products</li>
                     <li className="sidebar-section-title">Categories</li>
-                    <li onClick={() => handleCategoryClick('Spectacles')}>Spectacles</li>
-                    <li onClick={() => handleCategoryClick('Sunglasses')}>Sunglasses</li>
-                    <li onClick={() => handleCategoryClick('Contact Lenses')}>Contact Lenses</li>
-                    <li onClick={() => handleCategoryClick('Computer Glasses')}>Computer Glasses</li>
-                    <li onClick={() => handleCategoryClick('Kids Collection')}>Kids Collection</li>
+                    {categories.map((category) => (
+                        <li key={category} onClick={() => handleCategoryClick(category)}>{category}</li>
+                    ))}
                     <li className="sidebar-section-title">Others</li>
                     <li>Blogs</li>
                     <li>Contact Us</li>
@@ -144,19 +166,26 @@ const Navbar = () => {
             </div>
         </div>
 
-        <div className='navbarnext'>
+        <div className='navbarnext' onMouseLeave={handleMouseLeave}>
             <div className='navleft'>
-                <li onClick={() => handleCategoryClick('Spectacles')}>Spectacles</li>
-                <li onClick={() => handleCategoryClick('Sunglasses')}>Sunglasses</li>
-                <li onClick={() => handleCategoryClick('Contact Lenses')}>Contact Lenses</li>
-                <li onClick={() => handleCategoryClick('Computer Glasses')}>Computer Glasses</li>
-                <li onClick={() => handleCategoryClick('Kids Collection')}>Kids Collection</li>
+                {categories.map((category) => (
+                    <li 
+                        key={category}
+                        onMouseEnter={() => handleMouseEnter(category)}
+                        onClick={() => handleCategoryClick(category)}
+                        className={activeCategory === category ? 'active' : ''}
+                    >
+                        {category}
+                    </li>
+                ))}
             </div>
-        <div className='navbuttons'>
-            <button className='btn1'>Home Try-On</button>
-            <button className='btn2'>3D Virtual Try-On</button>
+            <div className='navbuttons'>
+                <button className='btn1'>Home Try-On</button>
+                <button className='btn2'>3D Virtual Try-On</button>
+            </div>
+            {/* Mega Menu Display */}
+            {activeCategory && <MegaMenu category={activeCategory} onClose={handleMouseLeave} />}
         </div>
-    </div>
     </>
   )
 }

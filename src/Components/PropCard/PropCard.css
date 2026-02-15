@@ -13,22 +13,58 @@
 
 .propcardimg{
     width: 100%;
-    height: 180px;
+    height: 220px;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #F2F4F8;
     border-radius: 8px;
     overflow: hidden;
+    position: relative;
 }
-
+.mycard
+{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: -100%;
+    top: -100%;
+    transition: 1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.mycard .hearticon{
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: white;
+    font-size: 20px;
+}
+.mycard .inimg{
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    transition: all 0.3s ease-in-out;
+}
 .propcardimg img{
     width: 80%;
     height: 80%;
     object-fit: contain;
     transition: all 0.3s ease-in-out;
 }
-
+.propcardimg:hover .inimg1{
+      width: 80%;
+    height: 80%;
+    object-fit: contain;
+    transition: all 0.5s ease-in-out;
+    transform: translate(-100%,-100%);
+}
+.propcardimg:hover .mycard{
+    left: 0;
+    top: 0;
+}
 .propcardimg img:hover{
     transform: scale(1.1);
 }
@@ -39,6 +75,87 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+.prop-buttons1{
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    gap: 20px;
+    width: 100%;
+    padding: 0px 20px 20px 20px;
+}
+.prop-buttons1 .btn1 {
+    flex: 1;
+    padding: 5px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    border: none;
+    outline: none;
+    padding: 10px;
+    background-color: white;
+    color: var(--primary-color);
+    font-size: 12px;
+    position: relative;
+    z-index: 1;
+    transition: 0.5s;
+    overflow: hidden;
+}
+.prop-buttons1 .btn1::before{
+    position: absolute;
+    content: "";
+    background-color:var(--primary-color);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: -100%;
+    border-radius: 6px;
+    transition: 0.5s;
+    z-index: -1;
+}
+.prop-buttons1 .btn1:hover::before{
+    left: 0;
+}
+.prop-buttons1 .btn1:hover{
+    color: white;
+}
+.prop-buttons1 .btn2 {
+    flex: 1;
+    padding: 5px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    border: none;
+    outline: none;
+    padding: 10px;
+    background-color: white;
+    color: var(--primary-color);
+    position: relative;
+    z-index: 1;
+    transition: 0.5s;
+    overflow: hidden;
+}
+.prop-buttons1 .btn2::before{
+    position: absolute;
+    content: "";
+    background-color:var(--secondary-color);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: -100%;
+    border-radius: 6px;
+    transition: 0.5s;
+    z-index: -1;
+}
+.prop-buttons1 .btn2:hover::before{
+    left: 0;
+}
+.prop-buttons1 .btn2:hover{
+    color: white;
 }
 
 .propcontent h5{

@@ -161,3 +161,58 @@
         display: none; /* Turn off the lady image on mobile as requested */
     }
 }
+
+/* Animations */
+.heading-text {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+/* Re-using the slide-up-out / slide-up-in classes for both text and image since they share the same logic now */
+/* .slide-up-out and .slide-up-in are already defined below */
+
+.sliderright {
+    overflow: hidden; /* Mask for image sliding */
+    position: relative;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.image-container {
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 90%; /* Adjust as needed */
+    object-fit: contain;
+}
+
+.slide-up-out {
+    transform: translateY(-50px); /* Reduced distance for text slightly, but keeping same class for simplicity */
+    opacity: 0;
+}
+
+.slide-up-in {
+    transform: translateY(0);
+    opacity: 1;
+    animation: slideUpFromBottom 0.5s ease-in-out;
+}
+
+@keyframes slideUpFromBottom {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

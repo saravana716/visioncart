@@ -9,7 +9,26 @@
     color: white;
     background: linear-gradient(to right, rgba(255, 0, 117, 1), rgba(255, 95, 169, 1));
     gap: 50px;
-    background-color: red;
+    /* background-color: red; REMOVED */
+}
+
+.contact .discoverright {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    overflow-x: auto; /* Allow scrolling if items overflow */
+    height: 100%;
+}
+
+.contact .discoverright .DiscoverCard {
+    min-width: 250px; /* Fixed width since not set in JS */
+    width: 250px;
+    height: 270px; /* Consistent height */
+    margin: 0;
+}
+/* Hide scrollbar for cleaner look */
+.contact .discoverright::-webkit-scrollbar {
+    display: none;
 }
 
 /* Responsive Styles */

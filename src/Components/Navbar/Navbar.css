@@ -151,9 +151,10 @@
     padding: 15px 30px;
     background-color: var(--primary-color);
     color: white;
+    position: relative; /* Validation for Mega Menu positioning */
 }
 .navleft{
-    width: 50%;
+    width: 60%; /* Increased width to accommodate items comfortably */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -163,7 +164,13 @@
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
+    padding: 10px 0; /* Add padding for better hover area */
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
 
+.navleft li:hover, .navleft li.active {
+    color: var(--secondary-color);
 }
 .navbuttons{
     width: 50%;

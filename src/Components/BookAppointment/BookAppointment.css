@@ -1,6 +1,6 @@
 .book{
     width: 100%;
-    height: 50%;
+    height: 500px; /* Fixed height as requested */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -8,10 +8,11 @@
     color: white;
     background-color: #002366; /* Deep Blue base */
     gap: 50px;
+    overflow: hidden; /* Ensure content stays within fixed height */
 }
 .bookleft{
    display: flex;
-   width: 100%;
+   width: 50%; /* Fixed width for text side */
    height: 100%;
    align-items: flex-start;
    justify-content: center;
@@ -39,14 +40,16 @@
     margin-top: 20px;
 }
 .bookright{
-    width: 100%;
+    width: 50%; /* Remaining width */
     height: 100%;
     display: flex;
     /* background-color: red; Remove debug color */
+    position: relative; /* For absolute positioning if needed, valid for flex child too */
 }
 .bookright img{
     width: 100%;
-    object-fit: cover;
+    height: 100%; /* Force image to take full height of container */
+    object-fit: cover; /* Maintain aspect ratio, crop if needed */
 }
 
 @media (max-width: 768px) {
@@ -105,4 +108,16 @@
         font-weight: 600;
         width: 100%; /* Full width button on mobile */
     }
+        width: 100%; /* Full width button on mobile */
+    }
+}
+
+/* Animation for Image Slider */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-in-out;
 }
