@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import logo from "../../assets/vision_cart_logo.png"
 import { FaRegHeart } from "react-icons/fa6";
 import { IoCartOutline } from "react-icons/io5";
@@ -6,23 +6,30 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import "./Navbar.css"
-import { useEffect } from 'react';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth } from '../../firebase.config';
 import MegaMenu from './MegaMenu';
 
 const Navbar = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(null); // State for mega menu
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  // Manage background scroll lock
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     if (isSidebarOpen) {
       document.body.classList.add('no-scroll');
     } else {
       document.body.classList.remove('no-scroll');
     }
-
     return () => {
       document.body.classList.remove('no-scroll');
     };
@@ -30,6 +37,17 @@ const Navbar = () => {
 
   const togglePopup = () => {
     setShowPopup(!showPopup);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      setShowPopup(false);
+      navigate('/');
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
 
     const handleNavigation = (path) => {
@@ -43,14 +61,13 @@ const Navbar = () => {
         navigate(`/products?category=${category}`);
         setIsSidebarOpen(false);
         document.body.classList.remove('no-scroll');
-        setActiveCategory(null); // Close menu on click
+        setActiveCategory(null);
     };
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
-    // Mega Menu Handlers
     const handleMouseEnter = (category) => {
         setActiveCategory(category);
     };
@@ -59,7 +76,6 @@ const Navbar = () => {
         setActiveCategory(null);
     };
 
-    // Categories List
     const categories = [
         'Spectacles', 
         'Sunglasses', 
@@ -92,11 +108,28 @@ const Navbar = () => {
                         <p>0</p>
                     </div>
                     <div className='user-icon-container'>
-                        <FaRegUserCircle className='nicon' onClick={togglePopup}/>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}} onClick={togglePopup}>
+                            <FaRegUserCircle className='nicon' />
+                            {!user && <span style={{fontSize: '14px', fontWeight: '500'}}>Login</span>}
+                        </div>
                         {showPopup && (
                             <div className='user-popup'>
-                                <button onClick={() => handleNavigation('/login')}>Login</button>
-                                <button onClick={() => handleNavigation('/signup')}>Sign Up</button>
+                                {user ? (
+                                    <>
+                                        <div className='user-info-brief' style={{padding: '5px 10px', borderBottom: '1px solid #eee', marginBottom: '5px'}}>
+                                            <p style={{fontSize: '12px', color: '#888'}}>Signed in as</p>
+                                            <p style={{fontSize: '13px', fontWeight: '600', textOverflow: 'ellipsis', overflow: 'hidden'}}>{user.email || user.phoneNumber}</p>
+                                        </div>
+                                        <button onClick={() => handleNavigation('/profile')}>My Profile</button>
+                                        <button onClick={() => handleNavigation('/orders')}>My Orders</button>
+                                        <button onClick={handleLogout} style={{color: '#ff4d4d'}}>Logout</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button onClick={() => handleNavigation('/login')}>Login</button>
+                                        <button onClick={() => handleNavigation('/signup')}>Sign Up</button>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
@@ -112,8 +145,18 @@ const Navbar = () => {
                         <FaRegUserCircle className='mobile-profile-icon' onClick={togglePopup}/>
                         {showPopup && (
                             <div className='user-popup mobile-popup'>
-                                <button onClick={() => handleNavigation('/login')}>Login</button>
-                                <button onClick={() => handleNavigation('/signup')}>Sign Up</button>
+                                {user ? (
+                                    <>
+                                        <p style={{padding: '0 15px', fontSize: '12px', color: '#888'}}>Hi, {user.email?.split('@')[0] || 'User'}</p>
+                                        <button onClick={() => handleNavigation('/profile')}>Profile</button>
+                                        <button onClick={handleLogout}>Logout</button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button onClick={() => handleNavigation('/login')}>Login</button>
+                                        <button onClick={() => handleNavigation('/signup')}>Sign Up</button>
+                                    </>
+                                )}
                             </div>
                         )}
                     </div>
@@ -159,6 +202,18 @@ const Navbar = () => {
                     {categories.map((category) => (
                         <li key={category} onClick={() => handleCategoryClick(category)}>{category}</li>
                     ))}
+                    <li className="sidebar-section-title">Account</li>
+                    {user ? (
+                        <>
+                            <li onClick={() => handleNavigation('/profile')}>My Profile</li>
+                            <li onClick={handleLogout}>Logout</li>
+                        </>
+                    ) : (
+                        <>
+                            <li onClick={() => handleNavigation('/login')}>Login</li>
+                            <li onClick={() => handleNavigation('/signup')}>Sign Up</li>
+                        </>
+                    )}
                     <li className="sidebar-section-title">Others</li>
                     <li>Blogs</li>
                     <li>Contact Us</li>
@@ -183,7 +238,6 @@ const Navbar = () => {
                 <button className='btn1'>Home Try-On</button>
                 <button className='btn2'>3D Virtual Try-On</button>
             </div>
-            {/* Mega Menu Display */}
             {activeCategory && <MegaMenu category={activeCategory} onClose={handleMouseLeave} />}
         </div>
     </>

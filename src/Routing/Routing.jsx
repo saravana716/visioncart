@@ -6,6 +6,7 @@ import Navbar from '../Components/Navbar/Navbar'
 import Home from '../Pages/Home'
 import ProductPage from '../Pages/ProductPage'
 import ProductDetails from '../Pages/ProductDetails'
+import Profile from '../Pages/Profile'
 
 const Routing = () => {
   return (
@@ -16,6 +17,7 @@ const Routing = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/products" element={<ProductPage />} />
         <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   )
