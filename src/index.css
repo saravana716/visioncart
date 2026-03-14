@@ -41,19 +41,30 @@ body.no-scroll,
     pointer-events: auto !important;
 }
 
-body{
-  width: 100vw;
-  height: 100vh;
-  overflow-x: hidden;
-  font-family: "Poppins", sans-serif;
-}
-
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --primary-color: #00387D;
-  --secondary-color: #FF0075;
+  --primary-color: #002366; /* Deeper, more premium blue */
+  --secondary-color: #FF0075; /* Vibrant signature pink */
   --accent-soft: rgba(255, 0, 117, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
   --category-theme: var(--primary-color);
+  --text-main: #1a1a1a;
+  --text-muted: #666666;
+  --shadow-premium: 0 10px 30px rgba(0, 35, 102, 0.08);
+  --transition-smooth: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    font-family: 'Outfit', sans-serif; /* Modern, premium font */
+    color: var(--text-main);
+    background-color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 ::view-transition-old(root),

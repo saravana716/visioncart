@@ -206,29 +206,44 @@
 .action-buttons-top {
     display: flex;
     gap: 15px;
-    margin: 15px 0;
+    margin: 25px 0;
 }
 
 .pink-action-btn {
     background: var(--secondary-color);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 14px 25px;
+    border-radius: 50px;
     font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
     flex: 1;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 15px rgba(255, 0, 117, 0.2);
+}
+
+.pink-action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 0, 117, 0.3);
 }
 
 .white-action-btn {
     background: white;
-    color: #333;
-    border: 1px solid #ddd;
-    padding: 10px 20px;
-    border-radius: 5px;
+    color: var(--primary-color);
+    border: 1.5px solid var(--primary-color);
+    padding: 14px 25px;
+    border-radius: 50px;
     font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
     flex: 1;
+    transition: var(--transition-smooth);
+}
+
+.white-action-btn:hover {
+    background: #f0f7ff;
+    transform: translateY(-3px);
 }
 
 .prescription-upload-box {
@@ -389,20 +404,32 @@
 
 .trust-badges-refined {
     margin: 30px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
 }
 
 .badge-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 15px;
+    text-align: center;
+    gap: 10px;
+    padding: 15px;
+    background: #f8faff;
+    border-radius: 16px;
+    transition: var(--transition-smooth);
+}
+
+.badge-item:hover {
+    background: white;
+    box-shadow: var(--shadow-premium);
+    transform: translateY(-5px);
 }
 
 .badge-icon {
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -415,14 +442,17 @@
 }
 
 .badge-text span {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
-    color: #333;
+    color: var(--primary-color);
+    line-height: 1.2;
+    display: block;
+    margin-bottom: 4px;
 }
 
 .badge-text p {
-    font-size: 11px;
-    color: #1b9e1b;
+    font-size: 10px;
+    color: #2e7d32;
     font-weight: 600;
 }
 
@@ -710,20 +740,30 @@
 
 .tech-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     margin: 20px 0;
+    border: 1px solid #f0f0f0;
+    border-radius: 16px;
+    overflow: hidden;
 }
 
 .tech-table td {
-    padding: 12px;
-    border: 1px solid #eee;
+    padding: 16px 20px;
+    border-bottom: 1px solid #f0f0f0;
     font-size: 14px;
+    color: var(--text-main);
+}
+
+.tech-table tr:last-child td {
+    border-bottom: none;
 }
 
 .tech-table td:first-child {
-    font-weight: 600;
-    background-color: #f9f9f9;
-    width: 35%;
+    font-weight: 700;
+    color: var(--primary-color);
+    background-color: #fcfcfc;
+    width: 40%;
 }
 
 .reviews-grid {

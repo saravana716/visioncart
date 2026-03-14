@@ -88,32 +88,73 @@ const Cart = () => {
                                     <img src={item.productImage} alt={item.productName} />
                                 </div>
                                 <div className="item-details">
-                                    <div className="item-main-info">
-                                        <h3>{item.productName}</h3>
-                                        <p className="item-price">{item.totalPrice}</p>
+                                    <div className="item-header-row">
+                                        <div className="item-title-col">
+                                            <h3>{item.productName}</h3>
+                                            {item.productSize && <span className="item-size-label">Size: {item.productSize}</span>}
+                                        </div>
+                                        <div className="item-price-actions">
+                                            <span className="item-price-val">{item.totalPrice}</span>
+                                            <button className="remove-item-btn" onClick={() => removeItemFromCart(item.id)}>
+                                                <FaTrashAlt /> Remove
+                                            </button>
+                                        </div>
                                     </div>
                                     
-                                    <div className="item-config-summary">
-                                        <div className="config-chip"><span>Lens:</span> {item.lensType}</div>
-                                        <div className="config-chip"><span>Material:</span> {item.material}</div>
+                                    <div className="item-attributes-grid">
+                                        {/* Dynamic Attribute Mapping */}
+                                        {item.specifications ? (
+                                            item.specifications.map((spec, idx) => (
+                                                <div key={idx} className="attribute-chip">
+                                                    <span className="attr-label">{spec.label}:</span> 
+                                                    <span className="attr-val">{spec.value}</span>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            /* Legacy Fallback for older items */
+                                            <>
+                                                <div className="attribute-chip">
+                                                    <span className="attr-label">Lens:</span> 
+                                                    <span className="attr-val">{item.lensType || 'Frame Only'}</span>
+                                                </div>
+                                                <div className="attribute-chip">
+                                                    <span className="attr-label">Material:</span> 
+                                                    <span className="attr-val">{item.material || 'Standard'}</span>
+                                                </div>
+                                                {item.usage && (
+                                                    <div className="attribute-chip">
+                                                        <span className="attr-label">Usage:</span> 
+                                                        <span className="attr-val">{item.usage}</span>
+                                                    </div>
+                                                )}
+                                                {item.frameStyle && (
+                                                    <div className="attribute-chip">
+                                                        <span className="attr-label">Style:</span> 
+                                                        <span className="attr-val">{item.frameStyle}</span>
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                        
+                                        <div className="attribute-chip">
+                                            <span className="attr-label">SKU:</span> 
+                                            <span className="attr-val sku-text">{item.sku || item.productId}</span>
+                                        </div>
+
                                         {item.enhancements?.length > 0 && (
-                                            <div className="config-chip">
-                                                <span>Add-ons:</span> {item.enhancements.map(e => e.name).join(', ')}
+                                            <div className="attribute-chip full-width">
+                                                <span className="attr-label">Add-ons:</span> 
+                                                <span className="attr-val">{item.enhancements.map(e => e.name).join(', ')}</span>
                                             </div>
                                         )}
                                     </div>
 
                                     {item.prescription && (
-                                        <div className="item-prescription-brief">
+                                        <div className="item-prescription-banner">
                                             <FaRegFileAlt /> 
                                             <span>Prescription Attached ({item.prescriptionType})</span>
                                         </div>
                                     )}
-                                </div>
-                                <div className="item-actions">
-                                    <button className="remove-item-btn" onClick={() => removeItemFromCart(item.id)}>
-                                        <FaTrashAlt /> Remove
-                                    </button>
                                 </div>
                             </div>
                         ))}

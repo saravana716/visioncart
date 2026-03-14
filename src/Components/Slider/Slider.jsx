@@ -77,9 +77,9 @@ const Slider = () => {
                         transition: 'transform 0.1s ease-out'
                     }}
                 >
-                    <div className='text-content'>
+                    <div className='text-content' style={{ '--slide-color': slide.color }}>
                         <h1>
-                            <span className={`heading-text ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`} style={{ display: 'inline-block', color: slide.color }}>
+                            <span className={`heading-text ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`} style={{ display: 'inline-block', color: 'var(--slide-color)' }}>
                                 {slide.heading}
                             </span> 
                             <span> {slide.highlight}</span>
@@ -105,6 +105,25 @@ const Slider = () => {
                     <div className={`image-container ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
                         <img src={slide.image} alt="Eyewear Model" />
                     </div>
+                </div>
+                
+                {/* Progress Indicators */}
+                <div className="slider-nav">
+                    {slides.map((_, idx) => (
+                        <div 
+                            key={idx} 
+                            className={`nav-dot ${currentSlide === idx ? 'active' : ''}`}
+                            onClick={() => {
+                                setIsAnimating(true);
+                                setTimeout(() => {
+                                    setCurrentSlide(idx);
+                                    setIsAnimating(false);
+                                }, 500);
+                            }}
+                        >
+                            {currentSlide === idx && <div className="dot-progress"></div>}
+                        </div>
+                    ))}
                 </div>
             </div>
         </>

@@ -110,6 +110,28 @@ const Checkout = () => {
         setLoading(false);
     };
 
+    useEffect(() => {
+        if (loading) return;
+
+        // Intersection Observer for Scroll Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        const revealElements = document.querySelectorAll('.scroll-reveal');
+        revealElements.forEach(el => observer.observe(el));
+
+        return () => observer.disconnect();
+    }, [step, loading]);
+
     if (cartCount === 0 && step !== 3) {
         navigate('/cart');
         return null;
@@ -126,19 +148,19 @@ const Checkout = () => {
                         <div className="step-count">1</div>
                         <span>Shipping</span>
                     </div>
-                    <div className="step-divider"></div>
+                    <div className={`step-divider ${step >= 2 ? 'active' : ''}`}></div>
                     <div className={`step-item ${step >= 2 ? 'active' : ''}`}>
                         <div className="step-count">2</div>
                         <span>Payment</span>
                     </div>
-                    <div className="step-divider"></div>
+                    <div className={`step-divider ${step >= 3 ? 'active' : ''}`}></div>
                     <div className={`step-item ${step >= 3 ? 'active' : ''}`}>
                         <div className="step-count">3</div>
                         <span>Complete</span>
                     </div>
                 </div>
 
-                <div className="checkout-content-grid">
+                <div className="checkout-content-grid scroll-reveal">
                     <div className="checkout-main">
                         {step === 1 && (
                             <div className="checkout-section fade-in">
@@ -245,7 +267,8 @@ const Checkout = () => {
                                         <img src={item.productImage} alt="" />
                                         <div className="item-info">
                                             <p className="name">{item.productName}</p>
-                                            <p className="config">{item.lensType} | {item.material}</p>
+                                            <p className="config">{item.lensType || 'Frame Only'} | {item.material || 'Standard'}</p>
+                                            <p className="config-sub">{item.productBrand} | {item.productSize || 'Medium'}</p>
                                         </div>
                                         <span className="price">{item.totalPrice}</span>
                                     </div>

@@ -114,6 +114,28 @@ const ProductDetails = () => {
         trackRecentlyViewed();
     }, [id]);
 
+    useEffect(() => {
+        if (loading) return;
+
+        // Intersection Observer for Scroll Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        const revealElements = document.querySelectorAll('.scroll-reveal');
+        revealElements.forEach(el => observer.observe(el));
+
+        return () => observer.disconnect();
+    }, [loading]);
+
 
 
     if (loading) return <Loader fullPage={true} />;
@@ -130,11 +152,11 @@ const ProductDetails = () => {
             )}
             
             <div className="product-container">
-                <div className="breadcrumbs">
+                <div className="breadcrumbs scroll-reveal">
                     Home &gt; {product.category} &gt; {product.brand}
                 </div>
 
-                <div className="main-info-grid">
+                <div className="main-info-grid scroll-reveal">
                     {/* Left: Gallery */}
                     <div className="product-gallery">
                         <div className="thumbnails">
@@ -174,8 +196,12 @@ const ProductDetails = () => {
                             <span className="offer-tag">({product.discount})</span>
                         </div>
 
-                        <div className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock-alert'}`}>
-                            {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Limited Stock - Order Soon!'}
+                        <div className={`stock-status ${product.stock > 5 ? 'in-stock' : product.stock > 0 ? 'limited-stock' : 'out-of-stock-alert'}`}>
+                            {product.stock > 5 
+                                ? `In Stock (${product.stock} available)` 
+                                : product.stock > 0 
+                                    ? `Limited Stock - Only ${product.stock} left!` 
+                                    : 'Out of Stock'}
                         </div>
 
                         <div className="color-selection">
@@ -197,7 +223,7 @@ const ProductDetails = () => {
                                 <h3>3D Virtual Try-On</h3>
                             </div>
                             <div className="tryon-img">
-                                <img src="https://visionkart.com/model-try-on.png" alt="Model" onError={(e) => e.target.src='https://via.placeholder.com/150x100?text=Model'} />
+                                <img src="https://i.imgur.com/8Q9Z5bX.png" alt="Model" onError={(e) => e.target.src='https://via.placeholder.com/150x100?text=Model'} />
                             </div>
                         </div>
 
@@ -222,10 +248,21 @@ const ProductDetails = () => {
                                 onClick={async () => {
                                     const cartData = {
                                         productId: id,
+                                        productBrand: product.brand,
                                         productName: product.title,
                                         productImage: product.mainImage,
                                         productPrice: product.price,
-                                        totalPrice: product.price
+                                        productSize: product.size,
+                                        totalPrice: product.price,
+                                        category: product.category,
+                                        specifications: [
+                                            ...(product.technicalSpecs || []),
+                                            { label: 'Color', value: selectedColor?.name || (product.colors ? product.colors[0].name : 'Default') },
+                                            { label: 'Size', value: product.size },
+                                            { label: 'Lens', value: 'Frame Only' },
+                                            { label: 'Material', value: 'Standard' }
+                                        ],
+                                        sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || id,
                                     };
                                     const success = await addItemToCart(cartData);
                                     if (success) {
@@ -263,7 +300,7 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-                <div className="middle-info-grid">
+                <div className="middle-info-grid scroll-reveal">
                     <div className="info-left-col">
                         <div className="technical-info-section">
                             <h2>Technical Information</h2>
@@ -326,7 +363,7 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
-                <div className="similar-products-section">
+                <div className="similar-products-section scroll-reveal">
                     <div className="section-header">
                         <h2>Similar Products</h2>
                         <a href="/products" className="shop-now-link">Shop <span>Now</span></a>

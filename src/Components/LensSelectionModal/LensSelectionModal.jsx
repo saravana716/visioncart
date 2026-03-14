@@ -16,6 +16,15 @@ const LensSelectionModal = ({
     const [selectedMaterial, setSelectedMaterial] = useState('TR90');
     const [selectedFrameStyle, setSelectedFrameStyle] = useState('Rimmed');
     const [selectedUsage, setSelectedUsage] = useState('Everyday');
+
+    useEffect(() => {
+        const handleCloseAll = () => {
+            if (isOpen) onClose();
+        };
+        window.addEventListener('close-all-modals', handleCloseAll);
+        return () => window.removeEventListener('close-all-modals', handleCloseAll);
+    }, [isOpen, onClose]);
+
     const [prescriptionType, setPrescriptionType] = useState('Same power for both eyes');
     const [selectedEnhancements, setSelectedEnhancements] = useState([]);
     const [prescription, setPrescription] = useState({
@@ -162,7 +171,12 @@ const LensSelectionModal = ({
                                     </tr>
                                 </tbody>
                             </table>
-                            <button className="save-btn-green">Save</button>
+                            <button 
+                                className="save-btn-green" 
+                                onClick={() => alert('Prescription saved successfully!')}
+                            >
+                                Save
+                            </button>
                         </div>
                     </div>
 
@@ -203,19 +217,27 @@ const LensSelectionModal = ({
 
                     <div className="modal-footer-btns">
                         <button 
-                            className={`modal-add-cart ${product.stock <= 0 ? 'disabled' : ''}`} 
-                            disabled={product.stock <= 0}
+                            className={`modal-add-cart ${product.stock !== undefined && product.stock <= 0 ? 'disabled' : ''}`} 
+                            disabled={product.stock !== undefined && product.stock <= 0}
                             onClick={async () => {
-                                if (product.stock <= 0) return;
+                                if (product.stock !== undefined && product.stock <= 0) return;
                                 const cartData = {
                                     productId: product.id,
+                                    productBrand: product.brand,
                                     productName: product.title,
                                     productImage: product.mainImage,
                                     productPrice: product.price,
-                                    lensType: selectedLensType,
-                                    material: selectedMaterial,
-                                    frameStyle: selectedFrameStyle,
-                                    usage: selectedUsage,
+                                    productSize: product.size,
+                                    category: product.category,
+                                    specifications: [
+                                        ...(product.technicalSpecs || []),
+                                        { label: 'Lens', value: selectedLensType },
+                                        { label: 'Material', value: selectedMaterial },
+                                        { label: 'Style', value: selectedFrameStyle },
+                                        { label: 'Usage', value: selectedUsage },
+                                        { label: 'Prescription', value: prescriptionType }
+                                    ],
+                                    sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || product.id,
                                     enhancements: selectedEnhancements,
                                     prescriptionType,
                                     prescription,
@@ -232,8 +254,8 @@ const LensSelectionModal = ({
                             Add to Cart
                         </button>
                         <button 
-                            className={`modal-buy-now ${product.stock <= 0 ? 'disabled' : ''}`} 
-                            disabled={product.stock <= 0}
+                            className={`modal-buy-now ${product.stock !== undefined && product.stock <= 0 ? 'disabled' : ''}`} 
+                            disabled={product.stock !== undefined && product.stock <= 0}
                             onClick={onClose}
                         >
                             Buy Now

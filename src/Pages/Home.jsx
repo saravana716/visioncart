@@ -28,6 +28,29 @@ const Home = () => {
     fetchHomeData();
   }, []);
 
+  useEffect(() => {
+    if (loading) return;
+
+    // Intersection Observer for Scroll Animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, observerOptions);
+
+    const revealElements = document.querySelectorAll('.scroll-reveal');
+    revealElements.forEach(el => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [loading]);
+
   return (
     <div className='reveal-in'>
       <Navbar/>
@@ -39,31 +62,37 @@ const Home = () => {
         <Loader />
       ) : (
         <>
-          <RecentlyViewed />
+          <div className="scroll-reveal"><RecentlyViewed /></div>
           {/* Dynamically render category sections */}
           {categories.slice(0, 1).map(cat => (
-            <TrendyCollection key={cat.id} title={`Premium ${cat.name}`} categoryName={cat.name}/>
+            <div key={cat.id} className="scroll-reveal">
+              <TrendyCollection title={`Premium ${cat.name}`} categoryName={cat.name}/>
+            </div>
           ))}
           
-          <ContactLens/>
+          <div className="scroll-reveal"><ContactLens/></div>
           
           {categories.slice(1, 2).map(cat => (
-            <TrendyCollection key={cat.id} title={`Latest ${cat.name}`} categoryName={cat.name}/>
+            <div key={cat.id} className="scroll-reveal">
+              <TrendyCollection title={`Latest ${cat.name}`} categoryName={cat.name}/>
+            </div>
           ))}
           
-          <BookAppointment/>
+          <div className="scroll-reveal"><BookAppointment/></div>
           
           {categories.slice(2).map((cat, index) => (
             <React.Fragment key={cat.id}>
-              <TrendyCollection title={cat.name} categoryName={cat.name}/>
-              {index === 0 && <UserSlider/>} 
+              <div className="scroll-reveal">
+                <TrendyCollection title={cat.name} categoryName={cat.name}/>
+              </div>
+              {index === 0 && <div className="scroll-reveal"><UserSlider/></div>} 
             </React.Fragment>
           ))}
           
           {/* Ensure UserSlider is shown even if there are fewer than 3 dynamic categories after slice */}
-          {categories.length < 3 && <UserSlider/>}
-          <TrendyCollection />
-          <NewsLetter />
+          {categories.length < 3 && <div className="scroll-reveal"><UserSlider/></div>}
+          <div className="scroll-reveal"><TrendyCollection /></div>
+          <div className="scroll-reveal"><NewsLetter /></div>
         </>
       )}
 

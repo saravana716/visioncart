@@ -3,16 +3,17 @@
     top: 100%; /* Position directly below the navbar */
     left: 0;
     width: 100%;
-    background-color: white;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
     z-index: 1000;
-    padding: 30px 40px;
-    border-top: 1px solid #eee;
-    animation: fadeIn 0.3s ease-in-out;
+    padding: 40px;
+    border-top: 1px solid var(--glass-border);
+    animation: megaReveal 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
+@keyframes megaReveal {
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 

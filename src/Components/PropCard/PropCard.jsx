@@ -23,12 +23,16 @@ const PropCard = ({ cardlist }) => {
                 >
                     <div className='propcardimg'>
                         {data.tryOn && <div className="tryon-tag">3D Try-On</div>}
-                        <img 
-                            src={data.img} 
-                            alt={data.title} 
-                            className='main-product-img' 
-                            style={{ viewTransitionName: `product-img-${data.id}` }}
-                        />
+                        {data.img ? (
+                            <img 
+                                src={data.img} 
+                                alt={data.title} 
+                                className='main-product-img' 
+                                style={{ viewTransitionName: `product-img-${data.id}` }}
+                            />
+                        ) : (
+                            <div className="main-product-img placeholder-img"></div>
+                        )}
                         
                         <div 
                             className={`heart-container ${isInWishlist(data.id) ? 'active' : ''}`}
@@ -46,10 +50,20 @@ const PropCard = ({ cardlist }) => {
                                     e.stopPropagation();
                                     const cartData = {
                                         productId: data.id,
+                                        productBrand: data.brand || 'Visionkart',
                                         productName: data.title,
                                         productImage: data.img,
                                         productPrice: data.price,
-                                        totalPrice: data.price
+                                        totalPrice: data.price,
+                                        category: data.category,
+                                        // Collect all technical specs dynamically
+                                        specifications: [
+                                            ...(data.technicalSpecs || []),
+                                            { label: 'Color', value: data.colorName || (data.colors ? data.colors[0].name : 'Standard') },
+                                            { label: 'Lens', value: 'Frame Only' },
+                                            { label: 'Material', value: 'Standard' }
+                                        ],
+                                        sku: data.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || data.id,
                                     };
                                     const success = await addItemToCart(cartData);
                                     if (success) {
@@ -71,7 +85,7 @@ const PropCard = ({ cardlist }) => {
                         {data.brand && <span className="product-brand">{data.brand}</span>}
                         <h5 className="product-title">{data.title}</h5>
                         <div className="product-reviews">
-                            <img src={data.rating} alt="rating" className="rating-stars" />
+                            {data.rating && <img src={data.rating} alt="rating" className="rating-stars" />}
                             <span className="review-count">({data.ratingcount} reviews)</span>
                         </div>
                         <div className='product-footer'>
@@ -80,7 +94,7 @@ const PropCard = ({ cardlist }) => {
                                 <span className="old-price">{data.mrpprice}</span>
                             </div>
                             <div className="product-variants">
-                                <img src={data.color} alt="colors" className="color-dots" />
+                                {data.color && <img src={data.color} alt="colors" className="color-dots" />}
                                 <span className="variant-count">{data.colorcount} +</span>
                             </div>
                         </div>

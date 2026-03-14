@@ -70,45 +70,113 @@
     flex: 1;
 }
 
-.item-main-info {
+.item-header-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
 }
 
-.item-main-info h3 {
+.item-title-col h3 {
     font-family: 'Outfit', sans-serif;
     font-size: 20px;
-    color: #1a1a1a;
-    margin: 0;
-}
-
-.item-price {
     font-weight: 700;
-    font-size: 18px;
-    color: #000f2d;
+    color: #2d3436;
+    margin: 0 0 4px 0;
 }
 
-.item-config-summary {
+.item-size-label {
+    font-size: 13px;
+    color: #636e72;
+}
+
+.item-price-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.item-price-val {
+    font-size: 22px;
+    font-weight: 800;
+    color: #001f54;
+}
+
+.remove-item-btn {
+    background: none;
+    border: none;
+    color: #ff7675;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    padding: 6px;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.remove-item-btn:hover {
+    background: #fff5f5;
+    color: #d63031;
+}
+
+.item-attributes-grid {
     display: flex;
     flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.attribute-chip {
+    background: #f1f2f6;
+    padding: 8px 16px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.attribute-chip.full-width {
+    width: 100%;
+}
+
+.attr-label {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.attr-val.sku-text {
+    font-family: monospace;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.item-title-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.item-prescription-banner {
+    background: #e1fdf4;
+    color: #00b894;
+    padding: 12px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
     gap: 10px;
-    margin-bottom: 15px;
-}
-
-.config-chip {
-    background: #f0f2f5;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    color: #444;
-}
-
-.config-chip span {
+    font-size: 14px;
     font-weight: 600;
-    color: #888;
-    margin-right: 4px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.item-prescription-banner svg {
+    font-size: 18px;
 }
 
 .item-prescription-brief {

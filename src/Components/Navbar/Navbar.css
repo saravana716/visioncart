@@ -1,10 +1,24 @@
-.navbar{
+.navbar {
     width: 100%;
-    height: 10vh;
-    padding:8px 30px;
+    height: 80px;
+    padding: 0 40px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 2500;
+    background: white;
+    transition: var(--transition-smooth);
+}
+
+.navbar.scrolled {
+    height: 70px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--glass-border);
 }
 .navbar img{
     width: 200px;
@@ -123,28 +137,43 @@
     left: 10px;
     right: auto;
 }
-.searchinput{
+.searchinput {
     width: 100%;
-    padding: 10px;
-    border: 1px solid gray;
-    border-radius: 10px;
+    padding: 8px 15px;
+    border: 1.5px solid #eee;
+    border-radius: 50px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: #f8f9fa;
+    transition: var(--transition-smooth);
 }
-.searchinput input{
+
+.searchinput:focus-within {
+    background: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(0, 35, 102, 0.05);
+}
+
+.searchinput input {
     width: 100%;
     border: none;
     outline: none;
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 500;
     background-color: transparent;
-    
+    font-family: inherit;
 }
-.searchinput .search{
+
+.searchinput .search {
     font-size: 20px;
     cursor: pointer;
+    color: var(--primary-color);
+    transition: transform 0.3s ease;
+}
 
+.searchinput .search:hover {
+    transform: scale(1.1);
 }
 .navbarnext{
     width: 100%;

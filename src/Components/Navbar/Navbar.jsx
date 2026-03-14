@@ -22,6 +22,7 @@ const Navbar = () => {
   const [activeCategory, setActiveCategory] = useState(null);
   const [user, setUser] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
   const { cartCount, cartOpen, setCartOpen, drawerTab, setDrawerTab } = useCart();
   const { wishlistItems } = useWishlist();
@@ -58,6 +59,18 @@ const Navbar = () => {
       document.body.classList.remove('no-scroll');
       if (appContainer) appContainer.classList.remove('no-scroll');
     }
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      document.documentElement.classList.remove('no-scroll');
+      document.body.classList.remove('no-scroll');
+      if (appContainer) appContainer.classList.remove('no-scroll');
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [isSidebarOpen]);
 
   const togglePopup = () => {
@@ -104,7 +117,7 @@ const Navbar = () => {
 
     return (
         <>
-        <div className='navbar'>
+        <div className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
             <img src={logo} alt="" onClick={() => navigate('/')} style={{cursor: 'pointer'}} />
             <div className='navtext'>
                 <li onClick={() => navigate('/')}>Home</li>
@@ -119,11 +132,19 @@ const Navbar = () => {
                     <IoIosSearch className='search' onClick={() => setIsSearchOpen(true)} style={{cursor: 'pointer'}} />
                 </div>
                 <div className='iconlist'>
-                    <div className='icon-with-badge' onClick={() => { setDrawerTab('wishlist'); setCartOpen(true); }} style={{cursor: 'pointer'}}>
+                    <div className='icon-with-badge' onClick={() => { 
+                        setDrawerTab('wishlist'); 
+                        setCartOpen(true); 
+                        window.dispatchEvent(new CustomEvent('close-all-modals'));
+                    }} style={{cursor: 'pointer'}}>
                         {wishlistItems.length > 0 ? <FaHeart className='nicon' style={{color: '#ff0066'}} /> : <FaRegHeart className='nicon' />}
                         {wishlistItems.length > 0 && <span className='badge'>{wishlistItems.length}</span>}
                     </div>
-                    <div className='icon-with-badge' onClick={() => { setDrawerTab('cart'); setCartOpen(true); }} style={{cursor: 'pointer'}}>
+                    <div className='icon-with-badge' onClick={() => { 
+                        setDrawerTab('cart'); 
+                        setCartOpen(true); 
+                        window.dispatchEvent(new CustomEvent('close-all-modals'));
+                    }} style={{cursor: 'pointer'}}>
                         <IoCartOutline className='nicon'/>
                         {cartCount > 0 && <span className='badge'>{cartCount}</span>}
                     </div>

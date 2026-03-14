@@ -236,7 +236,7 @@ const ProductPage = () => {
             </div>
 
             <div className="product-listing-section">
-                <div className="listing-header">
+                <div className="listing-header scroll-reveal">
                     <h3>{displayCategory}</h3>
                     <p>{cardlist.length} results found</p>
                 </div>
@@ -452,7 +452,7 @@ const ProductPage = () => {
                     </div>
 
                     {/* Product Grid Area */}
-                    <div className="product-grid-area">
+                    <div className="product-grid-area scroll-reveal">
                         <div className="grid-controls">
                             <div className="mobile-controls">
                                 <button className="mobile-sort-toggle" onClick={() => setShowSortModal(true)}>

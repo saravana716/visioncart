@@ -97,7 +97,7 @@ const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
                             <IoTimeOutline /> Recent
                         </button>
                     </div>
-                    <button className="drawer-close" onClick={onClose}>
+                    <button className="drawer-close-btn" onClick={onClose}>
                         <IoCloseOutline />
                     </button>
                 </div>
@@ -125,7 +125,8 @@ const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
                                         </div>
                                     ))}
                                     <div className="drawer-footer">
-                                        <button className="checkout-btn" onClick={() => { navigate('/cart'); onClose(); }}>View Full Cart</button>
+                                        <button className="checkout-btn" onClick={() => { navigate('/cart'); onClose(); }}>Checkout Now</button>
+                                        <button className="continue-btn" onClick={onClose}>Continue Shopping</button>
                                     </div>
                                 </div>
                             )}
@@ -153,6 +154,10 @@ const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
                                             </div>
                                         </div>
                                     ))}
+                                    <div className="drawer-footer">
+                                        <button className="checkout-btn" onClick={() => { navigate('/wishlist'); onClose(); }}>View All Wishlist</button>
+                                        <button className="continue-btn" onClick={onClose}>Continue Shopping</button>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -164,6 +169,7 @@ const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
                                 <div className="empty-state">
                                     <IoTimeOutline className="empty-icon" />
                                     <p>No recently viewed items</p>
+                                    <button className="shop-btn" onClick={() => { navigate('/products'); onClose(); }}>Browse Products</button>
                                 </div>
                             ) : (
                                 <div className="drawer-list">
@@ -178,6 +184,9 @@ const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
                                             </div>
                                         </div>
                                     ))}
+                                    <div className="drawer-footer">
+                                        <button className="continue-btn" onClick={onClose}>Continue Shopping</button>
+                                    </div>
                                 </div>
                             )}
                         </div>
