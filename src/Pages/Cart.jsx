@@ -1,14 +1,50 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { FaTrashAlt, FaRegFileAlt } from 'react-icons/fa';
+import toast from 'react-hot-toast';
+import { getCoupon } from '../services/firestoreService';
 import './Cart.css';
 
 const Cart = () => {
     const { cartItems, removeItemFromCart, cartCount } = useCart();
     const navigate = useNavigate();
+    const [couponCode, setCouponCode] = useState('');
+    const [discount, setDiscount] = useState(0);
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+    const handleApplyCoupon = async () => {
+        const code = couponCode.toUpperCase();
+        try {
+            const couponData = await getCoupon(code);
+            if (couponData) {
+                let disc = 0;
+                if (couponData.type === 'flat') {
+                    disc = couponData.value;
+                } else if (couponData.type === 'percent') {
+                    disc = Math.round(total * (couponData.value / 100));
+                }
+                
+                setDiscount(disc);
+                setAppliedCoupon(code);
+                toast.success(`Coupon Applied! ₹${disc} Off`);
+            } else {
+                toast.error("Invalid Coupon Code");
+            }
+        } catch (error) {
+            console.error("Error applying coupon:", error);
+            toast.error("Failed to apply coupon");
+        }
+    };
+
+    const removeCoupon = () => {
+        setDiscount(0);
+        setAppliedCoupon(null);
+        setCouponCode('');
+        toast.success("Coupon Removed");
+    };
 
     const calculateSubtotal = () => {
         return cartItems.reduce((acc, item) => {
@@ -100,8 +136,36 @@ const Cart = () => {
                             </div>
                             <div className="summary-total">
                                 <span>Total Amount</span>
-                                <span>₹{total.toLocaleString()}</span>
+                                <div className="total-stack">
+                                    {discount > 0 && <span className="old-total">₹{total.toLocaleString()}</span>}
+                                    <span className="final-total">₹{(total - discount).toLocaleString()}</span>
+                                </div>
                             </div>
+                            
+                            <div className="coupon-section">
+                                <div className="coupon-input-group">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Enter Coupon Code" 
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                        disabled={appliedCoupon}
+                                    />
+                                    <button 
+                                        onClick={handleApplyCoupon}
+                                        disabled={!couponCode || appliedCoupon}
+                                    >
+                                        {appliedCoupon ? 'Applied' : 'Apply'}
+                                    </button>
+                                </div>
+                                {appliedCoupon && (
+                                    <div className="applied-coupon-tag">
+                                        <span>{appliedCoupon} applied!</span>
+                                        <button onClick={removeCoupon}>✕</button>
+                                    </div>
+                                )}
+                            </div>
+
                             <button className="checkout-btn" onClick={() => navigate('/checkout')}>Proceed to Checkout</button>
                             <p className="checkout-note">Secure SSL encryption & safe payment processing</p>
                         </div>

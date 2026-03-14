@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import OurBrands from '../Components/Ourbrands/OurBrands';
 import PropCard from '../Components/PropCard/PropCard';
 import { getProductById, getProducts, getLensEnhancements } from '../services/firestoreService';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import ReviewsSection from '../Components/Reviews/ReviewsSection';
+import RecentlyViewed from '../Components/RecentlyViewed/RecentlyViewed';
+import Recommendations from '../Components/Recommendations/Recommendations';
 import rateimg from '../assets/star.png';
 import './ProductDetails.css';
 
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { toggleWishlist, isInWishlist } = useWishlist();
     
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -54,6 +60,7 @@ const ProductDetails = () => {
                     size: data.size || 'Medium',
                     colors: data.colors || [{ name: 'Default', hex: '#000' }],
                     category: data.category || 'Spectacles',
+                    stock: data.stock !== undefined ? data.stock : 10, // Default to 10 if not set
                     technicalSpecs: data.technicalSpecs || [
                         { label: 'Brand', value: data.brand || 'Visionkart' },
                         { label: 'Model No.', value: data.sku || 'N/A' },
@@ -91,6 +98,14 @@ const ProductDetails = () => {
 
         fetchProductData();
         fetchEnhancements();
+
+        // Track Recently Viewed
+        const trackRecentlyViewed = () => {
+            const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+            const updated = [id, ...viewed.filter(vId => vId !== id)].slice(0, 10);
+            localStorage.setItem('recentlyViewed', JSON.stringify(updated));
+        };
+        trackRecentlyViewed();
     }, [id]);
 
     const toggleEnhancement = (enh) => {
@@ -163,6 +178,10 @@ const ProductDetails = () => {
                             <span className="offer-tag">({product.discount})</span>
                         </div>
 
+                        <div className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                            {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
+                        </div>
+
                         <div className="color-selection">
                             <p>Select Color</p>
                             <div className="color-dots">
@@ -202,8 +221,29 @@ const ProductDetails = () => {
                         </div>
 
                         <div className="action-buttons-lower">
-                            <button className="gray-btn">Add to Cart</button>
-                            <button className="gray-btn">Buy Now</button>
+                            <button 
+                                className={`gray-btn ${product.stock <= 0 ? 'disabled' : ''}`}
+                                onClick={async () => {
+                                    if (product.stock <= 0) return;
+                                    const cartData = {
+                                        productId: id,
+                                        productName: product.title,
+                                        productImage: product.mainImage,
+                                        productPrice: product.price,
+                                        totalPrice: product.price
+                                    };
+                                    await addItemToCart(cartData);
+                                }}
+                                disabled={product.stock <= 0}
+                            >
+                                Add to Cart
+                            </button>
+                            <button 
+                                className={`gray-btn ${product.stock <= 0 ? 'disabled' : ''}`}
+                                disabled={product.stock <= 0}
+                            >
+                                Buy Now
+                            </button>
                         </div>
 
                         <div className="product-for-section">
@@ -276,7 +316,6 @@ const ProductDetails = () => {
                             </div>
                             </div>
                         </div>
-
                         <div className="availability-check">
                             <p>Check Availability</p>
                             <div className="zip-input">
@@ -286,30 +325,7 @@ const ProductDetails = () => {
                             <p className="delivery-status available">Delivered in 4-6 days</p>
                         </div>
 
-                        <div className="reviews-section">
-                            <div className="reviews-header">
-                                <h2>Review ({product.ratingCount})</h2>
-                                <div className="stars-avg">★★★★☆</div>
-                            </div>
-                            <div className="reviews-grid">
-                                <div className="review-card">
-                                    <div className="rev-stars">★★★★☆</div>
-                                    <p className="rev-text">Great quality!</p>
-                                    <p className="rev-user">Aman - Dec 22, 2024</p>
-                                </div>
-                                <div className="review-card">
-                                    <div className="rev-stars">★★★★★</div>
-                                    <p className="rev-text">Very good product.</p>
-                                    <p className="rev-user">Aman - Dec 22, 2024</p>
-                                </div>
-                                <div className="review-card">
-                                    <div className="rev-stars">★★★☆☆</div>
-                                    <p className="rev-text">Fast Delivery.</p>
-                                    <p className="rev-user">Aman - Dec 22, 2024</p>
-                                </div>
-                            </div>
-                            <button className="green-more-btn">More Reviews</button>
-                        </div>
+                        <ReviewsSection productId={id} />
                     </div>
                 </div>
 
@@ -324,6 +340,8 @@ const ProductDetails = () => {
                 </div>
 
                 <OurBrands />
+                <Recommendations category={product?.category} currentProductId={id} />
+                <RecentlyViewed excludeId={id} />
             </div>
 
             <Footers />
@@ -467,25 +485,38 @@ const ProductDetails = () => {
                             </div>
 
                             <div className="modal-footer-btns">
-                                <button className="modal-add-cart" onClick={async () => {
-                                    const cartData = {
-                                        productId: id,
-                                        productName: product.title,
-                                        productImage: product.mainImage,
-                                        productPrice: product.price,
-                                        lensType: selectedLensType,
-                                        material: selectedMaterial,
-                                        frameStyle: selectedFrameStyle,
-                                        usage: selectedUsage,
-                                        enhancements: selectedEnhancements,
-                                        prescriptionType,
-                                        prescription,
-                                        totalPrice: calculateTotalPrice()
-                                    };
-                                    const success = await addItemToCart(cartData);
-                                    if (success) setShowLensModal(false);
-                                }}>Add to Cart</button>
-                                <button className="modal-buy-now" onClick={() => setShowLensModal(false)}>Buy Now</button>
+                                <button 
+                                    className={`modal-add-cart ${product.stock <= 0 ? 'disabled' : ''}`} 
+                                    disabled={product.stock <= 0}
+                                    onClick={async () => {
+                                        if (product.stock <= 0) return;
+                                        const cartData = {
+                                            productId: id,
+                                            productName: product.title,
+                                            productImage: product.mainImage,
+                                            productPrice: product.price,
+                                            lensType: selectedLensType,
+                                            material: selectedMaterial,
+                                            frameStyle: selectedFrameStyle,
+                                            usage: selectedUsage,
+                                            enhancements: selectedEnhancements,
+                                            prescriptionType,
+                                            prescription,
+                                            totalPrice: calculateTotalPrice()
+                                        };
+                                        const success = await addItemToCart(cartData);
+                                        if (success) setShowLensModal(false);
+                                    }}
+                                >
+                                    Add to Cart
+                                </button>
+                                <button 
+                                    className={`modal-buy-now ${product.stock <= 0 ? 'disabled' : ''}`} 
+                                    disabled={product.stock <= 0}
+                                    onClick={() => setShowLensModal(false)}
+                                >
+                                    Buy Now
+                                </button>
                             </div>
                         </div>
                     </div>

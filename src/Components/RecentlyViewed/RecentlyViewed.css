@@ -1,0 +1,44 @@
+.recently-viewed-section {
+    margin: 60px 0;
+    padding: 40px;
+    background: #fff;
+    border-radius: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.03);
+}
+
+.recently-viewed-section .section-header {
+    margin-bottom: 35px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.recently-viewed-section h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #001f54;
+    white-space: nowrap;
+}
+
+.section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, #edf1f7, transparent);
+}
+
+.products-grid-viewed {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 25px;
+}
+
+@media (max-width: 768px) {
+    .recently-viewed-section {
+        padding: 30px 20px;
+        margin: 40px 0;
+    }
+    .products-grid-viewed {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}

@@ -7,8 +7,10 @@ import ContactLens from '../Components/Contact/ContactLens'
 import BookAppointment from '../Components/BookAppointment/BookAppointment'
 import UserSlider from '../Components/Userslider/UserSlider'
 import OurBrands from '../Components/Ourbrands/OurBrands'
-import Footers from '../Components/Footer/Footers'
+import Footers from '../Components/Footer/Footers';
+import RecentlyViewed from '../Components/RecentlyViewed/RecentlyViewed';
 import MobileCategories from '../Components/MobileCategories/MobileCategories'
+import NewsLetter from '../Components/NewsLetter/NewsLetter';
 import { getCategories } from '../services/firestoreService'
 
 const Home = () => {
@@ -37,6 +39,7 @@ const Home = () => {
         </div>
       ) : (
         <>
+          <RecentlyViewed />
           {/* Dynamically render category sections */}
           {categories.slice(0, 1).map(cat => (
             <TrendyCollection key={cat.id} title={`Premium ${cat.name}`} categoryName={cat.name}/>
@@ -59,6 +62,8 @@ const Home = () => {
           
           {/* Ensure UserSlider is shown even if there are fewer than 3 dynamic categories after slice */}
           {categories.length < 3 && <UserSlider/>}
+          <TrendyCollection />
+          <NewsLetter />
         </>
       )}
 

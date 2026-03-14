@@ -1,10 +1,12 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FaRegHeart } from "react-icons/fa";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
+import { useWishlist } from '../../context/WishlistContext';
 import "./PropCard.css"
 
 const PropCard = ({ cardlist }) => {
     const navigate = useNavigate();
+    const { toggleWishlist, isInWishlist } = useWishlist();
     
     if (!cardlist) return null;
     
@@ -20,10 +22,15 @@ const PropCard = ({ cardlist }) => {
                         {data.tryOn && <div className="tryon-tag">3D Try-On</div>}
                         <img src={data.img} alt={data.title} className='main-product-img' />
                         
-                        <FaRegHeart className='hearticon' onClick={(e) => {
-                            e.stopPropagation();
-                            // Heart logic here
-                        }}/>
+                        <div 
+                            className={`heart-container ${isInWishlist(data.id) ? 'active' : ''}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleWishlist(data.id);
+                            }}
+                        >
+                            {isInWishlist(data.id) ? <FaHeart className='hearticon' /> : <FaRegHeart className='hearticon' />}
+                        </div>
 
                         <div className="card-overlay">
                             <div className="prop-buttons-overlay">

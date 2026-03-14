@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { auth } from '../firebase.config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { placeOrder, clearUserCart } from '../services/firestoreService';
+import { placeOrder, clearUserCart, decrementStock } from '../services/firestoreService';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { FaShippingFast, FaCreditCard, FaCheckCircle } from 'react-icons/fa';
@@ -65,11 +65,18 @@ const Checkout = () => {
             shippingAddress: form,
             paymentMethod: 'Prepaid (Simulated)',
             amounts: { subtotal, tax, total },
-            userId: user.uid
+            userId: user.uid,
+            status: 'Processing'
         };
 
         const result = await placeOrder(user.uid, orderData);
         if (result.success) {
+            // Decrement stock for each item
+            for (const item of cartItems) {
+                if (item.productId) {
+                    await decrementStock(item.productId, 1);
+                }
+            }
             await clearUserCart(user.uid);
             clearCart();
             navigate('/order-success', { state: { orderId: result.id } });

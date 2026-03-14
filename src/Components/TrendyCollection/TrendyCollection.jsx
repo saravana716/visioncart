@@ -3,8 +3,9 @@ import "./TrendyCollection.css"
 import PropCard from '../PropCard/PropCard'
 import rateimg from "../../assets/star.png"
 import colorimg from "../../assets/color.png"
-import { getProducts } from '../../services/firestoreService';
+import { getTrendyProducts } from '../../services/firestoreService';
 import { useNavigate } from 'react-router-dom';
+import Skeleton from '../Skeleton/Skeleton';
 
 const TrendyCollection = ({ title = "Premium Optical Frames", categoryName = null }) => {
     const [trendingProducts, setTrendingProducts] = useState([]);
@@ -13,7 +14,7 @@ const TrendyCollection = ({ title = "Premium Optical Frames", categoryName = nul
 
     useEffect(() => {
         const fetchTrending = async () => {
-            const data = await getProducts(categoryName);
+            const data = await getTrendyProducts(categoryName);
             // Just take first 10 for the home page sections
             setTrendingProducts(data.slice(0, 10));
             setLoading(false);
@@ -41,35 +42,42 @@ const TrendyCollection = ({ title = "Premium Optical Frames", categoryName = nul
         }
     };
 
-  return (
-    <>
-    <div className='trendymain'>
-        <div className='trendymaintitle'>
-            <h1>{title}</h1>
-            <h1 
-                onClick={handleShopNow}
-                style={{borderBottom: "1px solid black", paddingBottom: "2px", cursor: "pointer"}}
-            >
-                Shop Now
-            </h1>
-        </div>
+    if (loading) {
+        return (
+            <div className="trendy-collection-section">
+                <div className="section-title-wrapper">
+                    <h2 className="premium-title">{title}</h2>
+                </div>
+                <div className="products-grid">
+                    {[1, 2, 3, 4].map(idx => <Skeleton key={idx} type="product" />)}
+                </div>
+            </div>
+        );
+    }
 
-        {loading ? (
-            <div style={{textAlign: 'center', padding: '50px', fontSize: '18px', color: 'var(--primary-color)'}}>
-                Loading {title}...
+    return (
+        <div className='trendymain'>
+            <div className='trendymaintitle'>
+                <h1>{title}</h1>
+                <h1 
+                    onClick={handleShopNow}
+                    style={{borderBottom: "1px solid black", paddingBottom: "2px", cursor: "pointer"}}
+                >
+                    Shop Now
+                </h1>
             </div>
-        ) : trendingProducts.length > 0 ? (
-            <div className='trendy'>
-                <PropCard cardlist={cardlist}/>
-            </div>
-        ) : (
-            <div style={{textAlign: 'center', padding: '30px', color: '#666'}}>
-                No products found in this category.
-            </div>
-        )}
-    </div>
-    </>
-  )
-}
+
+            {trendingProducts.length > 0 ? (
+                <div className='trendy'>
+                    <PropCard cardlist={cardlist}/>
+                </div>
+            ) : (
+                <div style={{textAlign: 'center', padding: '30px', color: '#666'}}>
+                    No products found in this category.
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default TrendyCollection

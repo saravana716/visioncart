@@ -1,25 +1,29 @@
 import React, { useState, useEffect } from 'react'
 import logo from "../../assets/vision_cart_logo.png"
-import { FaRegHeart } from "react-icons/fa6";
-import { IoCartOutline } from "react-icons/io5";
+import { FaRegHeart, FaHeart } from "react-icons/fa6";
+import { IoCartOutline, IoPersonOutline, IoSearchOutline, IoMenuOutline, IoCloseOutline } from "react-icons/io5";
 import { FaRegUserCircle } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
+import SearchOverlay from '../Search/SearchOverlay';
+import { useCart } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import "./Navbar.css"
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase.config';
 import { getCategories } from '../../services/firestoreService';
 import MegaMenu from './MegaMenu';
-import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 const Navbar = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   const [user, setUser] = useState(null);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
   const { cartCount } = useCart();
+  const { wishlistItems } = useWishlist();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -109,13 +113,16 @@ const Navbar = () => {
             <div className='icons'>
                 <div className='searchinput'>
                     <input type="text" placeholder="Search..." />
-                    <IoIosSearch  className='search'/>
+                    <IoIosSearch className='search' onClick={() => setIsSearchOpen(true)} style={{cursor: 'pointer'}} />
                 </div>
                 <div className='iconlist'>
-                    <FaRegHeart  className='nicon'/>
-                    <div className='iconlist' onClick={() => navigate('/cart')} style={{cursor: 'pointer'}}>
+                    <div className='icon-with-badge' onClick={() => navigate('/wishlist')} style={{cursor: 'pointer'}}>
+                        {wishlistItems.length > 0 ? <FaHeart className='nicon' style={{color: '#ff0066'}} /> : <FaRegHeart className='nicon' />}
+                        {wishlistItems.length > 0 && <span className='badge'>{wishlistItems.length}</span>}
+                    </div>
+                    <div className='icon-with-badge' onClick={() => navigate('/cart')} style={{cursor: 'pointer'}}>
                         <IoCartOutline className='nicon'/>
-                        <span className='badge'>{cartCount}</span>
+                        {cartCount > 0 && <span className='badge'>{cartCount}</span>}
                     </div>
                     <div className='user-icon-container'>
                         <div style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}} onClick={togglePopup}>
@@ -176,10 +183,13 @@ const Navbar = () => {
                     </div>
                 </div>
                 <div className='mobile-nav-right'>
-                    <FaRegHeart className='mobile-icon'/>
+                    <div className='mobile-wishlist' onClick={() => navigate('/wishlist')} style={{cursor: 'pointer'}}>
+                        {wishlistItems.length > 0 ? <FaHeart className='mobile-icon' style={{color: '#ff0066'}} /> : <FaRegHeart className='mobile-icon' />}
+                        {wishlistItems.length > 0 && <span className='badge'>{wishlistItems.length}</span>}
+                    </div>
                     <div className='mobile-bag' onClick={() => navigate('/cart')}>
                         <IoCartOutline className='mobile-icon'/>
-                        <span className='badge'>{cartCount}</span>
+                        {cartCount > 0 && <span className='badge'>{cartCount}</span>}
                     </div>
                     <div className='mobile-menu-icon' onClick={toggleSidebar}>
                         <div className='bar'></div>
@@ -189,8 +199,8 @@ const Navbar = () => {
                 </div>
             </div>
             <div className='mobile-nav-bottom'>
-                <div className='mobile-search-container'>
-                    <input type="text" placeholder="Search" />
+                <div className='mobile-search-container' onClick={() => setIsSearchOpen(true)}>
+                    <input type="text" placeholder="Search" readOnly />
                     <IoIosSearch className='mobile-search-icon'/>
                 </div>
                 <button className='mobile-try-on-btn' onClick={() => navigate('/virtual-try-on')}>3D Try-On</button>

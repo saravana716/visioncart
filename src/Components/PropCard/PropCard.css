@@ -51,27 +51,54 @@
     opacity: 1;
 }
 
-.hearticon {
+.heart-container {
     position: absolute;
     top: 15px;
     right: 15px;
-    font-size: 18px;
-    color: #001f54; /* Theme blue outline */
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     cursor: pointer;
     z-index: 15;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     opacity: 0;
     transform: translateY(-10px);
 }
 
-.propcard:hover .hearticon {
+.propcard:hover .heart-container {
     opacity: 1;
     transform: translateY(0);
 }
 
-.hearticon:hover {
+.heart-container.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.heart-container.active .hearticon {
     color: #ff0066;
-    transform: scale(1.2) !important;
+    animation: pulse-heart 0.3s ease-out;
+}
+
+.hearticon {
+    font-size: 16px;
+    color: #001f54;
+    transition: all 0.2s;
+}
+
+@keyframes pulse-heart {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+.heart-container:hover {
+    transform: scale(1.1) !important;
 }
 
 .prop-buttons-overlay {

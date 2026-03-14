@@ -2,7 +2,6 @@ import React from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import SignUp from '../Components/SignUp/SignUp'
 import Login from '../Components/Login/Login'
-import Navbar from '../Components/Navbar/Navbar'
 import Home from '../Pages/Home'
 import ProductPage from '../Pages/ProductPage'
 import ProductDetails from '../Pages/ProductDetails'
@@ -14,6 +13,7 @@ import Cart from '../Pages/Cart'
 import Checkout from '../Pages/Checkout'
 import OrderSuccess from '../Pages/OrderSuccess'
 import Orders from '../Pages/Orders'
+import Wishlist from '../Pages/Wishlist'
 
 const Routing = () => {
   return (
@@ -32,6 +32,7 @@ const Routing = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/wishlist" element={<Wishlist />} />
       </Routes>
     </BrowserRouter>
   )

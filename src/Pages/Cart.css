@@ -207,10 +207,124 @@
 }
 
 .checkout-note {
-    text-align: center;
-    font-size: 12px;
-    color: #999;
+    font-size: 11px;
+    color: #a0aec0;
     margin-top: 15px;
+    text-align: center;
+}
+
+/* Coupon Section */
+.coupon-section {
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 2px dashed #f1f5f9;
+}
+
+.coupon-input-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.coupon-input-group input {
+    flex: 1;
+    padding: 14px 20px;
+    border: 2px solid #f1f5f9;
+    border-radius: 12px;
+    font-size: 13px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #1a1a1a;
+    transition: all 0.3s ease;
+}
+
+.coupon-input-group input:focus {
+    border-color: #001f54;
+    background: #fff;
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 31, 84, 0.05);
+}
+
+.coupon-input-group button {
+    padding: 14px 30px;
+    background: #001f54;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+}
+
+.coupon-input-group button:hover:not(:disabled) {
+    background: #00338d;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 31, 84, 0.15);
+}
+
+.coupon-input-group button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.coupon-input-group button:disabled {
+    background: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+}
+
+.applied-coupon-tag {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f0f7ff;
+    border: 1px solid #c3dafe;
+    padding: 8px 15px;
+    border-radius: 10px;
+}
+
+.applied-coupon-tag span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1c3d5a;
+}
+
+.applied-coupon-tag button {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #a0aec0;
+    padding: 0;
+}
+
+/* Updated Summary Styles */
+.total-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.old-total {
+    font-size: 14px;
+    color: #a0aec0;
+    text-decoration: line-through;
+}
+
+.final-total {
+    font-size: 22px;
+    font-weight: 800;
+    color: #001f54;
+}
+
+.free-shipping {
+    color: #38a169;
+    font-weight: 700;
 }
 
 .empty-cart-container {
