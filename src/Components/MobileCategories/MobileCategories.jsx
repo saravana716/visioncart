@@ -19,7 +19,7 @@ const MobileCategories = () => {
           title: 'All Categories',
           items: data.map(cat => ({
             name: cat.name,
-            img: cat.image || `https://placehold.co/150/001f54/white?text=${encodeURIComponent(cat.name)}`
+            img: cat.imageUrl || cat.image || cat.img || `https://placehold.co/150/001f54/white?text=${encodeURIComponent(cat.name)}`
           }))
         }]);
       }

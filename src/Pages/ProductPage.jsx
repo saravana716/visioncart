@@ -227,7 +227,14 @@ const ProductPage = () => {
             <Navbar />
             
             {/* Banner Section */}
-            <div className="product-banner">
+            <div 
+                className="product-banner" 
+                style={categoryConfig?.imageUrl || categoryConfig?.image || categoryConfig?.bannerImage ? {
+                    backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${categoryConfig.imageUrl || categoryConfig.image || categoryConfig.bannerImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                } : {}}
+            >
                 <div className="banner-content">
                     <h1>{bannerInfo.title}</h1>
                     <h2>{bannerInfo.subtitle}</h2>

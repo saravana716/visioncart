@@ -799,13 +799,14 @@
     .thumbnails {
         flex-direction: row;
         overflow-x: auto;
-        justify-content: flex-start;
+        justify-content: center;
         padding-bottom: 10px;
+        gap: 10px;
     }
 
     .thumbnails img {
-        width: 70px;
-        height: 70px;
+        width: 65px;
+        height: 65px;
         flex-shrink: 0;
     }
 
@@ -832,8 +833,12 @@
     }
 
     .trust-badges-refined {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 12px;
+    }
+    
+    .badge-item {
+        padding: 12px 8px;
     }
 
     .lens-modal {

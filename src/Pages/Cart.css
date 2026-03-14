@@ -439,8 +439,27 @@
 @media (max-width: 600px) {
     .cart-item-card {
         flex-direction: column;
+        padding: 16px;
+        gap: 16px;
     }
     .item-img-box {
         width: 100%;
+        height: 180px;
+    }
+    .item-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .item-price-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .attribute-chip {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    .item-title-col h3 {
+        font-size: 18px;
     }
 }
