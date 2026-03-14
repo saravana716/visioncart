@@ -4,7 +4,8 @@ import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import OurBrands from '../Components/Ourbrands/OurBrands';
 import PropCard from '../Components/PropCard/PropCard';
-import { products } from '../data/products';
+import { getProductById, getProducts, getLensEnhancements } from '../services/firestoreService';
+import { useCart } from '../context/CartContext';
 import rateimg from '../assets/star.png';
 import './ProductDetails.css';
 
@@ -12,33 +13,106 @@ const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     
-    // Initialize state synchronously to prevent "Loading..." flash
-    const [product, setProduct] = useState(() => products.find(p => p.id === id) || products[0]);
-    const [selectedImg, setSelectedImg] = useState(product?.mainImage || '');
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [selectedImg, setSelectedImg] = useState('');
     const [showLensModal, setShowLensModal] = useState(false);
+    const [similarProducts, setSimilarProducts] = useState([]);
+    const [lensEnhancements, setLensEnhancements] = useState([]);
+    const [selectedEnhancements, setSelectedEnhancements] = useState([]);
+    
+    // Detailed Selection State
+    const [selectedLensType, setSelectedLensType] = useState('Single Vision');
+    const [selectedMaterial, setSelectedMaterial] = useState('TR90');
+    const [selectedFrameStyle, setSelectedFrameStyle] = useState('Rimmed');
+    const [selectedUsage, setSelectedUsage] = useState('Everyday');
+    const [prescriptionType, setPrescriptionType] = useState('Same power for both eyes');
+    const [prescription, setPrescription] = useState({
+        right: { sph: '-0.50', cyl: '----', axis: '----', add: '----' },
+        left: { sph: '-0.50', cyl: '----', axis: '----', add: '----' }
+    });
+
+    const { addItemToCart } = useCart();
 
     useEffect(() => {
-        const foundProduct = products.find(p => p.id === id);
-        if (foundProduct) {
-            setProduct(foundProduct);
-            setSelectedImg(foundProduct.mainImage);
-        }
-        window.scrollTo(0, 0);
+        const fetchProductData = async () => {
+            setLoading(true);
+            const data = await getProductById(id);
+            if (data) {
+                // Map Firestore fields to local state
+                const mappedProduct = {
+                    ...data,
+                    mainImage: (data.photos && data.photos.length > 0) ? data.photos[0] : (data.mainImage || 'https://via.placeholder.com/600?text=No+Image'),
+                    thumbnails: (data.photos && data.photos.length > 0) ? data.photos : (data.mainImage ? [data.mainImage] : ['https://via.placeholder.com/600?text=No+Image']),
+                    brand: data.brand || 'Visionkart',
+                    title: data.name || data.model || 'Product Details',
+                    price: data.price ? (data.price.startsWith('₹') ? data.price : `₹${data.price}`) : '₹0',
+                    originalPrice: data.originalPrice || `₹${parseInt(data.price || 0) * 1.5}`,
+                    discount: data.discount || '50% OFF',
+                    rating: data.rating || '4.5',
+                    ratingCount: data.ratingCount || '0',
+                    size: data.size || 'Medium',
+                    colors: data.colors || [{ name: 'Default', hex: '#000' }],
+                    category: data.category || 'Spectacles',
+                    technicalSpecs: data.technicalSpecs || [
+                        { label: 'Brand', value: data.brand || 'Visionkart' },
+                        { label: 'Model No.', value: data.sku || 'N/A' },
+                        { label: 'Frame Type', value: data.frameType || 'Full Rim' },
+                        { label: 'Frame Shape', value: data.frameShape || 'Rectangle' },
+                        { label: 'Frame Material', value: data.frameMaterial || 'Plastic' }
+                    ]
+                };
+                setProduct(mappedProduct);
+                setSelectedImg(mappedProduct.mainImage);
+
+                // Fetch similar products
+                const similar = await getProducts(data.category);
+                const similarMapped = similar.filter(p => p.id !== id).slice(0, 4).map(p => ({
+                    id: p.id,
+                    img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
+                    title: p.brand || p.name,
+                    rating: rateimg,
+                    ratingcount: p.ratingCount || "0",
+                    price: p.price ? (p.price.startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
+                    mrpprice: p.originalPrice || `₹${parseInt(p.price || 0) * 1.5}`,
+                    color: "",
+                    colorcount: p.colors ? p.colors.length : "1"
+                }));
+                setSimilarProducts(similarMapped);
+            }
+            setLoading(false);
+            window.scrollTo(0, 0);
+        };
+
+        const fetchEnhancements = async () => {
+            const enh = await getLensEnhancements();
+            setLensEnhancements(enh);
+        };
+
+        fetchProductData();
+        fetchEnhancements();
     }, [id]);
 
-    if (!product) return null;
+    const toggleEnhancement = (enh) => {
+        setSelectedEnhancements(prev => {
+            const exists = prev.find(e => e.id === enh.id);
+            if (exists) {
+                return prev.filter(e => e.id !== enh.id);
+            } else {
+                return [...prev, enh];
+            }
+        });
+    };
 
-    const cardList = products.map(p => ({
-        id: p.id,
-        img: p.mainImage,
-        title: p.brand,
-        rating: rateimg,
-        ratingcount: p.ratingCount,
-        price: p.price,
-        mrpprice: p.originalPrice,
-        color: "",
-        colorcount: p.colors.length
-    }));
+    const calculateTotalPrice = () => {
+        if (!product) return '₹0';
+        const base = parseInt(product.price.toString().replace(/[^0-9]/g, '') || '0');
+        const extras = selectedEnhancements.reduce((sum, enh) => sum + (parseInt(enh.price || 0)), 0);
+        return `₹${base + extras}`;
+    };
+
+    if (loading) return <div style={{padding: '100px', textAlign: 'center', fontSize: '20px'}}>Loading Product Details...</div>;
+    if (!product) return <div style={{padding: '100px', textAlign: 'center', fontSize: '20px'}}>Product not found</div>;
 
     return (
         <div className="product-details-page">
@@ -245,7 +319,7 @@ const ProductDetails = () => {
                         <a href="/products" className="shop-now-link">Shop <span>Now</span></a>
                     </div>
                     <div className="products-grid">
-                        <PropCard cardlist={cardList} />
+                        <PropCard cardlist={similarProducts} />
                     </div>
                 </div>
 
@@ -263,22 +337,22 @@ const ProductDetails = () => {
                         <div className="modal-content">
                             <h2 className="modal-title-small">Select Lens Type</h2>
                             <div className="lens-type-grid">
-                                <div className="lens-type-item active">
+                                <div className={`lens-type-item ${selectedLensType === 'Single Vision' ? 'active' : ''}`} onClick={() => setSelectedLensType('Single Vision')}>
                                     <div className="icon">👁️</div>
                                     <p>Single Vision</p>
                                     <span>Distance | Near Vision</span>
                                 </div>
-                                <div className="lens-type-item">
+                                <div className={`lens-type-item ${selectedLensType === 'Progressive' ? 'active' : ''}`} onClick={() => setSelectedLensType('Progressive')}>
                                     <div className="icon">🔄</div>
                                     <p>Progressive</p>
                                     <span>Near & Far Vision</span>
                                 </div>
-                                <div className="lens-type-item">
+                                <div className={`lens-type-item ${selectedLensType === 'Bifocal' ? 'active' : ''}`} onClick={() => setSelectedLensType('Bifocal')}>
                                     <div className="icon">👓</div>
                                     <p>Bifocal</p>
                                     <span>Dual Vision</span>
                                 </div>
-                                <div className="lens-type-item">
+                                <div className={`lens-type-item ${selectedLensType === 'Anti-Power' ? 'active' : ''}`} onClick={() => setSelectedLensType('Anti-Power')}>
                                     <div className="icon">⚙️</div>
                                     <p>Anti-Power</p>
                                     <span>Fashion Lenses</span>
@@ -287,36 +361,43 @@ const ProductDetails = () => {
 
                             <h2 className="modal-title-small">Select Lens Material</h2>
                             <div className="material-grid">
-                                <label><input type="radio" name="material" /> <span>Metal</span></label>
-                                <label><input type="radio" name="material" /> <span>Stainless Steel</span></label>
-                                <label><input type="radio" name="material" defaultChecked /> <span>TR90 <span className="recommended">Recommended</span></span></label>
-                                <label><input type="radio" name="material" /> <span>Mixed Material</span></label>
-                                <label><input type="radio" name="material" /> <span>Titanium</span></label>
+                                <label><input type="radio" name="material" checked={selectedMaterial === 'Metal'} onChange={() => setSelectedMaterial('Metal')} /> <span>Metal</span></label>
+                                <label><input type="radio" name="material" checked={selectedMaterial === 'Stainless Steel'} onChange={() => setSelectedMaterial('Stainless Steel')} /> <span>Stainless Steel</span></label>
+                                <label><input type="radio" name="material" checked={selectedMaterial === 'TR90'} onChange={() => setSelectedMaterial('TR90')} /> <span>TR90 <span className="recommended">Recommended</span></span></label>
+                                <label><input type="radio" name="material" checked={selectedMaterial === 'Mixed Material'} onChange={() => setSelectedMaterial('Mixed Material')} /> <span>Mixed Material</span></label>
+                                <label><input type="radio" name="material" checked={selectedMaterial === 'Titanium'} onChange={() => setSelectedMaterial('Titanium')} /> <span>Titanium</span></label>
                             </div>
 
                             <h2 className="modal-title-small">Select Frame Style</h2>
                             <div className="material-grid">
-                                <label><input type="radio" name="f-style" /> <span>Rimmed</span></label>
-                                <label><input type="radio" name="f-style" /> <span>Semi - Rimmed</span></label>
-                                <label><input type="radio" name="f-style" /> <span>Rimless</span></label>
+                                <label><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimmed'} onChange={() => setSelectedFrameStyle('Rimmed')} /> <span>Rimmed</span></label>
+                                <label><input type="radio" name="f-style" checked={selectedFrameStyle === 'Semi - Rimmed'} onChange={() => setSelectedFrameStyle('Semi - Rimmed')} /> <span>Semi - Rimmed</span></label>
+                                <label><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimless'} onChange={() => setSelectedFrameStyle('Rimless')} /> <span>Rimless</span></label>
                             </div>
 
                             <h2 className="modal-title-small">Add Lens Enhancements</h2>
                             <div className="enhancements-grid">
-                                <label><input type="checkbox" /> Anti-Glare</label>
-                                <label><input type="checkbox" /> Blue Cut</label>
-                                <label><input type="checkbox" /> UV Protection</label>
-                                <label><input type="checkbox" /> Hard Multi Coat</label>
-                                <label><input type="checkbox" /> Anti Dust</label>
-                                <label><input type="checkbox" /> Auto Cooling</label>
-                                <label><input type="checkbox" /> Extra Cooling</label>
-                                <label><input type="checkbox" /> Tinted</label>
+                                {lensEnhancements.map((enh) => (
+                                    <label key={enh.id} className={selectedEnhancements.find(e => e.id === enh.id) ? 'active' : ''}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={!!selectedEnhancements.find(e => e.id === enh.id)}
+                                            onChange={() => toggleEnhancement(enh)}
+                                        /> {enh.name} {enh.price > 0 && `(+₹${enh.price})`}
+                                    </label>
+                                ))}
                             </div>
 
                             <h2 className="modal-title-small">Power Options - Eye Selection</h2>
                             <div className="prescription-toggle">
-                                <label><input type="radio" name="p-type" defaultChecked /> Same power for both eyes</label>
-                                <label><input type="radio" name="p-type" /> Different power for each eye</label>
+                                <label>
+                                    <input type="radio" name="p-type" checked={prescriptionType === 'Same power for both eyes'} onChange={() => setPrescriptionType('Same power for both eyes')} /> 
+                                    <span>Same power for both eyes</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="p-type" checked={prescriptionType === 'Different power for each eye'} onChange={() => setPrescriptionType('Different power for each eye')} /> 
+                                    <span>Different power for each eye</span>
+                                </label>
                             </div>
 
                             <div className="prescription-input-area">
@@ -332,16 +413,16 @@ const ProductDetails = () => {
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <div className="p-row"><span>SPH</span><select><option>-0.50</option></select></div>
-                                                    <div className="p-row"><span>CYL</span><select><option>----</option></select></div>
-                                                    <div className="p-row"><span>AXIS</span><select><option>----</option></select></div>
-                                                    <div className="p-row"><span>ADD</span><select><option>----</option></select></div>
+                                                    <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, sph: e.target.value } }))}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
+                                                    <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, cyl: e.target.value } }))}><option>----</option><option>-0.25</option></select></div>
+                                                    <div className="p-row"><span>AXIS</span><select value={prescription.right.axis} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, axis: e.target.value } }))}><option>----</option><option>90</option><option>180</option></select></div>
+                                                    <div className="p-row"><span>ADD</span><select value={prescription.right.add} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, add: e.target.value } }))}><option>----</option><option>+1.00</option></select></div>
                                                 </td>
                                                 <td>
-                                                    <div className="p-row"><span>SPH</span><select><option>-0.50</option></select></div>
-                                                    <div className="p-row"><span>CYL</span><select><option>----</option></select></div>
-                                                    <div className="p-row"><span>AXIS</span><select><option>----</option></select></div>
-                                                    <div className="p-row"><span>ADD</span><select><option>----</option></select></div>
+                                                    <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, sph: e.target.value } }))}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
+                                                    <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, cyl: e.target.value } }))}><option>----</option><option>-0.25</option></select></div>
+                                                    <div className="p-row"><span>AXIS</span><select value={prescription.left.axis} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, axis: e.target.value } }))}><option>----</option><option>90</option><option>180</option></select></div>
+                                                    <div className="p-row"><span>ADD</span><select value={prescription.left.add} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, add: e.target.value } }))}><option>----</option><option>+1.00</option></select></div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -352,25 +433,25 @@ const ProductDetails = () => {
 
                             <h2 className="modal-title-small">How will you use these glasses?</h2>
                             <div className="usage-grid">
-                                <div className="usage-item">
+                                <div className={`usage-item ${selectedUsage === 'Everyday' ? 'active' : ''}`} onClick={() => setSelectedUsage('Everyday')}>
                                     <div className="usage-box">
                                         <img src="https://cdn-icons-png.flaticon.com/512/3652/3652115.png" alt="Everyday" />
                                     </div>
                                     <p>Everyday</p>
                                 </div>
-                                <div className="usage-item">
+                                <div className={`usage-item ${selectedUsage === 'Computer | Screen' ? 'active' : ''}`} onClick={() => setSelectedUsage('Computer | Screen')}>
                                     <div className="usage-box">
                                         <img src="https://cdn-icons-png.flaticon.com/512/3062/3062115.png" alt="Computer" />
                                     </div>
                                     <p>Computer | Screen</p>
                                 </div>
-                                <div className="usage-item">
+                                <div className={`usage-item ${selectedUsage === 'Reading' ? 'active' : ''}`} onClick={() => setSelectedUsage('Reading')}>
                                     <div className="usage-box">
                                         <img src="https://cdn-icons-png.flaticon.com/512/3308/3308336.png" alt="Reading" />
                                     </div>
                                     <p>Reading</p>
                                 </div>
-                                <div className="usage-item">
+                                <div className={`usage-item ${selectedUsage === 'Driving' ? 'active' : ''}`} onClick={() => setSelectedUsage('Driving')}>
                                     <div className="usage-box">
                                         <img src="https://cdn-icons-png.flaticon.com/512/2554/2554907.png" alt="Driving" />
                                     </div>
@@ -379,15 +460,32 @@ const ProductDetails = () => {
                             </div>
 
                             <div className="price-summary-box">
-                                <div className="p-line"><span>Frame Price:</span> <span>₹350</span></div>
-                                <div className="p-line"><span>Lens Price:</span> <span>₹150</span></div>
-                                <div className="p-line"><span>Add-ons:</span> <span>₹50</span></div>
-                                <div className="p-total-line"><span>Total Price:</span> <span>₹550</span></div>
+                                <div className="p-line"><span>Frame Price:</span> <span>{product.price}</span></div>
+                                <div className="p-line"><span>Lens Price:</span> <span>₹0</span></div>
+                                <div className="p-line"><span>Add-ons:</span> <span>₹{selectedEnhancements.reduce((sum, e) => sum + (parseInt(e.price || 0)), 0)}</span></div>
+                                <div className="p-total-line"><span>Total Price:</span> <span>{calculateTotalPrice()}</span></div>
                             </div>
 
                             <div className="modal-footer-btns">
-                                <button className="modal-add-cart">Add to Cart</button>
-                                <button className="modal-buy-now">Buy Now</button>
+                                <button className="modal-add-cart" onClick={async () => {
+                                    const cartData = {
+                                        productId: id,
+                                        productName: product.title,
+                                        productImage: product.mainImage,
+                                        productPrice: product.price,
+                                        lensType: selectedLensType,
+                                        material: selectedMaterial,
+                                        frameStyle: selectedFrameStyle,
+                                        usage: selectedUsage,
+                                        enhancements: selectedEnhancements,
+                                        prescriptionType,
+                                        prescription,
+                                        totalPrice: calculateTotalPrice()
+                                    };
+                                    const success = await addItemToCart(cartData);
+                                    if (success) setShowLensModal(false);
+                                }}>Add to Cart</button>
+                                <button className="modal-buy-now" onClick={() => setShowLensModal(false)}>Buy Now</button>
                             </div>
                         </div>
                     </div>

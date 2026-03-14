@@ -22,7 +22,7 @@
 .iconlist{
     position: relative;
 }
-.iconlist p{
+.iconlist .badge{
     position: absolute;
     top: -10px;
     right: -10px;
@@ -172,29 +172,46 @@
 .navleft li:hover, .navleft li.active {
     color: var(--secondary-color);
 }
-.navbuttons{
-    width: 50%;
+.navright-actions {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 20px;
+    gap: 15px;
 }
-.navbuttons .btn2{
-    padding: 7px 10px;
-    border-radius: 5px;
-    border: none;
-    color: white;
-    background-color: var(--secondary-color);
-    cursor: pointer;
-}
-.navbuttons .btn1{
-    padding: 7px 10px;
-    border-radius: 5px;
-    border: none;
-    color: var(--primary-color);
-    cursor: pointer;
 
-    
+.btn-home-tryon {
+    background: white;
+    color: var(--primary-color);
+    border: 1px solid white;
+    padding: 6px 15px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-virtual-tryon {
+    background: #ff0066;
+    color: white;
+    border: none;
+    padding: 7px 15px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-home-tryon:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.btn-virtual-tryon:hover {
+    background: #e6005c;
+}
+
+.navbuttons {
+    display: none; /* Hiding the old static buttons */
 }
 
 /* Mobile Navbar Styles */

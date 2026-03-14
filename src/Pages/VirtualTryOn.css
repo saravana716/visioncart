@@ -1,0 +1,168 @@
+.virtual-tryon-page {
+    background: #fff;
+    min-height: 100vh;
+}
+
+.tryon-hero {
+    padding: 60px 20px;
+    background: #fff;
+}
+
+.tryon-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.tryon-header-text h1 {
+    font-size: 28px;
+    color: #003366;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.tryon-header-text p {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 40px;
+}
+
+.tryon-preview-card {
+    background: #003366;
+    border-radius: 12px;
+    padding: 60px;
+    display: inline-block;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
+}
+
+.preview-main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-circle {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 4px dashed #ff0066;
+    overflow: hidden;
+    position: relative;
+    background: #fff;
+}
+
+.preview-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.tryon-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 60px;
+}
+
+.tryon-btn {
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.tryon-btn.primary {
+    background: #ff0066;
+    color: #fff;
+}
+
+.tryon-btn.secondary {
+    background: #e0e0e0;
+    color: #444;
+}
+
+.tryon-btn.secondary:hover {
+    background: #d0d0d0;
+}
+
+.tryon-btn.primary:hover {
+    background: #e6005c;
+    transform: scale(1.02);
+}
+
+.try-spectacles-section {
+    padding: 60px 20px;
+    background: #fff;
+}
+
+.section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section-container h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.products-scroll {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* Reusable banner style from design */
+.visionkart-banner-footer {
+    background: #003366;
+    color: #fff;
+    padding: 40px 0;
+    text-align: center;
+    margin-top: 40px;
+}
+
+.visionkart-banner-footer h1 {
+    font-size: 80px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    font-weight: 800;
+    letter-spacing: -2px;
+}
+
+.eye-icon {
+    font-size: 60px;
+}
+
+@media (max-width: 768px) {
+    .tryon-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .tryon-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+
+    .preview-circle {
+        width: 220px;
+        height: 220px;
+    }
+
+    .visionkart-banner-footer h1 {
+        font-size: 40px;
+    }
+}

@@ -8,14 +8,32 @@ import { useNavigate } from 'react-router-dom';
 import "./Navbar.css"
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase.config';
+import { getCategories } from '../../services/firestoreService';
 import MegaMenu from './MegaMenu';
+import { useCart } from '../../context/CartContext';
 
 const Navbar = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   const [user, setUser] = useState(null);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
+  const { cartCount } = useCart();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const fetchedCategories = await getCategories();
+      if (fetchedCategories.length > 0) {
+        setCategories(fetchedCategories);
+      } else {
+        // Fallback to original list with basic structure if Firestore is empty
+        const fallbackNames = ['Spectacles', 'Sunglasses', 'Contact Lenses', 'Computer Glasses', 'Kids Collection', 'Reading Glasses'];
+        setCategories(fallbackNames.map(name => ({ id: name, name })));
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -58,7 +76,8 @@ const Navbar = () => {
     };
 
     const handleCategoryClick = (category) => {
-        navigate(`/products?category=${category}`);
+        const categoryName = typeof category === 'string' ? category : category.name;
+        navigate(`/products?category=${categoryName}`);
         setIsSidebarOpen(false);
         document.body.classList.remove('no-scroll');
         setActiveCategory(null);
@@ -75,15 +94,6 @@ const Navbar = () => {
     const handleMouseLeave = () => {
         setActiveCategory(null);
     };
-
-    const categories = [
-        'Spectacles', 
-        'Sunglasses', 
-        'Contact Lenses', 
-        'Computer Glasses', 
-        'Kids Collection', 
-        'Reading Glasses'
-    ];
 
     return (
         <>
@@ -103,9 +113,9 @@ const Navbar = () => {
                 </div>
                 <div className='iconlist'>
                     <FaRegHeart  className='nicon'/>
-                    <div className='iconlist'>
+                    <div className='iconlist' onClick={() => navigate('/cart')} style={{cursor: 'pointer'}}>
                         <IoCartOutline className='nicon'/>
-                        <p>0</p>
+                        <span className='badge'>{cartCount}</span>
                     </div>
                     <div className='user-icon-container'>
                         <div style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}} onClick={togglePopup}>
@@ -167,9 +177,9 @@ const Navbar = () => {
                 </div>
                 <div className='mobile-nav-right'>
                     <FaRegHeart className='mobile-icon'/>
-                    <div className='mobile-bag'>
+                    <div className='mobile-bag' onClick={() => navigate('/cart')}>
                         <IoCartOutline className='mobile-icon'/>
-                        <span className='badge'>1</span>
+                        <span className='badge'>{cartCount}</span>
                     </div>
                     <div className='mobile-menu-icon' onClick={toggleSidebar}>
                         <div className='bar'></div>
@@ -183,7 +193,7 @@ const Navbar = () => {
                     <input type="text" placeholder="Search" />
                     <IoIosSearch className='mobile-search-icon'/>
                 </div>
-                <button className='mobile-try-on-btn'>3D Try-On</button>
+                <button className='mobile-try-on-btn' onClick={() => navigate('/virtual-try-on')}>3D Try-On</button>
             </div>
         </div>
 
@@ -200,7 +210,7 @@ const Navbar = () => {
                     <li onClick={() => handleNavigation('/products')}>All Products</li>
                     <li className="sidebar-section-title">Categories</li>
                     {categories.map((category) => (
-                        <li key={category} onClick={() => handleCategoryClick(category)}>{category}</li>
+                        <li key={category.id || category.name} onClick={() => handleCategoryClick(category)}>{category.name}</li>
                     ))}
                     <li className="sidebar-section-title">Account</li>
                     {user ? (
@@ -217,6 +227,9 @@ const Navbar = () => {
                     <li className="sidebar-section-title">Others</li>
                     <li>Blogs</li>
                     <li>Contact Us</li>
+                    <li className="sidebar-section-title">Premium Services</li>
+                    <li onClick={() => handleNavigation('/home-try-on')}>Home Try-On</li>
+                    <li onClick={() => handleNavigation('/virtual-try-on')}>3D Virtual Try-On</li>
                 </ul>
             </div>
         </div>
@@ -225,18 +238,18 @@ const Navbar = () => {
             <div className='navleft'>
                 {categories.map((category) => (
                     <li 
-                        key={category}
+                        key={category.id || category.name}
                         onMouseEnter={() => handleMouseEnter(category)}
                         onClick={() => handleCategoryClick(category)}
-                        className={activeCategory === category ? 'active' : ''}
+                        className={activeCategory?.name === category.name ? 'active' : ''}
                     >
-                        {category}
+                        {category.name}
                     </li>
                 ))}
             </div>
-            <div className='navbuttons'>
-                <button className='btn1'>Home Try-On</button>
-                <button className='btn2'>3D Virtual Try-On</button>
+            <div className='navright-actions'>
+                <button className='btn-home-tryon' onClick={() => navigate('/home-try-on')}>Home Try-On</button>
+                <button className='btn-virtual-tryon' onClick={() => navigate('/virtual-try-on')}>3D Virtual Try-On</button>
             </div>
             {activeCategory && <MegaMenu category={activeCategory} onClose={handleMouseLeave} />}
         </div>

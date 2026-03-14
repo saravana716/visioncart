@@ -1,10 +1,11 @@
 .signup{
     width: 100%;
-    min-height: 100vh;
+    height:100%;
     display: flex;
     align-items: stretch;
     justify-content: space-between;
     font-family: "Poppins", sans-serif;
+    overflow: hidden;
 }
 .signupLeft{
     width: 50%;
@@ -19,14 +20,17 @@
 .signupRight{
     width: 50%;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     background-color: var(--primary-color);
     padding: 40px 20px;
+    overflow-y: scroll;
+}
+.signup-container{
+    width: 100%;
 }
 .signupForm{
     width: 80%;
-    max-width: 450px;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;

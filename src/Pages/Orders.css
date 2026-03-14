@@ -1,0 +1,288 @@
+.orders-page {
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.orders-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.orders-header {
+    margin-bottom: 40px;
+}
+
+.orders-header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 32px;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.orders-header p {
+    color: #666;
+    font-size: 16px;
+}
+
+.orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.order-card.expanded {
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.order-main-info {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.order-main-info:hover {
+    background: #fafbff;
+}
+
+.order-primary-details {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+}
+
+.status-badge[data-status="Ordered"] {
+    background: #fff4e5;
+    color: #b25e09;
+}
+
+.order-id-date h3 {
+    font-size: 18px;
+    margin: 0 0 4px;
+    color: #1a1a1a;
+}
+
+.order-id-date span {
+    font-size: 13px;
+    color: #888;
+}
+
+.order-summary-metrics {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.metric label {
+    display: block;
+    font-size: 12px;
+    color: #999;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.metric p {
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.total-price {
+    font-size: 18px;
+    color: #000f2d !important;
+}
+
+.expand-icon {
+    color: #999;
+    font-size: 18px;
+}
+
+.order-expanded-content {
+    padding: 0 24px 30px;
+    border-top: 1px solid #f5f5f5;
+}
+
+.order-details-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+    margin-top: 24px;
+}
+
+.items-section h4, .delivery-section h4 {
+    font-size: 16px;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.order-item-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.order-item-row .item-img {
+    width: 80px;
+    height: 60px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.order-item-row .item-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.item-info .item-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0;
+}
+
+.item-info .item-config {
+    font-size: 13px;
+    color: #777;
+    margin: 4px 0;
+}
+
+.prescription-tag {
+    font-size: 11px;
+    background: #e8f8f5;
+    color: #00b894;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.item-price {
+    margin-left: auto;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.shipping-info p {
+    font-size: 14px;
+    color: #555;
+    margin: 4px 0;
+}
+
+.customer-name {
+    font-weight: 700;
+    color: #1a1a1a !important;
+    font-size: 15px !important;
+}
+
+.shipping-info .contact {
+    color: #888;
+    margin-top: 8px;
+}
+
+.detailed-pricing {
+    margin-top: 30px;
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 12px;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.price-row.free span:last-child {
+    color: #00b894;
+    font-weight: 600;
+}
+
+.grand-total {
+    border-top: 1px solid #ddd;
+    margin-top: 12px;
+    padding-top: 12px;
+    font-weight: 700;
+    color: #1a1a1a;
+    font-size: 16px;
+}
+
+.no-orders {
+    text-align: center;
+    padding: 80px 20px;
+    background: #fff;
+    border-radius: 24px;
+}
+
+.no-orders svg {
+    font-size: 64px;
+    color: #eee;
+    margin-bottom: 24px;
+}
+
+.shop-now-btn {
+    background: #000f2d;
+    color: #fff;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 30px;
+    font-weight: 600;
+    margin-top: 30px;
+    cursor: pointer;
+}
+
+.orders-loading {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.orders-loader-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .order-main-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    .order-summary-metrics {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .order-details-grid {
+        grid-template-columns: 1fr;
+    }
+}

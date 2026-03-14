@@ -2,43 +2,62 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaRegHeart } from "react-icons/fa";
 import "./PropCard.css"
-const PropCard = (props) => {
-    const navigate = useNavigate();
-    console.log("props",props);
-    let carddata=props.cardlist
-    console.log("checkdata",carddata);
-    
-    
-  return (
-    <>
- {carddata.map(function (data) {
-    return(
-           <div className='propcard' key={data.id} onClick={() => navigate(`/product/${data.id}`)} style={{cursor: 'pointer'}}>
-        <div className='propcardimg'>
-            <img src={data.img} alt="Prop" className='inimg1' />
-           <div className='mycard'>
-            <img src={data.img} alt="Prop" className='inimg'/>
 
-                <FaRegHeart  className='hearticon'/>
-            <div className="prop-buttons1">
-             <button className='btn1'> + Add to card</button>
-             <button className='btn2'>View</button>
-            </div>
-           </div>
-        </div>
-        <div className='propcontent'>
-            <h5>{data.title}</h5>
-            <p><img src={data.rating} alt="" /> ({data.ratingcount} reviews)</p>
-            <div className='rate'>
-                <h6>{data.price} <del>{data.mrpprice}</del></h6>
-             <p><img src={data.color} alt="" /> {data.colorcount} +</p> 
-            </div>
-        </div>
-    </div>
+const PropCard = ({ cardlist }) => {
+    const navigate = useNavigate();
+    
+    if (!cardlist) return null;
+    
+    return (
+        <>
+            {cardlist.map((data) => (
+                <div 
+                    className='propcard' 
+                    key={data.id} 
+                    onClick={() => navigate(`/product/${data.id}`)}
+                >
+                    <div className='propcardimg'>
+                        {data.tryOn && <div className="tryon-tag">3D Try-On</div>}
+                        <img src={data.img} alt={data.title} className='main-product-img' />
+                        
+                        <FaRegHeart className='hearticon' onClick={(e) => {
+                            e.stopPropagation();
+                            // Heart logic here
+                        }}/>
+
+                        <div className="card-overlay">
+                            <div className="prop-buttons-overlay">
+                                <button className='btn-add' onClick={(e) => e.stopPropagation()}>+ Add to card</button>
+                                <button className='btn-view' onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/product/${data.id}`);
+                                }}>View</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='propcontent'>
+                        {data.brand && <span className="product-brand">{data.brand}</span>}
+                        <h5 className="product-title">{data.title}</h5>
+                        <div className="product-reviews">
+                            <img src={data.rating} alt="rating" className="rating-stars" />
+                            <span className="review-count">({data.ratingcount} reviews)</span>
+                        </div>
+                        <div className='product-footer'>
+                            <div className="product-pricing">
+                                <span className="current-price">{data.price}</span>
+                                <span className="old-price">{data.mrpprice}</span>
+                            </div>
+                            <div className="product-variants">
+                                <img src={data.color} alt="colors" className="color-dots" />
+                                <span className="variant-count">{data.colorcount} +</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </>
     )
- })}
-    </>
-  )
 }
 
 export default PropCard

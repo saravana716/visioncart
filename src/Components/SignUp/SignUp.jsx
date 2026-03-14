@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import logo from "../../assets/vision_cart_logo.png"
 import googleicon from "../../assets/google_icon.png"
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import "./SignUp.css"
 import { auth, db } from '../../firebase.config'
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
@@ -13,9 +14,9 @@ const SignUp = () => {
     firstName: '',
     lastName: '',
     email: '',
-    password: ''
+    password: '',
+    phoneNumber: ''
   });
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -24,11 +25,10 @@ const SignUp = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setError('');
     setLoading(true);
 
-    if (!formData.email || !formData.password || !formData.firstName) {
-      setError('Please fill in all required fields.');
+    if (!formData.email || !formData.password || !formData.firstName || !formData.phoneNumber) {
+      toast.error('Please fill in all required fields (including phone number).');
       setLoading(false);
       return;
     }
@@ -42,18 +42,20 @@ const SignUp = () => {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
+        phoneNumber: formData.phoneNumber,
         createdAt: new Date().toISOString()
       });
 
+      toast.success("Account created successfully!");
       navigate('/');
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignUp = async () => {
+  /* const handleGoogleSignUp = async () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
@@ -71,7 +73,7 @@ const SignUp = () => {
     } catch (err) {
       setError(err.message);
     }
-  };
+  }; */
 
   return (
     <>
@@ -82,7 +84,6 @@ const SignUp = () => {
     <div className='signupRight'>
         <form className='signupForm' onSubmit={handleSignUp}>
     <h1>Sign Up</h1>
-    {error && <p style={{color: 'red', marginBottom: '10px'}}>{error}</p>}
     <div className='forminput'>
         <h4>First name</h4>
         <input 
@@ -127,6 +128,17 @@ const SignUp = () => {
         />
     </div>
     <div className='forminput'>
+        <h4>Phone Number</h4>
+        <input 
+          type="tel" 
+          name="phoneNumber"
+          placeholder='Enter Your Phone Number (e.g. 9876543210)' 
+          value={formData.phoneNumber}
+          onChange={handleChange}
+          required
+        />
+    </div>
+    <div className='forminput'>
         <p>– Must be at least 8 characters</p>
         <p>– Must include one lowercase character</p>
         <p>– Must include one uppercase character</p>
@@ -136,17 +148,17 @@ const SignUp = () => {
         <button type="submit" disabled={loading}>
           {loading ? 'Signing up...' : 'Sign up'}
         </button>
-        <div className='line'>
+        {/* <div className='line'>
             <p></p>
             <h3>Or</h3>
             <p></p>
         </div>
         <button type="button" onClick={handleGoogleSignUp}>
           <img src={googleicon} alt="" />Sign up with Google
-        </button>
+        </button> */}
     </div>
     <div className='formContent'>
-        <p className='pname'>By clicking "Sign Up" or "Sign up with Google" you accept the Terms of Service and Privacy Policy.</p>
+        <p className='pname'>By clicking "Sign Up" you accept the Terms of Service and Privacy Policy.</p>
         <p className='pname' style={{textAlign: 'center', marginTop: '10px'}}>
           Already have an account? <span className='link-text' onClick={() => navigate('/login')}>Log in</span>
         </p>

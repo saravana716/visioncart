@@ -1,57 +1,55 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import "./ContactLens.css"
-import discoverimg from "../../assets/discoverimg.png"
-import card1 from "../../assets/card1.png"
-import card2 from "../../assets/card2.png"
-import card3 from "../../assets/card3.png"
-import card4 from "../../assets/card4.png"
+import { getCategoryByName } from '../../services/firestoreService'
+import { useNavigate } from 'react-router-dom'
 
 const ContactLens = () => {
-    const list=[{
-        id:1,
-        name:"Spectacles",
-        img:card1
-    },
-    {
-        id:2,
-        name:"Sunglasses",
-        img:card2
+    const [subcategories, setSubcategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchSubcategories = async () => {
+            const categoryData = await getCategoryByName('Contact Lenses');
+            if (categoryData && categoryData.subcategories) {
+                setSubcategories(categoryData.subcategories);
+            }
+            setLoading(false);
+        };
+        fetchSubcategories();
+    }, []);
+
+    if (loading) {
+        return <div className='contact' style={{justifyContent: 'center', color: 'white'}}>Loading contact lenses...</div>;
     }
-    ,{
-        id:3,
-        name:"Contact Lenses",
-        img:card3
-    },
-    {
-        id:4,
-        name:"Computer Glasses",
-        img:card4
-    }
-]
-  return (
-    <>
-    <div className='contact'>
-        <div className='discoverleft'>
-            <h2>Contact Lens</h2>
-            {/* <h1>Frames <img src={discoverimg} alt="Discover" /></h1> */}
-            <h2>and Accessories</h2>
-            <button>Explore More</button>
-        </div>
-        <div className='discoverright'>
-            {list.map(function (data) {
-                return(
-                    <div className='DiscoverCard'>
-                <div className='cardimg'>
-                    <img src={data.img} alt={data.name} />
-                </div>
-                <button>{data.name}</button>
+
+    return (
+        <div className='contact'>
+            <div className='discoverleft'>
+                <h2>Contact Lens</h2>
+                <h2>and Accessories</h2>
+                <button onClick={() => navigate('/products?category=Contact Lenses')}>Explore More</button>
             </div>
-                )
-            })}
+            <div className='discoverright'>
+                {subcategories.map((data, index) => (
+                    <div 
+                        className='DiscoverCard' 
+                        key={data.id || index} 
+                        style={{cursor: 'pointer'}}
+                        onClick={() => navigate(`/products?category=${data.name}`)}
+                    >
+                        <div className='cardimg'>
+                            <img src={data.imageUrl} alt={data.name} />
+                        </div>
+                        <button onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/products?category=${data.name}`);
+                        }}>{data.name}</button>
+                    </div>
+                ))}
+            </div>
         </div>
-    </div>
-    </>
-  )
+    )
 }
 
 export default ContactLens

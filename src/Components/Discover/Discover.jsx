@@ -1,66 +1,47 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import "./Discover.css"
 import discoverimg from "../../assets/discoverimg.png"
-import card1 from "../../assets/card1.png"
-import card2 from "../../assets/card2.png"
-import card3 from "../../assets/card3.png"
-import card4 from "../../assets/card4.png"
+import { getCategories } from '../../services/firestoreService'
+import { useNavigate } from 'react-router-dom'
 
 const Discover = () => {
-    const list = [
-        { id: 1, name: "Spectacles", img: card1 },
-        { id: 2, name: "Sunglasses", img: card2 },
-        { id: 3, name: "Contact Lenses", img: card3 },
-        { id: 4, name: "Computer Glasses", img: card4 }
-    ];
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
+    useEffect(() => {
+        const fetchCategoriesData = async () => {
+            const data = await getCategories();
+            setCategories(data);
+            setLoading(false);
+        };
+        fetchCategoriesData();
+    }, []);
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isTransitioning, setIsTransitioning] = useState(true);
+    
     // Duplicate list for infinite scroll effect
-    const extendedList = [...list, ...list, ...list]; 
+    const extendedList = categories.length > 0 ? [...categories, ...categories, ...categories] : []; 
 
-    const [currentIndex, setCurrentIndex] = React.useState(0);
-    const [isTransitioning, setIsTransitioning] = React.useState(true);
-    const trackRef = React.useRef(null);
+    useEffect(() => {
+        if (categories.length === 0) return;
 
-    React.useEffect(() => {
         const interval = setInterval(() => {
             setCurrentIndex(prev => prev + 1);
             setIsTransitioning(true);
         }, 3000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [categories.length]);
 
-    const handleTransitionEnd = () => {
-        // If we reached the end of the second set (visually), snap back to the first set
-        // The length is list.length. We want to loop when we pass the first set.
-        // Actually simplest is: if we reach distinct items count, reset to 0 without transition
-        if (currentIndex >= list.length * 2) {
-             setIsTransitioning(false);
-             setCurrentIndex(list.length);
-        }
-    };
+    useEffect(() => {
+        if (categories.length === 0) return;
 
-    // To prevent "flicker" on reset, we usually check index in effect, but onTransitionEnd is smoother for React
-    // Let's rely on simple resetting for now if it gets too complex, but try the snap-back.
-    // Logic: 
-    // We start at index 0. 
-    // We scroll... 1, 2, 3, 4 ... 
-    // When we hit index = list.length, we are effectively showing the "copy".
-    // Wait, if we only have 4 items and show 4 items, "scrolling" 1 item means showing [2,3,4,1].
-    
-    // Improved logic for "infinite" scroll with visible items:
-    // If we want to scroll 1 by 1 endlessly:
-    // We render [1,2,3,4, 1,2,3,4, 1,2,3,4]
-    // Move from 0 -> 1 -> 2 -> 3 -> 4.
-    // At 4, we are at the start of the 2nd copy.
-    // If we reach end of 2nd copy, snap back to end of 1st copy?
-    
-    // Let's use a simpler check:
-    React.useEffect(() => {
-        if (currentIndex >= list.length * 2) {
+        if (currentIndex >= categories.length * 2) {
              const timeout = setTimeout(() => {
                  setIsTransitioning(false);
-                 setCurrentIndex(list.length); // Snap back to the middle copy
+                 setCurrentIndex(categories.length); // Snap back to the middle copy
              }, 500); // Wait for transition to finish
              return () => clearTimeout(timeout);
         }
@@ -71,8 +52,15 @@ const Discover = () => {
             }, 50);
              return () => clearTimeout(timeout);
         }
-    }, [currentIndex, isTransitioning, list.length]);
+    }, [currentIndex, isTransitioning, categories.length]);
 
+    if (loading) {
+        return <div className='discover' style={{justifyContent: 'center'}}>Loading categories...</div>;
+    }
+
+    if (categories.length === 0) {
+        return null;
+    }
 
     return (
         <div className='discover'>
@@ -85,9 +73,9 @@ const Discover = () => {
                 <div 
                     className='carousel-track' 
                     style={{ 
-                        transform: `translateX(-${currentIndex * (100 / extendedList.length)}%)`, 
+                        transform: `translateX(-${currentIndex * (100 / (extendedList.length || 1))}%)`, 
                         transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none',
-                        width: `calc(${extendedList.length} * (100% / 3))`, // RESTORED: Exact width for 3 items
+                        width: `calc(${extendedList.length} * (100% / 3))`, 
                         display: 'flex'
                     }}
                 >
@@ -96,13 +84,18 @@ const Discover = () => {
                             className='DiscoverCard' 
                             key={`${data.id}-${index}`} 
                             style={{ 
-                                width: `calc(100% / ${extendedList.length})`, // Exact share of track
+                                width: `calc(100% / ${extendedList.length})`,
+                                cursor: 'pointer'
                             }}
+                            onClick={() => navigate(`/products?category=${data.name}`)}
                         > 
                             <div className='cardimg'>
-                                <img src={data.img} alt={data.name} />
+                                <img src={data.imageUrl || data.img} alt={data.name} />
                             </div>
-                            <button>{data.name}</button>
+                            <button onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/products?category=${data.name}`);
+                            }}>{data.name}</button>
                         </div>
                     ))}
                 </div>
@@ -111,4 +104,4 @@ const Discover = () => {
     )
 }
 
-export default Discover
+export default Discover
