@@ -1,0 +1,447 @@
+/* LensSelectionModal.css */
+
+.lens-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 15, 45, 0.4); /* Deeper, more tint-matched overlay */
+    backdrop-filter: blur(4px); /* Modern glass effect */
+    z-index: 2200;
+    display: flex;
+    justify-content: flex-end;
+    align-items: stretch;
+}
+
+.lens-modal {
+    width: 500px;
+    max-width: 100%;
+    height: 100vh;
+    background: white;
+    position: relative;
+    overflow-y: auto;
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Base reveal animation if not global */
+.reveal-in {
+    animation: slideRightPremium 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes slideRightPremium {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.close-modal {
+    position: absolute;
+    top: 20px; right: 20px;
+    border: none; 
+    background: #f4f6f9;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 16px; 
+    color: #444;
+    cursor: pointer;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.close-modal:hover {
+    background: #e9ecef;
+    transform: rotate(90deg);
+}
+
+.modal-content {
+    padding: 40px 30px;
+}
+
+.modal-content h2 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 35px 0 15px 0;
+    color: #001f54;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.modal-content h2:first-child {
+    margin-top: 10px;
+}
+
+/* Lens Type Grid - More Professional Cards */
+.lens-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.lens-type-item {
+    padding: 20px 15px;
+    border: 1.5px solid #edf1f7;
+    border-radius: 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.lens-type-item.active {
+    border-color: #003366;
+    background-color: #f0f7ff;
+    box-shadow: 0 4px 15px rgba(0, 51, 102, 0.08);
+}
+
+.lens-type-item .icon { 
+    font-size: 24px; 
+    margin-bottom: 12px; 
+}
+
+.usage-emoji {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.lens-type-item p { 
+    font-size: 13px; 
+    font-weight: 700; 
+    margin-bottom: 4px; 
+    color: #001f54; 
+}
+
+.lens-type-item span { 
+    font-size: 11px; 
+    color: #6c757d; 
+    display: block; 
+    line-height: 1.4; 
+}
+
+/* Material & Style Grids - Neater Radio UI */
+.material-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.material-grid label {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    border: 1.5px solid #edf1f7;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fbfcfe;
+}
+
+.material-grid label:hover {
+    background: #f4f7fc;
+    border-color: #d1d9e6;
+}
+
+.material-grid input[type="radio"] {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+    cursor: pointer;
+    appearance: none;
+    background-color: white;
+    border: 2px solid #cbd5e0;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.material-grid input[type="radio"]:checked {
+    border-color: #003366;
+    background-color: #003366;
+    box-shadow: inset 0 0 0 4px white;
+}
+
+/* Enhancements - Sleek Checkbox Pills */
+.enhancements-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.enhancements-grid label {
+    display: flex;
+    align-items: center;
+    padding: 14px 15px;
+    background: #fff;
+    border: 1.5px solid #edf1f7;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.enhancements-grid label:hover {
+    border-color: #d1d9e6;
+}
+
+.enhancements-grid label.active {
+    background: #f0f7ff;
+    border-color: #003366;
+    color: #003366;
+}
+
+.enhancements-grid input[type="checkbox"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #cbd5e0;
+    border-radius: 4px;
+    margin-right: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    flex-shrink: 0;
+}
+
+.enhancements-grid input[type="checkbox"]:checked {
+    background-color: #003366;
+    border-color: #003366;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+    background-size: 14px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Usage Grid - Better Circles */
+.usage-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.usage-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.usage-item:hover {
+    transform: translateY(-2px);
+}
+
+.usage-box {
+    width: 60px;
+    height: 60px;
+    background: #f8faff;
+    border: 1.5px solid #edf1f7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.usage-item:hover .usage-box {
+    border-color: #003366;
+    background: #f0f7ff;
+}
+
+.usage-item p {
+    font-size: 11px;
+    font-weight: 700;
+    color: #555;
+    text-align: center;
+}
+
+.usage-box img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* Price Summary - Premium Look */
+.price-summary-box {
+    background: #f9fbfd;
+    border: 1.5px solid #edf1f7;
+    padding: 25px;
+    border-radius: 15px;
+    margin: 30px 0;
+}
+
+.p-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.p-total-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: 800;
+    padding-top: 15px;
+    border-top: 1px dashed #ced4da;
+    margin-top: 15px;
+    color: #001f54;
+}
+
+/* Footer Buttons - Floating Style */
+.modal-footer-btns {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    padding: 20px 0;
+    display: flex;
+    gap: 15px;
+    z-index: 50;
+    border-top: 1px solid #f1f3f5;
+}
+
+.modal-add-cart, .modal-buy-now {
+    flex: 1;
+    height: 50px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.modal-add-cart {
+    background: #FF0075;
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 0, 117, 0.2);
+}
+
+.modal-buy-now {
+    background: #001f54;
+    color: white;
+}
+
+.modal-add-cart:hover, .modal-buy-now:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
+/* Prescription Table Refinement */
+.prescription-input-area {
+    margin: 30px 0;
+}
+
+.prescription-input-area h3 {
+    font-size: 12px;
+    font-weight: 800;
+    margin: 15px 0 10px 0;
+}
+
+.prescription-table {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1.5px solid #edf1f7;
+}
+
+.prescription-table th {
+    background: #001f54;
+    color: white;
+    padding: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.prescription-table td {
+    border: 1px solid #eee;
+    padding: 10px;
+}
+
+.p-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 2px 0;
+}
+
+.p-row span {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6c757d;
+    min-width: 40px;
+}
+
+.p-row select {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1.5px solid #edf1f7;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #333;
+    background: #fbfcfe;
+}
+
+.save-btn-green {
+    background: #00d285;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 13px;
+    margin-top: 20px; /* Added more space above the button */
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-btn-green:hover {
+    background: #00b976;
+    transform: translateY(-1px);
+}
+
+.recommended {
+    font-size: 10px;
+    color: #2e7d32;
+    background: #e8f5e9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+.prescription-table-wrapper {
+    overflow-x: auto; /* Scroll horizontally on small screens */
+    margin: 15px 0;
+}
+
+.modal-title-small {
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    text-transform: capitalize;
+}
+
+@media (max-width: 550px) {
+    .lens-modal {
+        width: 100%;
+    }
+    .lens-type-grid, .enhancements-grid {
+        grid-template-columns: 1fr;
+    }
+}

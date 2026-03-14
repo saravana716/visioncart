@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import './Product360Viewer.css';
 import { MdOutline360 } from "react-icons/md";
 import { IoCloseOutline } from "react-icons/io5";
@@ -12,12 +13,22 @@ const Product360Viewer = ({ images, isOpen, onClose }) => {
     const mainImage = images?.[0] || '';
 
     useEffect(() => {
+        const appContainer = document.querySelector('.App');
         if (isOpen) {
-            document.body.style.overflow = 'hidden';
+            document.documentElement.classList.add('no-scroll');
+            document.body.classList.add('no-scroll');
+            if (appContainer) appContainer.classList.add('no-scroll');
             setRotation({ x: 0, y: 0 });
         } else {
-            document.body.style.overflow = 'auto';
+            document.documentElement.classList.remove('no-scroll');
+            document.body.classList.remove('no-scroll');
+            if (appContainer) appContainer.classList.remove('no-scroll');
         }
+        return () => {
+            document.documentElement.classList.remove('no-scroll');
+            document.body.classList.remove('no-scroll');
+            if (appContainer) appContainer.classList.remove('no-scroll');
+        };
     }, [isOpen]);
 
     const handleMouseDown = (e) => {
@@ -53,7 +64,7 @@ const Product360Viewer = ({ images, isOpen, onClose }) => {
 
     if (!isOpen || !mainImage) return null;
 
-    return (
+    return ReactDOM.createPortal(
         <div className="product-360-overlay">
             <div className="product-360-modal reveal-in">
                 <div className="modal-header">
@@ -112,7 +123,7 @@ const Product360Viewer = ({ images, isOpen, onClose }) => {
                 </div>
             </div>
         </div>
-    );
+    , document.body);
 };
 
 export default Product360Viewer;
