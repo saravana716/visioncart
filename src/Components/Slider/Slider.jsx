@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import sliderimg from "../../assets/sliderimg.png";
-import image1 from "../../assets/image 1.png"; // Importing another image for rotation
+import image1 from "../../assets/image 1.png";
 import "./Slider.css";
 
 const Slider = () => {
@@ -12,7 +12,7 @@ const Slider = () => {
             desc1: 'Experience frames instantly with our Virtual Try-On (Live AR + Photo Upload)',
             desc2: 'and discover eyewear that fits your style perfectly.',
             image: sliderimg,
-            color: '#FF0075' // Example color for "See"
+            color: '#FF0075'
         },
         {
             heading: 'Feel',
@@ -21,7 +21,7 @@ const Slider = () => {
             desc1: 'Lightweight materials and ergonomic designs ensuring all-day comfort',
             desc2: 'without compromising on the trendiest looks.',
             image: image1,
-             color: '#FF0075' // Example color for "Feel" - keep pink as per design request potentially
+            color: '#FF0075'
         },
         {
             heading: 'Look',
@@ -29,25 +29,13 @@ const Slider = () => {
             subheading: 'Elevate Your Style with Premium Frames.',
             desc1: 'Choose from a wide range of curated collections that match your personality',
             desc2: 'and make a statement wherever you go.',
-            image: sliderimg, // Reusing sliderimg for the third slide for now
-             color: '#FF0075' // Example color for "Look"
+            image: sliderimg,
+            color: '#FF0075'
         }
     ];
 
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-    const handleMouseMove = (e) => {
-        const { clientX, clientY } = e;
-        const x = (clientX - window.innerWidth / 2) / 30;
-        const y = (clientY - window.innerHeight / 2) / 30;
-        setMousePos({ x, y });
-    };
-
-    const handleMouseLeave = () => {
-        setMousePos({ x: 0, y: 0 });
-    };
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -55,79 +43,62 @@ const Slider = () => {
             setTimeout(() => {
                 setCurrentSlide((prev) => (prev + 1) % slides.length);
                 setIsAnimating(false);
-            }, 500); // 500ms should match CSS transition time
-        }, 4000); // Change slide every 4 seconds
-
+            }, 600);
+        }, 5000);
         return () => clearInterval(interval);
     }, [slides.length]);
 
     const slide = slides[currentSlide];
 
     return (
-        <>
-            <div 
-                className='slider' 
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-            >
-                <div 
-                    className='sliderleft'
-                    style={{ 
-                        transform: `translate(${mousePos.x * -0.5}px, ${mousePos.y * -0.5}px)`,
-                        transition: 'transform 0.1s ease-out'
-                    }}
-                >
-                    <div className='text-content' style={{ '--slide-color': slide.color }}>
-                        <h1>
-                            <span className={`heading-text ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`} style={{ display: 'inline-block', color: 'var(--slide-color)' }}>
-                                {slide.heading}
-                            </span> 
-                            <span> {slide.highlight}</span>
-                        </h1>
-                        <h3>{slide.subheading}</h3>
-                        <div className='para'>
-                            <p>{slide.desc1}</p>
-                            <p>{slide.desc2}</p>
-                        </div>
-                    </div>
-                    <div className='sliderbtn'>
-                        <button className='sliderbtnleft'>Try Frames Virtually</button>
-                        <button className='sliderbtnright'>Shop Eyewear</button>
+        <div className='slider'>
+            <div className='sliderleft'>
+                <div className='text-content'>
+                    <h1>
+                        <span className={`heading-text ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
+                            {slide.heading}
+                        </span> 
+                        <span className={`highlight-text ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
+                            &nbsp;{slide.highlight}
+                        </span>
+                    </h1>
+                    <h3 className={isAnimating ? 'fade-out' : 'fade-in'}>{slide.subheading}</h3>
+                    <div className={`para ${isAnimating ? 'fade-out' : 'fade-in'}`}>
+                        <p>{slide.desc1}</p>
+                        <p>{slide.desc2}</p>
                     </div>
                 </div>
-                <div 
-                    className='sliderright'
-                    style={{ 
-                        transform: `translate(${mousePos.x * 0.8}px, ${mousePos.y * 0.8}px)`,
-                        transition: 'transform 0.1s ease-out'
-                    }}
-                >
-                    <div className={`image-container ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
-                        <img src={slide.image} alt="Eyewear Model" />
-                    </div>
-                </div>
-                
-                {/* Progress Indicators */}
-                <div className="slider-nav">
-                    {slides.map((_, idx) => (
-                        <div 
-                            key={idx} 
-                            className={`nav-dot ${currentSlide === idx ? 'active' : ''}`}
-                            onClick={() => {
-                                setIsAnimating(true);
-                                setTimeout(() => {
-                                    setCurrentSlide(idx);
-                                    setIsAnimating(false);
-                                }, 500);
-                            }}
-                        >
-                            {currentSlide === idx && <div className="dot-progress"></div>}
-                        </div>
-                    ))}
+                <div className='sliderbtn'>
+                    <button className='sliderbtnleft'>Try Frames Virtually</button>
+                    <button className='sliderbtnright'>Shop Eyewear</button>
                 </div>
             </div>
-        </>
-    )
-}
+            
+            <div className='sliderright'>
+                <div className={`image-container1 ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
+                    <img src={slide.image} alt="Eyewear Model" />
+                </div>
+            </div>
+
+            <div className="slider-nav">
+                {slides.map((_, idx) => (
+                    <div 
+                        key={idx} 
+                        className={`nav-dot ${currentSlide === idx ? 'active' : ''}`}
+                        onClick={() => {
+                            setIsAnimating(true);
+                            setTimeout(() => {
+                                setCurrentSlide(idx);
+                                setIsAnimating(false);
+                            }, 600);
+                        }}
+                    >
+                        {currentSlide === idx && <div className="dot-progress"></div>}
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
 
 export default Slider;
