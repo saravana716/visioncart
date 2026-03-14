@@ -281,3 +281,109 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Saved Addresses Selector */
+.saved-addresses-selector {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #fdfdff;
+    border: 1.5px dashed #e2e8f0;
+    border-radius: 16px;
+}
+
+.selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.selector-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.toggle-selector-btn {
+    background: #f1f5f9;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggle-selector-btn:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
+
+.address-options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.address-option-card {
+    background: #fff;
+    border: 1.5px solid #eee;
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.address-option-card:hover {
+    border-color: #000f2d;
+    box-shadow: 0 10px 20px rgba(0, 15, 45, 0.08);
+    transform: translateY(-3px);
+}
+
+.address-option-card .addr-tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #f0f7ff;
+    color: #0066cc;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.address-option-card strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+}
+
+.address-option-card p {
+    font-size: 12px;
+    color: #666;
+    margin: 2px 0;
+    line-height: 1.4;
+}
+
+.use-this-text {
+    display: block;
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ff007f;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.address-option-card:hover .use-this-text {
+    opacity: 1;
+}

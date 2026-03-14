@@ -45,6 +45,13 @@ export const getProducts = async (categoryName = null, filters = {}, sortBy = 'l
       ...doc.data()
     }));
 
+    // In-memory sort to avoid requiring composite indexes
+    products.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt instanceof Date ? a.createdAt : new Date(0));
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt instanceof Date ? b.createdAt : new Date(0));
+        return dateB - dateA;
+    });
+
     // Post-process Price Range Filter (since Firestore inequality limits)
     if (filters.priceRange && Array.isArray(filters.priceRange) && filters.priceRange.length > 0) {
         products = products.filter(p => {
@@ -81,21 +88,29 @@ export const getProducts = async (categoryName = null, filters = {}, sortBy = 'l
   }
 };
 
-export const getTrendyProducts = async (limitCount = 8) => {
+export const getTrendyProducts = async (categoryName = null, limitCount = 8) => {
   try {
-    // In a real app, you might have a 'trendy' or 'featured' field
-    // For now, we'll fetch the latest products as 'trendy'
-    const q = query(
-      collection(db, 'products'),
-      orderBy('createdAt', 'desc'),
-      // limit(limitCount) // Note: limit needs to be imported if used
-    );
+    let q = query(collection(db, 'products'));
+    
+    if (categoryName && typeof categoryName === 'string') {
+      q = query(q, where('category', '==', categoryName));
+    }
+
     const querySnapshot = await getDocs(q);
     const products = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
-    return products.slice(0, limitCount);
+
+    // Sort in JS to avoid index requirement
+    products.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : (a.createdAt instanceof Date ? a.createdAt : new Date(0));
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : (b.createdAt instanceof Date ? b.createdAt : new Date(0));
+        return dateB - dateA;
+    });
+
+    const actualLimit = typeof categoryName === 'number' ? categoryName : limitCount;
+    return products.slice(0, actualLimit);
   } catch (error) {
     console.error("Error fetching trendy products: ", error);
     return [];
@@ -262,6 +277,19 @@ export const getUserOrders = async (userId) => {
   } catch (error) {
     console.error("Error fetching user orders: ", error);
     return [];
+  }
+};
+
+export const getOrderById = async (orderId) => {
+  try {
+    const docSnap = await getDoc(doc(db, 'orders', orderId));
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching order by ID: ", error);
+    return null;
   }
 };
 

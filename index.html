@@ -12,5 +12,34 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Global Scroll Reveal Logic
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+
+      // Observe existing and future elements
+      const observeElements = () => {
+        document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+      };
+
+      // Initial check
+      observeElements();
+      
+      // Re-observe on DOM changes (for SPA navigation)
+      const domObserver = new MutationObserver(() => {
+        observeElements();
+      });
+      domObserver.observe(document.body, { childList: true, subtree: true });
+    </script>
   </body>
 </html>

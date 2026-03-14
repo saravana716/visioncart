@@ -9,6 +9,7 @@ import { IoIosSearch } from "react-icons/io";
 import rateimg from '../assets/star.png';
 import colorimg from '../assets/color.png';
 import './ProductPage.css';
+import Loader from '../Components/Loader/Loader';
 
 const fallbackData = {
     'Spectacles': {
@@ -137,7 +138,8 @@ const ProductPage = () => {
 
             const data = await getProducts(category, activeFilters, sortBy);
             setFilteredProducts(data);
-            setLoading(false);
+            // Small delay for premium feel
+            setTimeout(() => setLoading(false), 500);
             window.scrollTo(0, 0);
         };
         fetchProductsData();
@@ -472,7 +474,7 @@ const ProductPage = () => {
                         </div>
                         <div className="product-grid">
                             {loading ? (
-                                <div className="loading-state">Loading products...</div>
+                                <Loader />
                             ) : cardlist.length > 0 ? (
                                 <PropCard cardlist={cardlist} />
                             ) : (

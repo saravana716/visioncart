@@ -12,6 +12,7 @@ import RecentlyViewed from '../Components/RecentlyViewed/RecentlyViewed';
 import MobileCategories from '../Components/MobileCategories/MobileCategories'
 import NewsLetter from '../Components/NewsLetter/NewsLetter';
 import { getCategories } from '../services/firestoreService'
+import Loader from '../Components/Loader/Loader'
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
@@ -21,22 +22,21 @@ const Home = () => {
     const fetchHomeData = async () => {
       const cats = await getCategories();
       setCategories(cats);
-      setLoading(false);
+      // Small delay for smooth transition
+      setTimeout(() => setLoading(false), 500);
     };
     fetchHomeData();
   }, []);
 
   return (
-    <div>
+    <div className='reveal-in'>
       <Navbar/>
       <Slider/>
       <MobileCategories />
       <Discover/>
       
       {loading ? (
-        <div style={{textAlign: 'center', padding: '50px', fontSize: '18px', color: 'var(--primary-color)'}}>
-          Loading Visioncart Experience...
-        </div>
+        <Loader />
       ) : (
         <>
           <RecentlyViewed />

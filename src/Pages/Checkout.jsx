@@ -3,17 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { auth } from '../firebase.config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { placeOrder, clearUserCart, decrementStock } from '../services/firestoreService';
+import { 
+    placeOrder, 
+    clearUserCart, 
+    decrementStock, 
+    getUserAddresses 
+} from '../services/firestoreService';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
-import { FaShippingFast, FaCreditCard, FaCheckCircle } from 'react-icons/fa';
+import { FaShippingFast, FaCreditCard, FaCheckCircle, FaMapMarkerAlt } from 'react-icons/fa';
 import './Checkout.css';
+import Loader from '../Components/Loader/Loader';
 
 const Checkout = () => {
     const { cartItems, cartCount, clearCart } = useCart();
     const [user, setUser] = useState(null);
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [savedAddresses, setSavedAddresses] = useState([]);
+    const [showSavedAddresses, setShowSavedAddresses] = useState(false);
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
@@ -27,7 +35,7 @@ const Checkout = () => {
     });
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
                 setForm(prev => ({ 
@@ -35,6 +43,12 @@ const Checkout = () => {
                     email: currentUser.email || '', 
                     phone: currentUser.phoneNumber || '' 
                 }));
+                // Fetch saved addresses
+                const addresses = await getUserAddresses(currentUser.uid);
+                setSavedAddresses(addresses);
+                if (addresses.length > 0) {
+                    setShowSavedAddresses(true);
+                }
             } else {
                 navigate('/login');
             }
@@ -58,6 +72,19 @@ const Checkout = () => {
         setForm(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleSelectAddress = (addr) => {
+        setForm({
+            fullName: addr.name || '',
+            email: user?.email || '',
+            phone: addr.phone || '',
+            address: addr.address || '',
+            city: addr.city || '',
+            zip: addr.pincode || '',
+            state: addr.state || 'Tamil Nadu'
+        });
+        setShowSavedAddresses(false);
+    };
+
     const handlePlaceOrder = async () => {
         setLoading(true);
         const orderData = {
@@ -71,7 +98,6 @@ const Checkout = () => {
 
         const result = await placeOrder(user.uid, orderData);
         if (result.success) {
-            // Decrement stock for each item
             for (const item of cartItems) {
                 if (item.productId) {
                     await decrementStock(item.productId, 1);
@@ -88,6 +114,8 @@ const Checkout = () => {
         navigate('/cart');
         return null;
     }
+
+    if (loading) return <Loader fullPage={true} />;
 
     return (
         <div className="checkout-page">
@@ -115,6 +143,39 @@ const Checkout = () => {
                         {step === 1 && (
                             <div className="checkout-section fade-in">
                                 <h2><FaShippingFast /> Shipping Details</h2>
+                                
+                                {savedAddresses.length > 0 && (
+                                    <div className="saved-addresses-selector">
+                                        <div className="selector-header">
+                                            <h3><FaMapMarkerAlt /> Use a Saved Address</h3>
+                                            <button 
+                                                className="toggle-selector-btn"
+                                                onClick={() => setShowSavedAddresses(!showSavedAddresses)}
+                                            >
+                                                {showSavedAddresses ? 'Hide' : 'Show Saved'}
+                                            </button>
+                                        </div>
+                                        
+                                        {showSavedAddresses && (
+                                            <div className="address-options-grid">
+                                                {savedAddresses.map(addr => (
+                                                    <div 
+                                                        key={addr.id} 
+                                                        className="address-option-card"
+                                                        onClick={() => handleSelectAddress(addr)}
+                                                    >
+                                                        <div className="addr-tag">{addr.type}</div>
+                                                        <strong>{addr.name}</strong>
+                                                        <p>{addr.address}</p>
+                                                        <p>{addr.city}, {addr.state} - {addr.pincode}</p>
+                                                        <span className="use-this-text">Use this address</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
                                 <div className="checkout-form">
                                     <div className="form-group full">
                                         <label>Full Name</label>

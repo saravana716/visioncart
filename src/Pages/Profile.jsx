@@ -1,3 +1,8 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase.config';
 import { 
     updateUserProfile, 
     addUserAddress, 
@@ -6,7 +11,16 @@ import {
     deleteUserAddress 
 } from '../services/firestoreService';
 import toast from 'react-hot-toast';
-import { useState } from 'react';
+import Navbar from '../Components/Navbar/Navbar';
+import Footers from '../Components/Footer/Footers';
+import { 
+    FaUser, FaShoppingBag, FaMapMarkerAlt, FaCreditCard, 
+    FaShieldAlt, FaChevronRight, FaSignOutAlt, FaEnvelope, 
+    FaPhoneAlt, FaEdit 
+} from 'react-icons/fa';
+import "./Profile.css";
+import Loader from '../Components/Loader/Loader';
+
 const Profile = () => {
     const [user, setUser] = useState(null);
     const [userData, setUserData] = useState(null);
@@ -52,7 +66,11 @@ const Profile = () => {
             } else {
                 navigate('/login');
             }
-            setLoading(false);
+            
+            // Artificial delay for premium feel if loading happens too fast
+            setTimeout(() => {
+                setLoading(false);
+            }, 800);
         });
         return () => unsubscribe();
     }, [navigate]);
@@ -96,11 +114,7 @@ const Profile = () => {
     };
 
     if (loading) {
-        return (
-            <div className="profile-loading">
-                <div className="loader"></div>
-            </div>
-        );
+        return <Loader fullPage={true} />;
     }
 
     const navigationItems = [
@@ -117,7 +131,7 @@ const Profile = () => {
     };
 
     return (
-        <div className="profile-page">
+        <div className="profile-page reveal-in">
             <Navbar />
             <div className="profile-hero">
                 <div className="hero-content">
@@ -135,7 +149,7 @@ const Profile = () => {
 
             <div className="profile-main-container">
                 <div className="profile-grid">
-                    <aside className="profile-navigation">
+                    <aside className="profile-navigation reveal-up">
                         <div className="nav-group">
                             {navigationItems.map(item => (
                                 <button 
@@ -155,7 +169,7 @@ const Profile = () => {
                         </button>
                     </aside>
 
-                    <main className="profile-content-area">
+                    <main className="profile-content-area reveal-up stagger-1">
                         {activeTab === 'personal' && (
                             <section className="content-section fade-in">
                                 <div className="section-header">

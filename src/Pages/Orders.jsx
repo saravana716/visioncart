@@ -7,6 +7,7 @@ import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { FaShoppingBag, FaBox, FaClock, FaCheckCircle, FaChevronRight, FaMapMarkerAlt, FaCreditCard, FaReceipt } from 'react-icons/fa';
 import './Orders.css';
+import Loader from '../Components/Loader/Loader';
 
 const Orders = () => {
     const [orders, setOrders] = useState([]);
@@ -23,7 +24,8 @@ const Orders = () => {
             } else {
                 navigate('/login');
             }
-            setLoading(false);
+            // Small delay for premium feel
+            setTimeout(() => setLoading(false), 500);
         });
         return () => unsubscribe();
     }, [navigate]);
@@ -38,18 +40,7 @@ const Orders = () => {
         });
     };
 
-    if (loading) {
-        return (
-            <div className="orders-loading-screen">
-                <Navbar />
-                <div className="loader-box">
-                    <div className="luxury-loader"></div>
-                    <p>Curating your collection...</p>
-                </div>
-                <Footers />
-            </div>
-        );
-    }
+    if (loading) return <Loader fullPage={true} />;
 
     return (
         <div className="orders-premium-page">
@@ -173,7 +164,12 @@ const Orders = () => {
 
                                 <div className="card-footer-actions">
                                     <button className="invoice-btn"><FaReceipt /> Invoice</button>
-                                    <button className="details-btn">View Details <FaChevronRight /></button>
+                                    <button 
+                                        className="details-btn"
+                                        onClick={() => navigate(`/orders/${order.id}`)}
+                                    >
+                                        View Details <FaChevronRight />
+                                    </button>
                                 </div>
                             </div>
                         ))}

@@ -13,6 +13,7 @@ import RecentlyViewed from '../Components/RecentlyViewed/RecentlyViewed';
 import Recommendations from '../Components/Recommendations/Recommendations';
 import rateimg from '../assets/star.png';
 import './ProductDetails.css';
+import Loader from '../Components/Loader/Loader';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -87,7 +88,8 @@ const ProductDetails = () => {
                 }));
                 setSimilarProducts(similarMapped);
             }
-            setLoading(false);
+            // Small delay for premium feel
+            setTimeout(() => setLoading(false), 500);
             window.scrollTo(0, 0);
         };
 
@@ -126,7 +128,7 @@ const ProductDetails = () => {
         return `₹${base + extras}`;
     };
 
-    if (loading) return <div style={{padding: '100px', textAlign: 'center', fontSize: '20px'}}>Loading Product Details...</div>;
+    if (loading) return <Loader fullPage={true} />;
     if (!product) return <div style={{padding: '100px', textAlign: 'center', fontSize: '20px'}}>Product not found</div>;
 
     return (

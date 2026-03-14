@@ -7,6 +7,7 @@ import rateimg from '../assets/star.png';
 import colorimg from '../assets/color.png';
 import modelImg from '../assets/discoverimg.png'; // Fallback model image
 import './VirtualTryOn.css';
+import Loader from '../Components/Loader/Loader';
 
 const VirtualTryOn = () => {
     const [products, setProducts] = useState([]);
@@ -74,7 +75,7 @@ const VirtualTryOn = () => {
                 <div className="section-container">
                     <h2>Try Spectacles</h2>
                     {loading ? (
-                        <div className="loading">Loading products...</div>
+                        <Loader />
                     ) : (
                         <div className="products-scroll">
                             <PropCard cardlist={products} />

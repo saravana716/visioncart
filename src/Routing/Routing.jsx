@@ -14,6 +14,7 @@ import Checkout from '../Pages/Checkout'
 import OrderSuccess from '../Pages/OrderSuccess'
 import Orders from '../Pages/Orders'
 import Wishlist from '../Pages/Wishlist'
+import OrderDetail from '../Pages/OrderDetail'
 
 const Routing = () => {
   return (
@@ -32,6 +33,7 @@ const Routing = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/orders/:orderId" element={<OrderDetail />} />
         <Route path="/wishlist" element={<Wishlist />} />
       </Routes>
     </BrowserRouter>

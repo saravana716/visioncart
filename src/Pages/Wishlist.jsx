@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import rateimg from "../assets/star.png";
 import colorimg from "../assets/color.png";
 import './Wishlist.css';
+import Loader from '../Components/Loader/Loader';
 
 const Wishlist = () => {
     const { wishlistItems } = useWishlist();
@@ -65,10 +66,7 @@ const Wishlist = () => {
 
             <div className="wishlist-container">
                 {loading ? (
-                    <div className="wishlist-loading">
-                        <div className="loader"></div>
-                        <p>Loading your favorites...</p>
-                    </div>
+                    <Loader />
                 ) : wishlistProducts.length === 0 ? (
                     <div className="wishlist-empty fade-in">
                         <div className="empty-heart-box">
