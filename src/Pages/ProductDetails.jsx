@@ -14,6 +14,9 @@ import Recommendations from '../Components/Recommendations/Recommendations';
 import rateimg from '../assets/star.png';
 import './ProductDetails.css';
 import Loader from '../Components/Loader/Loader';
+import Product360Viewer from '../Components/Product360Viewer/Product360Viewer';
+import ImageZoom from '../Components/ImageZoom/ImageZoom';
+import { MdOutline360 } from "react-icons/md";
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -27,6 +30,7 @@ const ProductDetails = () => {
     const [similarProducts, setSimilarProducts] = useState([]);
     const [lensEnhancements, setLensEnhancements] = useState([]);
     const [selectedEnhancements, setSelectedEnhancements] = useState([]);
+    const [is360Open, setIs360Open] = useState(false);
     
     // Detailed Selection State
     const [selectedLensType, setSelectedLensType] = useState('Single Vision');
@@ -39,7 +43,7 @@ const ProductDetails = () => {
         left: { sph: '-0.50', cyl: '----', axis: '----', add: '----' }
     });
 
-    const { addItemToCart } = useCart();
+    const { addItemToCart, setCartOpen, setDrawerTab } = useCart();
 
     useEffect(() => {
         const fetchProductData = async () => {
@@ -87,6 +91,17 @@ const ProductDetails = () => {
                     colorcount: p.colors ? p.colors.length : "1"
                 }));
                 setSimilarProducts(similarMapped);
+
+                // Dynamic Theme Adaptation
+                const themes = {
+                    'Spectacles': '#00387D',
+                    'Sunglasses': '#FF8C00',
+                    'Contact Lenses': '#00CED1',
+                    'Computer Glasses': '#4B0082',
+                    'Reading Glasses': '#2E8B57'
+                };
+                const color = themes[data.category] || '#00387D';
+                document.documentElement.style.setProperty('--category-theme', color);
             }
             // Small delay for premium feel
             setTimeout(() => setLoading(false), 500);
@@ -109,6 +124,24 @@ const ProductDetails = () => {
         };
         trackRecentlyViewed();
     }, [id]);
+
+    useEffect(() => {
+        const appContainer = document.querySelector('.App');
+        if (showLensModal) {
+            document.documentElement.classList.add('no-scroll');
+            document.body.classList.add('no-scroll');
+            if (appContainer) appContainer.classList.add('no-scroll');
+        } else {
+            document.documentElement.classList.remove('no-scroll');
+            document.body.classList.remove('no-scroll');
+            if (appContainer) appContainer.classList.remove('no-scroll');
+        }
+        return () => {
+            document.documentElement.classList.remove('no-scroll');
+            document.body.classList.remove('no-scroll');
+            if (appContainer) appContainer.classList.remove('no-scroll');
+        };
+    }, [showLensModal]);
 
     const toggleEnhancement = (enh) => {
         setSelectedEnhancements(prev => {
@@ -161,8 +194,12 @@ const ProductDetails = () => {
                             ))}
                         </div>
                         <div className="main-image">
-                            <img src={selectedImg} alt="Main Product" />
+                            <ImageZoom src={selectedImg} alt={product.title} />
                             <button className="wishlist-btn-abs">♡</button>
+                            <button className="btn-360-trigger" onClick={() => setIs360Open(true)}>
+                                <MdOutline360 />
+                                <span>360° View</span>
+                            </button>
                         </div>
                     </div>
 
@@ -180,8 +217,8 @@ const ProductDetails = () => {
                             <span className="offer-tag">({product.discount})</span>
                         </div>
 
-                        <div className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                            {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Out of Stock'}
+                        <div className={`stock-status ${product.stock > 0 ? 'in-stock' : 'out-of-stock-alert'}`}>
+                            {product.stock > 0 ? `In Stock (${product.stock} available)` : 'Limited Stock - Order Soon!'}
                         </div>
 
                         <div className="color-selection">
@@ -224,9 +261,8 @@ const ProductDetails = () => {
 
                         <div className="action-buttons-lower">
                             <button 
-                                className={`gray-btn ${product.stock <= 0 ? 'disabled' : ''}`}
+                                className="action-primary-btn"
                                 onClick={async () => {
-                                    if (product.stock <= 0) return;
                                     const cartData = {
                                         productId: id,
                                         productName: product.title,
@@ -234,15 +270,17 @@ const ProductDetails = () => {
                                         productPrice: product.price,
                                         totalPrice: product.price
                                     };
-                                    await addItemToCart(cartData);
+                                    const success = await addItemToCart(cartData);
+                                    if (success) {
+                                        setDrawerTab('cart');
+                                        setCartOpen(true);
+                                    }
                                 }}
-                                disabled={product.stock <= 0}
                             >
                                 Add to Cart
                             </button>
                             <button 
-                                className={`gray-btn ${product.stock <= 0 ? 'disabled' : ''}`}
-                                disabled={product.stock <= 0}
+                                className="action-secondary-btn"
                             >
                                 Buy Now
                             </button>
@@ -455,25 +493,25 @@ const ProductDetails = () => {
                             <div className="usage-grid">
                                 <div className={`usage-item ${selectedUsage === 'Everyday' ? 'active' : ''}`} onClick={() => setSelectedUsage('Everyday')}>
                                     <div className="usage-box">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/3652/3652115.png" alt="Everyday" />
+                                        <span className="usage-emoji">🏠</span>
                                     </div>
                                     <p>Everyday</p>
                                 </div>
                                 <div className={`usage-item ${selectedUsage === 'Computer | Screen' ? 'active' : ''}`} onClick={() => setSelectedUsage('Computer | Screen')}>
                                     <div className="usage-box">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/3062/3062115.png" alt="Computer" />
+                                        <span className="usage-emoji">💻</span>
                                     </div>
-                                    <p>Computer | Screen</p>
+                                    <p>Digital Use</p>
                                 </div>
                                 <div className={`usage-item ${selectedUsage === 'Reading' ? 'active' : ''}`} onClick={() => setSelectedUsage('Reading')}>
                                     <div className="usage-box">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/3308/3308336.png" alt="Reading" />
+                                        <span className="usage-emoji">📚</span>
                                     </div>
                                     <p>Reading</p>
                                 </div>
                                 <div className={`usage-item ${selectedUsage === 'Driving' ? 'active' : ''}`} onClick={() => setSelectedUsage('Driving')}>
                                     <div className="usage-box">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/2554/2554907.png" alt="Driving" />
+                                        <span className="usage-emoji">🚗</span>
                                     </div>
                                     <p>Driving</p>
                                 </div>
@@ -507,7 +545,11 @@ const ProductDetails = () => {
                                             totalPrice: calculateTotalPrice()
                                         };
                                         const success = await addItemToCart(cartData);
-                                        if (success) setShowLensModal(false);
+                                        if (success) {
+                                            setShowLensModal(false);
+                                            setDrawerTab('cart');
+                                            setCartOpen(true);
+                                        }
                                     }}
                                 >
                                     Add to Cart
@@ -524,6 +566,11 @@ const ProductDetails = () => {
                     </div>
                 </div>
             )}
+            <Product360Viewer 
+                images={product.thumbnails} 
+                isOpen={is360Open} 
+                onClose={() => setIs360Open(false)} 
+            />
         </div>
     );
 };

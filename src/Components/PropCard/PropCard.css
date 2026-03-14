@@ -103,7 +103,7 @@
 
 .prop-buttons-overlay {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
     transform: translateY(15px);
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -115,29 +115,34 @@
 
 .btn-add, .btn-view {
     flex: 1;
-    padding: 10px 5px;
+    padding: 12px 5px;
     border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
     border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .btn-add {
     background: white;
     color: #001f54;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .btn-view {
     background: #ff007f;
     color: white;
+    box-shadow: 0 4px 15px rgba(255, 0, 127, 0.2);
 }
 
 .btn-add:hover, .btn-view:hover {
-    transform: translateY(-2px);
-    opacity: 0.95;
+    transform: translateY(-3px);
+}
+
+.btn-add:hover {
+    background: #f8f9fa;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .propcontent {

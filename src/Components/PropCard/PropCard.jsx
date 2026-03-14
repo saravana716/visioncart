@@ -2,11 +2,14 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { useWishlist } from '../../context/WishlistContext';
+import { useCart } from '../../context/CartContext';
 import "./PropCard.css"
+import { useState } from 'react';
 
 const PropCard = ({ cardlist }) => {
     const navigate = useNavigate();
     const { toggleWishlist, isInWishlist } = useWishlist();
+    const { addItemToCart } = useCart();
     
     if (!cardlist) return null;
     
@@ -20,7 +23,12 @@ const PropCard = ({ cardlist }) => {
                 >
                     <div className='propcardimg'>
                         {data.tryOn && <div className="tryon-tag">3D Try-On</div>}
-                        <img src={data.img} alt={data.title} className='main-product-img' />
+                        <img 
+                            src={data.img} 
+                            alt={data.title} 
+                            className='main-product-img' 
+                            style={{ viewTransitionName: `product-img-${data.id}` }}
+                        />
                         
                         <div 
                             className={`heart-container ${isInWishlist(data.id) ? 'active' : ''}`}
@@ -34,9 +42,25 @@ const PropCard = ({ cardlist }) => {
 
                         <div className="card-overlay">
                             <div className="prop-buttons-overlay">
-                                <button className='btn-add' onClick={(e) => e.stopPropagation()}>+ Add to card</button>
+                                <button className='btn-add' onClick={async (e) => {
+                                    e.stopPropagation();
+                                    const cartData = {
+                                        productId: data.id,
+                                        productName: data.title,
+                                        productImage: data.img,
+                                        productPrice: data.price,
+                                        totalPrice: data.price
+                                    };
+                                    const success = await addItemToCart(cartData);
+                                    if (success) {
+                                        navigate(`/product/${data.id}`);
+                                    }
+                                }}>Add to Cart</button>
                                 <button className='btn-view' onClick={(e) => {
                                     e.stopPropagation();
+                                    const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+                                    const updated = [data.id, ...viewed.filter(vId => vId !== data.id)].slice(0, 10);
+                                    localStorage.setItem('recentlyViewed', JSON.stringify(updated));
                                     navigate(`/product/${data.id}`);
                                 }}>View</button>
                             </div>

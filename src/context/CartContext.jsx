@@ -10,6 +10,7 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const [cartOpen, setCartOpen] = useState(false);
+  const [drawerTab, setDrawerTab] = useState('cart');
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -75,6 +76,8 @@ export const CartProvider = ({ children }) => {
       clearCart,
       cartOpen,
       setCartOpen,
+      drawerTab,
+      setDrawerTab,
       cartCount: cartItems.length
     }}>
       {children}

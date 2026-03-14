@@ -18,8 +18,27 @@ input, textarea, [contenteditable="true"] {
     caret-color: auto; /* Show caret only where needed */
 }
 
-.no-scroll {
-    overflow: hidden;
+/* Global Scroll Lock - Target everything pervasive */
+html.no-scroll,
+body.no-scroll,
+.App.no-scroll {
+    overflow: hidden !important;
+    height: 100dvh !important;
+    width: 100vw !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    -webkit-overflow-scrolling: none !important;
+}
+
+/* Re-enable scrolling for inner containers */
+.drawer-body,
+.lens-modal,
+.mobile-sidebar {
+    overflow-y: auto !important;
+    touch-action: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    pointer-events: auto !important;
 }
 
 body{
@@ -34,6 +53,12 @@ body{
   --primary-color: #00387D;
   --secondary-color: #FF0075;
   --accent-soft: rgba(255, 0, 117, 0.05);
+  --category-theme: var(--primary-color);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
 }
 
 /* Global Animations */

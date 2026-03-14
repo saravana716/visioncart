@@ -36,6 +36,18 @@ const Slider = () => {
 
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+    const handleMouseMove = (e) => {
+        const { clientX, clientY } = e;
+        const x = (clientX - window.innerWidth / 2) / 30;
+        const y = (clientY - window.innerHeight / 2) / 30;
+        setMousePos({ x, y });
+    };
+
+    const handleMouseLeave = () => {
+        setMousePos({ x: 0, y: 0 });
+    };
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -53,8 +65,18 @@ const Slider = () => {
 
     return (
         <>
-            <div className='slider'>
-                <div className='sliderleft'>
+            <div 
+                className='slider' 
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+            >
+                <div 
+                    className='sliderleft'
+                    style={{ 
+                        transform: `translate(${mousePos.x * -0.5}px, ${mousePos.y * -0.5}px)`,
+                        transition: 'transform 0.1s ease-out'
+                    }}
+                >
                     <div className='text-content'>
                         <h1>
                             <span className={`heading-text ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`} style={{ display: 'inline-block', color: slide.color }}>
@@ -73,7 +95,13 @@ const Slider = () => {
                         <button className='sliderbtnright'>Shop Eyewear</button>
                     </div>
                 </div>
-                <div className='sliderright'>
+                <div 
+                    className='sliderright'
+                    style={{ 
+                        transform: `translate(${mousePos.x * 0.8}px, ${mousePos.y * 0.8}px)`,
+                        transition: 'transform 0.1s ease-out'
+                    }}
+                >
                     <div className={`image-container ${isAnimating ? 'slide-up-out' : 'slide-up-in'}`}>
                         <img src={slide.image} alt="Eyewear Model" />
                     </div>
