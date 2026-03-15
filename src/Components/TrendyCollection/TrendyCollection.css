@@ -50,5 +50,10 @@
 
     .trendymaintitle {
         padding: 0 20px;
+        margin-bottom: 5px;
+    }
+
+    .trendymaintitle h1 {
+        font-size: 16px;
     }
 }

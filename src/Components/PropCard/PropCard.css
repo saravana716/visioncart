@@ -271,15 +271,15 @@
     }
 
     .propcardimg {
-        height: 180px;
-        padding: 15px;
+        height: 160px; /* Reduced from 180px */
+        padding: 12px;
         border-radius: 12px;
     }
     
     .card-overlay {
         opacity: 1;
         background: transparent;
-        padding: 10px;
+        padding: 8px;
     }
 
     .prop-buttons-overlay {
@@ -288,35 +288,35 @@
     }
 
     .btn-add, .btn-view {
-        padding: 8px 4px;
-        font-size: 11px;
+        padding: 6px 3px;
+        font-size: 10px; /* Reduced from 11px */
         border-radius: 6px;
     }
 
     .heart-container {
         opacity: 1;
         transform: translateY(0);
-        top: 10px;
-        right: 10px;
-        width: 30px;
-        height: 30px;
+        top: 8px;
+        right: 8px;
+        width: 28px;
+        height: 28px;
     }
 
     .hearticon {
-        font-size: 16px;
+        font-size: 14px;
     }
     
     .propcontent {
-        padding: 10px 4px;
-        gap: 4px;
+        padding: 8px 3px;
+        gap: 3px;
     }
 
     .product-brand {
-        font-size: 9px;
+        font-size: 8px; /* Reduced from 9px */
     }
 
     .product-title {
-        font-size: 14px;
+        font-size: 13px; /* Reduced from 14px */
         white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -325,27 +325,41 @@
         line-height: 1.2;
         height: 2.4em;
     }
+
+    .product-reviews {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .rating-stars {
+        height: 10px; /* Scaled down stars */
+    }
+
+    .review-count {
+        font-size: 10px; /* Reduced label */
+    }
     
     .current-price {
-        font-size: 16px;
+        font-size: 14px; /* Reduced from 16px */
     }
 
     .old-price {
-        font-size: 12px;
+        font-size: 11px; /* Reduced from 12px */
     }
 
     .color-dots {
-        height: 14px;
+        height: 12px; /* Reduced from 14px */
     }
 
     .variant-count {
-        font-size: 11px;
+        font-size: 10px; /* Reduced from 11px */
     }
 
     .tryon-tag {
-        top: 10px;
-        left: 10px;
-        padding: 3px 8px;
-        font-size: 8px;
+        top: 8px;
+        left: 8px;
+        padding: 2px 6px;
+        font-size: 7px;
     }
 }
