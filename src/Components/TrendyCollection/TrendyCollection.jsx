@@ -60,13 +60,13 @@ const TrendyCollection = ({ title = "Premium Optical Frames", categoryName = nul
     return (
         <div className='trendymain'>
             <div className='trendymaintitle'>
-                <h1>{title}</h1>
-                <h1 
+                <h2>{title}</h2>
+                <span 
+                    className="shop-now-link"
                     onClick={handleShopNow}
-                    style={{borderBottom: "1px solid black", paddingBottom: "2px", cursor: "pointer"}}
                 >
                     Shop Now
-                </h1>
+                </span>
             </div>
 
             {trendingProducts.length > 0 ? (
