@@ -271,15 +271,15 @@
     }
 
     .propcardimg {
-        height: 160px; /* Reduced from 180px */
-        padding: 12px;
+        height: 140px; /* Reduced from 160px for better proportion */
+        padding: 10px;
         border-radius: 12px;
     }
     
     .card-overlay {
         opacity: 1;
         background: transparent;
-        padding: 8px;
+        padding: 6px;
     }
 
     .prop-buttons-overlay {
@@ -288,35 +288,35 @@
     }
 
     .btn-add, .btn-view {
-        padding: 6px 3px;
-        font-size: 10px; /* Reduced from 11px */
+        padding: 5px 2px;
+        font-size: 9px; /* Further reduced from 10px */
         border-radius: 6px;
     }
 
     .heart-container {
         opacity: 1;
         transform: translateY(0);
-        top: 8px;
-        right: 8px;
-        width: 28px;
-        height: 28px;
+        top: 6px;
+        right: 6px;
+        width: 26px;
+        height: 26px;
     }
 
     .hearticon {
-        font-size: 14px;
+        font-size: 13px;
     }
     
     .propcontent {
-        padding: 8px 3px;
-        gap: 3px;
+        padding: 6px 2px;
+        gap: 2px; /* Tightened from 3px */
     }
 
     .product-brand {
-        font-size: 8px; /* Reduced from 9px */
+        font-size: 7px; /* Reduced from 8px */
     }
 
     .product-title {
-        font-size: 13px; /* Reduced from 14px */
+        font-size: 12px; /* Reduced from 13px */
         white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -329,37 +329,37 @@
     .product-reviews {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 3px;
     }
 
     .rating-stars {
-        height: 10px; /* Scaled down stars */
+        height: 8px; /* Further scaled down stars */
     }
 
     .review-count {
-        font-size: 10px; /* Reduced label */
+        font-size: 9px; /* Reduced label */
     }
     
     .current-price {
-        font-size: 14px; /* Reduced from 16px */
+        font-size: 13px; /* Reduced from 14px */
     }
 
     .old-price {
-        font-size: 11px; /* Reduced from 12px */
-    }
-
-    .color-dots {
-        height: 12px; /* Reduced from 14px */
-    }
-
-    .variant-count {
         font-size: 10px; /* Reduced from 11px */
     }
 
+    .color-dots {
+        height: 10px; /* Reduced from 12px */
+    }
+
+    .variant-count {
+        font-size: 9px; /* Reduced from 10px */
+    }
+
     .tryon-tag {
-        top: 8px;
-        left: 8px;
-        padding: 2px 6px;
-        font-size: 7px;
+        top: 6px;
+        left: 6px;
+        padding: 2px 5px;
+        font-size: 6px;
     }
 }
