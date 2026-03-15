@@ -224,7 +224,7 @@ const ProductDetails = () => {
                                 <h3>3D Virtual Try-On</h3>
                             </div>
                             <div className="tryon-img">
-                                <img src="https://i.imgur.com/8Q9Z5bX.png" alt="Model" onError={(e) => e.target.src='https://via.placeholder.com/150x100?text=Model'} />
+                                <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400" alt="Model" onError={(e) => e.target.src='https://via.placeholder.com/150x100?text=Model'} />
                             </div>
                         </div>
 

@@ -63,7 +63,7 @@ const Cart = () => {
                 <Navbar />
                 <div className="empty-cart-container">
                     <div className="empty-cart-box">
-                        <img src="https://cdni.iconscout.com/illustration/premium/thumb/empty-cart-illustration-download-in-svg-png-gif-file-formats--shopping-ecommerce-pack-e-commerce-illustrations-4436696.png" alt="Empty Cart" />
+                        <img src="https://images.unsplash.com/photo-1557821552-17105176677c?w=600" alt="Empty Cart" style={{borderRadius: '20px', marginBottom: '30px'}} />
                         <h2>Your Cart is Empty</h2>
                         <p>Looks like you haven't added anything to your cart yet.</p>
                         <button className="start-shopping-btn" onClick={() => navigate('/products')}>Start Shopping</button>

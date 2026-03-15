@@ -1,0 +1,40 @@
+.about-page-wrapper {
+    width: 100%;
+}
+
+.about-hero {
+    height: 300px;
+    background: linear-gradient(rgba(0,35,102,0.8), rgba(0,35,102,0.8)), url('https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=1600');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+}
+
+.about-hero h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.about-content {
+    padding: 80px 10%;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.about-content h2 {
+    font-size: 32px;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+}
+
+.about-content p {
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text-muted);
+}

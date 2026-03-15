@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import sliderimg from "../../assets/sliderimg.png";
 import image1 from "../../assets/image 1.png";
 import "./Slider.css";
@@ -36,6 +37,7 @@ const Slider = () => {
 
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -69,8 +71,8 @@ const Slider = () => {
                     </div>
                 </div>
                 <div className='sliderbtn'>
-                    <button className='sliderbtnleft'>Try Frames Virtually</button>
-                    <button className='sliderbtnright'>Shop Eyewear</button>
+                    <button className='sliderbtnleft' onClick={() => navigate('/virtual-try-on')}>Try Frames Virtually</button>
+                    <button className='sliderbtnright' onClick={() => navigate('/products')}>Shop Eyewear</button>
                 </div>
             </div>
             

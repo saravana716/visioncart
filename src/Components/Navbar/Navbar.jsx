@@ -123,12 +123,21 @@ const Navbar = () => {
                 <li onClick={() => navigate('/')}>Home</li>
                 <li onClick={() => navigate('/about')}>About</li>
                 <li onClick={() => navigate('/products')}>Products</li>
-                <li>Blogs</li>
-                <li>Contact</li>
+                <li onClick={() => navigate('/blogs')}>Blogs</li>
+                <li onClick={() => navigate('/contact')}>Contact</li>
             </div>
             <div className='icons'>
                 <div className='searchinput'>
-                    <input type="text" placeholder="Search..." />
+                    <input 
+                        type="text" 
+                        placeholder="Search..." 
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && e.target.value.trim()) {
+                                navigate(`/products?search=${e.target.value.trim()}`);
+                                setIsSearchOpen(false);
+                            }
+                        }}
+                    />
                     <IoIosSearch className='search' onClick={() => setIsSearchOpen(true)} style={{cursor: 'pointer'}} />
                 </div>
                 <div className='iconlist'>

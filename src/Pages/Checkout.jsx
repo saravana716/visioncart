@@ -12,6 +12,7 @@ import {
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { FaShippingFast, FaCreditCard, FaCheckCircle, FaMapMarkerAlt } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 import './Checkout.css';
 import Loader from '../Components/Loader/Loader';
 
@@ -98,6 +99,7 @@ const Checkout = () => {
 
         const result = await placeOrder(user.uid, orderData);
         if (result.success) {
+            toast.success("Order placed successfully!");
             for (const item of cartItems) {
                 if (item.productId) {
                     await decrementStock(item.productId, 1);
@@ -227,7 +229,15 @@ const Checkout = () => {
                                             <input type="text" name="zip" value={form.zip} onChange={handleInputChange} />
                                         </div>
                                     </div>
-                                    <button className="checkout-next-btn" onClick={() => setStep(2)}>Continue to Payment</button>
+                                    <button className="checkout-next-btn" onClick={() => {
+                                        const required = ['fullName', 'email', 'phone', 'address', 'city', 'zip'];
+                                        const missing = required.filter(field => !form[field]);
+                                        if (missing.length > 0) {
+                                            toast.error(`Please fill in all required fields: ${missing.join(', ')}`);
+                                            return;
+                                        }
+                                        setStep(2);
+                                    }}>Continue to Payment</button>
                                 </div>
                             </div>
                         )}

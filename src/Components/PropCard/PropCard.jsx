@@ -9,7 +9,7 @@ import { useState } from 'react';
 const PropCard = ({ cardlist }) => {
     const navigate = useNavigate();
     const { toggleWishlist, isInWishlist } = useWishlist();
-    const { addItemToCart } = useCart();
+    const { addItemToCart, setCartOpen, setDrawerTab } = useCart();
     
     if (!cardlist) return null;
     
@@ -54,41 +54,6 @@ const PropCard = ({ cardlist }) => {
                             {isInWishlist(data.id) ? <FaHeart className='hearticon' /> : <FaRegHeart className='hearticon' />}
                         </div>
 
-                        <div className="card-overlay">
-                            <div className="prop-buttons-overlay">
-                                <button className='btn-add' onClick={async (e) => {
-                                    e.stopPropagation();
-                                    const cartData = {
-                                        productId: data.id,
-                                        productBrand: data.brand || 'Visionkart',
-                                        productName: data.title,
-                                        productImage: data.img,
-                                        productPrice: data.price,
-                                        totalPrice: data.price,
-                                        category: data.category,
-                                        // Collect all technical specs dynamically
-                                        specifications: [
-                                            ...(data.technicalSpecs || []),
-                                            { label: 'Color', value: data.colorName || (data.colors ? data.colors[0].name : 'Standard') },
-                                            { label: 'Lens', value: 'Frame Only' },
-                                            { label: 'Material', value: 'Standard' }
-                                        ],
-                                        sku: data.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || data.id,
-                                    };
-                                    const success = await addItemToCart(cartData);
-                                    if (success) {
-                                        navigate(`/product/${data.id}`);
-                                    }
-                                }}>Add to Cart</button>
-                                <button className='btn-view' onClick={(e) => {
-                                    e.stopPropagation();
-                                    const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
-                                    const updated = [data.id, ...viewed.filter(vId => vId !== data.id)].slice(0, 10);
-                                    localStorage.setItem('recentlyViewed', JSON.stringify(updated));
-                                    navigate(`/product/${data.id}`);
-                                }}>View</button>
-                            </div>
-                        </div>
                     </div>
 
                     <div className='propcontent'>
@@ -107,6 +72,39 @@ const PropCard = ({ cardlist }) => {
                                 {data.color && <img src={data.color} alt="colors" className="color-dots" />}
                                 <span className="variant-count">{data.colorcount} +</span>
                             </div>
+                        </div>
+                        <div className="product-actions">
+                            <button className='btn-add' onClick={async (e) => {
+                                e.stopPropagation();
+                                const cartData = {
+                                    productId: data.id,
+                                    productBrand: data.brand || 'Visionkart',
+                                    productName: data.title,
+                                    productImage: data.img,
+                                    productPrice: data.price,
+                                    totalPrice: data.price,
+                                    category: data.category,
+                                    specifications: [
+                                        ...(data.technicalSpecs || []),
+                                        { label: 'Color', value: data.colorName || (data.colors ? data.colors[0].name : 'Standard') },
+                                        { label: 'Lens', value: 'Frame Only' },
+                                        { label: 'Material', value: 'Standard' }
+                                    ],
+                                    sku: data.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || data.id,
+                                };
+                                const success = await addItemToCart(cartData);
+                                if (success) {
+                                    setDrawerTab('cart');
+                                    setCartOpen(true);
+                                }
+                            }}>Add to Cart</button>
+                            <button className='btn-view' onClick={(e) => {
+                                e.stopPropagation();
+                                const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+                                const updated = [data.id, ...viewed.filter(vId => vId !== data.id)].slice(0, 10);
+                                localStorage.setItem('recentlyViewed', JSON.stringify(updated));
+                                navigate(`/product/${data.id}`);
+                            }}>View</button>
                         </div>
                     </div>
                 </div>

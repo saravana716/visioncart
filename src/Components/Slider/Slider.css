@@ -187,7 +187,19 @@
     }
 
     .sliderright {
-        display: none; /* Hide on mobile to keep focus on CTAs */
+        display: block;
+        position: relative;
+        width: 100%;
+        height: 300px;
+        order: -1; /* Move image to top on mobile */
+        margin-bottom: 20px;
+    }
+
+    .image-container1 img {
+        height: 100%;
+        width: auto;
+        max-width: 100%;
+        object-fit: contain;
     }
 
     .slider-nav {

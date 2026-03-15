@@ -15,6 +15,10 @@ import OrderSuccess from '../Pages/OrderSuccess'
 import Orders from '../Pages/Orders'
 import Wishlist from '../Pages/Wishlist'
 import OrderDetail from '../Pages/OrderDetail'
+import About from '../Pages/About'
+import Blogs from '../Pages/Blogs'
+import ContactPage from '../Pages/ContactPage'
+import NotFound from '../Pages/NotFound'
 
 const Routing = () => {
   return (
@@ -35,6 +39,10 @@ const Routing = () => {
         <Route path="/orders" element={<Orders />} />
         <Route path="/orders/:orderId" element={<OrderDetail />} />
         <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/blogs" element={<Blogs />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   )
