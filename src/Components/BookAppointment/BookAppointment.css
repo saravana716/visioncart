@@ -54,61 +54,70 @@
 
 @media (max-width: 768px) {
     .book {
-        height: auto;
-        flex-direction: column; /* Stack vertically */
-        padding: 40px 20px; 
-        background-color: #002366; /* Blue background */
-        gap: 30px;
-        display: flex; /* Restore flex */
+        height: 480px;
+        position: relative;
+        background-image: url('../../assets/sliderimg.png');
+        background-size: cover;
+        background-position: center;
+        padding: 0;
+        display: block;
+    }
+
+    /* Add overlay directly via before pseudo-element on .book */
+    .book::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, #002366 30%, rgba(0, 35, 102, 0.3) 100%);
+        z-index: 1;
     }
 
     .bookleft {
         width: 100%;
-        align-items: center;
-        text-align: center;
-        padding: 0;
-        order: 1; 
+        height: 100%;
+        position: relative;
+        z-index: 2;
+        padding: 0 10%;
+        align-items: flex-start;
+        text-align: left;
+        justify-content: center;
+        order: unset;
     }
 
     .bookright {
-        width: 100%;
-        height: auto;
-        display: flex;
-        justify-content: center;
-        order: 2;
-    }
-    
-    .bookright img {
-        width: 80%;
-        height: auto;
-        object-fit: contain;
-        border-radius: 10px; 
+        display: none; /* Hide the separate image container on mobile */
     }
     
     .bookleft h1 {
-        font-size: 32px;
-        color: white;
-        margin-bottom: 15px;
+        font-size: 36px;
+        font-weight: 800;
+        line-height: 1.1;
+        max-width: 280px;
+        margin-bottom: 20px;
     }
     
     .bookleft div p {
-        color: rgba(255, 255, 255, 0.8);
         font-size: 16px;
+        color: rgba(255, 255, 255, 0.9);
         line-height: 1.5;
-        margin-bottom: 25px;
+        margin-bottom: 30px;
+        max-width: 320px;
+        text-align: left;
     }
     
     .bookleft button {
-        background-color: #FF0075; /* Pink button */
-        color: white;
-        border: none;
-        padding: 12px 30px;
-        border-radius: 5px;
+        width: auto;
+        padding: 14px 28px;
+        border-radius: 8px;
         font-size: 16px;
-        font-weight: 600;
-        width: 100%; /* Full width button on mobile */
+        font-weight: 700;
+        margin-top: 0;
+        transition: transform 0.3s ease;
     }
-  
+
+    .bookleft button:active {
+        transform: scale(0.98);
+    }
 }
 
 /* Animation for Image Slider */

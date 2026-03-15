@@ -5,15 +5,13 @@ import sliderimg from "../../assets/sliderimg.png" // Reusing the same image or 
 const MobileTryOn = () => {
   return (
     <div className='mobile-tryon'>
+        <div className='mobile-tryon-overlay'></div>
         <div className='mobile-tryon-content'>
             <h1 className='title'>Try Before You Buy</h1>
             <p className='description'>
                 Instantly see how every frame suits your face with VisionKart’s Virtual Try-On. Choose. Try. Buy — all in seconds.
             </p>
             <button className='try-btn'>Try Frames Virtually</button>
-        </div>
-        <div className='mobile-tryon-image'>
-            <img src={sliderimg} alt="Try On" />
         </div>
     </div>
   )
