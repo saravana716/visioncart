@@ -28,6 +28,7 @@ const TrendyCollection = ({ title = "Premium Optical Frames", categoryName = nul
         price: (p.price && p.price.toString().startsWith('₹')) ? p.price : `₹${p.price}`,
         mrpprice: p.originalPrice || (p.price ? (parseInt(p.price) * 1.5).toString() : "0"),
         img: p.photos ? p.photos[0] : (p.mainImage || ''),
+        hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
         rating: rateimg,
         color: colorimg,
         ratingcount: p.ratingCount || "0",

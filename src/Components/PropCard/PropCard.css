@@ -42,7 +42,32 @@
 }
 
 .propcard:hover .main-product-img {
+    transform: scale(1.05);
+    opacity: 0;
+}
+
+.img-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hover-product-img {
+    position: absolute;
+    width: 90%;
+    height: 90%;
+    object-fit: contain;
+    opacity: 0;
     transform: scale(1.1);
+    transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.propcard:hover .hover-product-img {
+    opacity: 1;
+    transform: scale(1);
 }
 
 .card-overlay {
@@ -175,9 +200,21 @@
     font-weight: 600;
     color: var(--primary-color);
     margin: 0;
-    white-space: nowrap;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.2;
+    height: 2.4em;
     overflow: hidden;
-    text-overflow: ellipsis;
+}
+
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
 }
 
 .product-pricing {
@@ -229,16 +266,86 @@
 }
 
 @media (max-width: 768px) {
+    .propcard {
+        padding: 5px;
+    }
+
     .propcardimg {
         height: 180px;
         padding: 15px;
+        border-radius: 12px;
     }
     
+    .card-overlay {
+        opacity: 1;
+        background: transparent;
+        padding: 10px;
+    }
+
+    .prop-buttons-overlay {
+        transform: translateY(0);
+        gap: 4px;
+    }
+
+    .btn-add, .btn-view {
+        padding: 8px 4px;
+        font-size: 11px;
+        border-radius: 6px;
+    }
+
+    .heart-container {
+        opacity: 1;
+        transform: translateY(0);
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .hearticon {
+        font-size: 16px;
+    }
+    
+    .propcontent {
+        padding: 10px 4px;
+        gap: 4px;
+    }
+
+    .product-brand {
+        font-size: 9px;
+    }
+
     .product-title {
         font-size: 14px;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-height: 1.2;
+        height: 2.4em;
     }
     
     .current-price {
         font-size: 16px;
+    }
+
+    .old-price {
+        font-size: 12px;
+    }
+
+    .color-dots {
+        height: 14px;
+    }
+
+    .variant-count {
+        font-size: 11px;
+    }
+
+    .tryon-tag {
+        top: 10px;
+        left: 10px;
+        padding: 3px 8px;
+        font-size: 8px;
     }
 }

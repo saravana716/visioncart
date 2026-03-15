@@ -23,16 +23,26 @@ const PropCard = ({ cardlist }) => {
                 >
                     <div className='propcardimg'>
                         {data.tryOn && <div className="tryon-tag">3D Try-On</div>}
-                        {data.img ? (
-                            <img 
-                                src={data.img} 
-                                alt={data.title} 
-                                className='main-product-img' 
-                                style={{ viewTransitionName: `product-img-${data.id}` }}
-                            />
-                        ) : (
-                            <div className="main-product-img placeholder-img"></div>
-                        )}
+                        <div className="img-wrapper">
+                            {data.img ? (
+                                <img 
+                                    src={data.img} 
+                                    alt={data.title} 
+                                    className='main-product-img' 
+                                    style={{ viewTransitionName: `product-img-${data.id}` }}
+                                />
+                            ) : (
+                                <div className="main-product-img placeholder-img"></div>
+                            )}
+                            
+                            {data.hoverImg && (
+                                <img 
+                                    src={data.hoverImg} 
+                                    alt={`${data.title} hover`} 
+                                    className='hover-product-img' 
+                                />
+                            )}
+                        </div>
                         
                         <div 
                             className={`heart-container ${isInWishlist(data.id) ? 'active' : ''}`}

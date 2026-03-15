@@ -54,9 +54,10 @@ const ProductPage = () => {
         gender: true,
         frameStyle: true,
         frameShape: true,
-        lensType: true,
         frameMaterial: true,
         frameColor: true,
+        frameSize: true,
+        lensType: true,
         priceRange: true
     });
 
@@ -69,6 +70,7 @@ const ProductPage = () => {
         lensType: [],
         frameMaterial: [],
         frameColor: [],
+        frameSize: [],
         priceRange: []
     });
 
@@ -83,6 +85,7 @@ const ProductPage = () => {
             lensType: searchParams.getAll('lensType'),
             frameMaterial: searchParams.getAll('frameMaterial'),
             frameColor: searchParams.getAll('frameColor'),
+            frameSize: searchParams.getAll('frameSize'),
             priceRange: searchParams.getAll('priceRange')
         };
         
@@ -102,6 +105,7 @@ const ProductPage = () => {
             lensType: getParams('lensType'),
             frameMaterial: getParams('frameMaterial'),
             frameColor: getParams('frameColor'),
+            frameSize: getParams('frameSize'),
             priceRange: getParams('priceRange')
         });
 
@@ -179,12 +183,13 @@ const ProductPage = () => {
     };
 
     const currentFilters = {
-        gender: categoryConfig?.gender || fallbackData[category]?.gender || [],
-        style: categoryConfig?.style || fallbackData[category]?.style || [],
-        shape: categoryConfig?.shape || fallbackData[category]?.shape || [],
-        lensType: categoryConfig?.lensType || fallbackData[category]?.lensType || [],
-        material: categoryConfig?.material || fallbackData[category]?.material || ['Metal', 'Plastic', 'Acetate', 'Titanium'],
-        color: categoryConfig?.color || fallbackData[category]?.color || ['Black', 'Blue', 'Brown', 'Silver']
+        gender: categoryConfig?.gender || fallbackData[category]?.gender || ['Men', 'Women', 'Unisex', 'Kids'],
+        style: categoryConfig?.style || fallbackData[category]?.style || ['Full Rim', 'Half Rim', 'Rimless'],
+        shape: categoryConfig?.shape || fallbackData[category]?.shape || ['Rectangle', 'Round', 'Oval', 'Square', 'Wayfarer', 'Aviator', 'Cat Eye'],
+        lensType: categoryConfig?.lensType || fallbackData[category]?.lensType || ['Blue Cut', 'ARC', 'UV Protect', 'Polarized'],
+        material: categoryConfig?.material || fallbackData[category]?.material || ['Metal', 'Plastic', 'Acetate', 'Titanium', 'TR90'],
+        color: categoryConfig?.color || fallbackData[category]?.color || ['Black', 'Blue', 'Brown', 'Silver', 'Gold', 'Gunmetal'],
+        size: categoryConfig?.size || fallbackData[category]?.size || ['Small', 'Medium', 'Wide', 'Extra Wide']
     };
 
     const cardlist = filteredProducts.map(p => {
@@ -257,7 +262,10 @@ const ProductPage = () => {
                     {/* Sidebar Filters */}
                     <aside className={`sidebar-filters ${showMobileFilters ? 'show' : ''}`}>
                         <div className="filter-header">
-                            <h4>Filters</h4>
+                            <div className="filter-header-top">
+                                <h4>Filters</h4>
+                                <button className="reset-link" onClick={resetFilters}>Reset</button>
+                            </div>
                             <button className="close-mobile-filters" onClick={() => setShowMobileFilters(false)}>✕</button>
                         </div>
 
@@ -267,7 +275,7 @@ const ProductPage = () => {
                                 <div className="filter-group">
                                     <div className="filter-title" onClick={() => toggleFilter('gender')}>
                                         <span>Gender</span>
-                                        <span>{openFilters.gender ? '▾' : '▸'}</span>
+                                        <span className={`arrow ${openFilters.gender ? 'open' : ''}`}>▾</span>
                                     </div>
                                     {openFilters.gender && (
                                         <div className="filter-options">
@@ -285,12 +293,12 @@ const ProductPage = () => {
                                 </div>
                             )}
 
-                            {/* Style Filter */}
+                            {/* Frame Type Filter */}
                             {currentFilters.style.length > 0 && (
                                 <div className="filter-group">
                                     <div className="filter-title" onClick={() => toggleFilter('frameStyle')}>
-                                        <span>Style</span>
-                                        <span>{openFilters.frameStyle ? '▾' : '▸'}</span>
+                                        <span>Frame Type</span>
+                                        <span className={`arrow ${openFilters.frameStyle ? 'open' : ''}`}>▾</span>
                                     </div>
                                     {openFilters.frameStyle && (
                                         <div className="filter-options">
@@ -313,7 +321,7 @@ const ProductPage = () => {
                                 <div className="filter-group">
                                     <div className="filter-title" onClick={() => toggleFilter('frameShape')}>
                                         <span>Frame Shape</span>
-                                        <span>{openFilters.frameShape ? '▾' : '▸'}</span>
+                                        <span className={`arrow ${openFilters.frameShape ? 'open' : ''}`}>▾</span>
                                     </div>
                                     {openFilters.frameShape && (
                                         <div className="filter-options">
@@ -336,7 +344,7 @@ const ProductPage = () => {
                                 <div className="filter-group">
                                     <div className="filter-title" onClick={() => toggleFilter('lensType')}>
                                         <span>Lens Type</span>
-                                        <span>{openFilters.lensType ? '▾' : '▸'}</span>
+                                        <span className={`arrow ${openFilters.lensType ? 'open' : ''}`}>▾</span>
                                     </div>
                                     {openFilters.lensType && (
                                         <div className="filter-options">
@@ -359,7 +367,7 @@ const ProductPage = () => {
                                 <div className="filter-group">
                                     <div className="filter-title" onClick={() => toggleFilter('frameMaterial')}>
                                         <span>Frame Material</span>
-                                        <span>{openFilters.frameMaterial ? '▾' : '▸'}</span>
+                                        <span className={`arrow ${openFilters.frameMaterial ? 'open' : ''}`}>▾</span>
                                     </div>
                                     {openFilters.frameMaterial && (
                                         <div className="filter-options">
@@ -382,7 +390,7 @@ const ProductPage = () => {
                                 <div className="filter-group">
                                     <div className="filter-title" onClick={() => toggleFilter('frameColor')}>
                                         <span>Frame Color</span>
-                                        <span>{openFilters.frameColor ? '▾' : '▸'}</span>
+                                        <span className={`arrow ${openFilters.frameColor ? 'open' : ''}`}>▾</span>
                                     </div>
                                     {openFilters.frameColor && (
                                         <div className="filter-options">
@@ -400,11 +408,34 @@ const ProductPage = () => {
                                 </div>
                             )}
 
+                            {/* Frame Size */}
+                            {currentFilters.size.length > 0 && (
+                                <div className="filter-group">
+                                    <div className="filter-title" onClick={() => toggleFilter('frameSize')}>
+                                        <span>Frame Size</span>
+                                        <span className={`arrow ${openFilters.frameSize ? 'open' : ''}`}>▾</span>
+                                    </div>
+                                    {openFilters.frameSize && (
+                                        <div className="filter-options">
+                                            {currentFilters.size.map((opt, i) => (
+                                                <label key={i}>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={selectedFilters.frameSize.includes(opt)}
+                                                        onChange={() => handleFilterChange('frameSize', opt)}
+                                                    /> {opt}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             {/* Price Range */}
                             <div className="filter-group">
                                 <div className="filter-title" onClick={() => toggleFilter('priceRange')}>
                                     <span>Price Range</span>
-                                    <span>{openFilters.priceRange ? '▾' : '▸'}</span>
+                                    <span className={`arrow ${openFilters.priceRange ? 'open' : ''}`}>▾</span>
                                 </div>
                                 {openFilters.priceRange && (
                                     <div className="filter-options">

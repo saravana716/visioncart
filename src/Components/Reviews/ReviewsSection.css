@@ -200,16 +200,48 @@
 
 .no-reviews-state {
     text-align: center;
-    padding: 40px;
-    background: #fafafa;
+    padding: 60px 40px;
+    background: #fcfcfc;
+    border: 1px dashed #e2e8f0;
     border-radius: 20px;
-    color: #888;
+    color: #a0aec0;
     font-style: italic;
+    font-size: 15px;
 }
 
 @media (max-width: 768px) {
+    .reviews-section-v2 {
+        margin-top: 30px;
+        padding-top: 25px;
+    }
+
     .reviews-header-v2 {
         grid-template-columns: 1fr;
-        gap: 40px;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .avg-num {
+        font-size: 36px;
+    }
+
+    .review-form-container textarea {
+        height: 100px;
+        padding: 12px;
+    }
+
+    .review-card-v2 {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .rev-summary-main h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .no-reviews-state {
+        padding: 25px 15px;
+        font-size: 13px;
     }
 }

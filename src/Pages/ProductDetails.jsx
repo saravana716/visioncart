@@ -14,9 +14,9 @@ import Recommendations from '../Components/Recommendations/Recommendations';
 import rateimg from '../assets/star.png';
 import './ProductDetails.css';
 import Loader from '../Components/Loader/Loader';
-import Product360Viewer from '../Components/Product360Viewer/Product360Viewer';
+// import Product360Viewer from '../Components/Product360Viewer/Product360Viewer';
 import ImageZoom from '../Components/ImageZoom/ImageZoom';
-import { MdOutline360 } from "react-icons/md";
+// import { MdOutline360 } from "react-icons/md";
 import LensSelectionModal from '../Components/LensSelectionModal/LensSelectionModal';
 
 const ProductDetails = () => {
@@ -30,7 +30,7 @@ const ProductDetails = () => {
     const [showLensModal, setShowLensModal] = useState(false);
     const [similarProducts, setSimilarProducts] = useState([]);
     const [lensEnhancements, setLensEnhancements] = useState([]);
-    const [is360Open, setIs360Open] = useState(false);
+    // const [is360Open, setIs360Open] = useState(false);
     
     const { addItemToCart, setCartOpen, setDrawerTab } = useCart();
 
@@ -71,6 +71,7 @@ const ProductDetails = () => {
                 const similarMapped = similar.filter(p => p.id !== id).slice(0, 4).map(p => ({
                     id: p.id,
                     img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
+                    hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
                     title: p.brand || p.name,
                     rating: rateimg,
                     ratingcount: p.ratingCount || "0",
@@ -174,10 +175,10 @@ const ProductDetails = () => {
                             <div className="main-image">
                                 <ImageZoom src={selectedImg} alt={product.title} />
                                 <button className="wishlist-btn-abs">♡</button>
-                                <button className="btn-360-trigger" onClick={() => setIs360Open(true)}>
+                                {/* <button className="btn-360-trigger" onClick={() => setIs360Open(true)}>
                                     <MdOutline360 />
                                     <span>360° View</span>
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                     </div>
@@ -389,11 +390,11 @@ const ProductDetails = () => {
                 setCartOpen={setCartOpen}
                 setDrawerTab={setDrawerTab}
             />
-            <Product360Viewer 
+            {/* <Product360Viewer 
                 images={product.thumbnails} 
                 isOpen={is360Open} 
                 onClose={() => setIs360Open(false)} 
-            />
+            /> */}
         </div>
     );
 };
