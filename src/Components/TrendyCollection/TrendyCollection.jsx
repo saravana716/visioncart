@@ -7,7 +7,7 @@ import { getTrendyProducts } from '../../services/firestoreService';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from '../Skeleton/Skeleton';
 
-const TrendyCollection = ({ title = "Premium Optical Frames", categoryName = null }) => {
+const TrendyCollection = ({ title = "Premium", categoryName = null }) => {
     const [trendingProducts, setTrendingProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
