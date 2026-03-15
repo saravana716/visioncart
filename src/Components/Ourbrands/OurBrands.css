@@ -53,3 +53,25 @@
     height: 100%;
     object-fit: cover;
 }
+
+@media (max-width: 768px) {
+    .our-brands-section {
+        padding: 30px 15px;
+        margin-bottom: 60px;
+        gap: 20px;
+    }
+
+    .our-brands-section h1 {
+        font-size: 20px; /* Matched with other section headers */
+    }
+
+    .carousel-track {
+        gap: 20px;
+        padding: 10px 0;
+    }
+
+    .brand-card {
+        width: 160px; /* Matched with dynamic JS width */
+        height: 100px;
+    }
+}

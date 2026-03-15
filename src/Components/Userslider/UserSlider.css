@@ -52,3 +52,25 @@
     color: white;
     padding-left: 5px;
 }
+@media (max-width: 768px) {
+    .userslider-section {
+        padding: 10px 0;
+    }
+
+    .userslider-section .carousel-track {
+        padding: 10px 15px; /* Unified side padding */
+        gap: 20px;
+    }
+
+    .usercard {
+        width: 160px; /* Matched with JS dynamic width calculation */
+    }
+
+    .usercard .userimg {
+        height: 200px; /* Scaled down for mobile */
+    }
+
+    .usercard p {
+        font-size: 13px;
+    }
+}

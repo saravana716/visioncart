@@ -106,18 +106,54 @@
     .contact {
         flex-direction: column;
         height: auto;
-        padding: 40px 20px;
-        text-align: center;
+        padding: 30px 15px; /* Unified side padding */
+        text-align: left; /* Unified left alignment */
+        align-items: flex-start;
+        gap: 20px;
     }
     
     .contact .discoverleft {
         width: 100%;
-        align-items: center;
-        margin-bottom: 30px;
+        align-items: flex-start;
+        margin-bottom: 0;
+    }
+
+    .contact .discoverleft h2 {
+        font-size: 24px; /* Scaled for mobile */
+        color: white;
+        margin-bottom: 5px;
+    }
+
+    .contact .discoverleft p {
+        font-size: 14px;
+        opacity: 0.9;
+        line-height: 1.4;
+    }
+
+    .contact .discoverleft button {
+        padding: 10px 30px;
+        font-size: 14px;
+        margin-top: 15px;
     }
 
     .contact .discoverright {
-        width: 100%;
-        padding: 10px;
+        width: calc(100% + 30px); /* Allow partial card peek */
+        margin-left: -15px;
+        padding: 10px 15px;
+        gap: 12px;
+    }
+
+    .contact .DiscoverCard {
+        width: 150px;
+        height: 200px;
+    }
+
+    .contact .DiscoverCard .cardimg {
+        height: 120px;
+    }
+}
+@media (max-width: 480px) {
+    .contact .discoverleft h2 {
+        font-size: 20px;
     }
 }

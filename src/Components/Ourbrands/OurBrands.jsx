@@ -15,8 +15,17 @@ const OurBrands = () => {
         { id: 9, img: brand }
     ];
 
-    const cardWidth = 240; // 220px width + 20px gap
-    const visibleCards = 5; 
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const isMobile = windowWidth <= 768;
+    const cardWidth = isMobile ? 180 : 240; // Dynamic width: 160px card + 20px gap
+    const visibleCards = isMobile ? 2 : 5; 
     
     // Create an extended list: Original + First few items (buffer)
     // We need enough buffer to cover the view while resetting
