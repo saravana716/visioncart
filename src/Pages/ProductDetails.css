@@ -538,15 +538,36 @@
 }
 
 .virtual-tryon-banner {
-    background-color: #002366;
+    background: linear-gradient(90deg, #001f54 0%, #00387d 100%);
     color: white;
-    border-radius: 10px;
+    border-radius: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 12px 20px;
     cursor: pointer;
-    margin: 10px 0;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(0, 31, 84, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.virtual-tryon-banner:hover {
+    transform: scale(1.02);
+}
+
+.tryon-text h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.tryon-img img {
+    width: 90px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
 }
 
 .option-buttons {
@@ -837,34 +858,85 @@
 
     .action-buttons-top, .action-buttons-lower {
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
+        margin: 15px 0;
     }
 
     .action-buttons-top button, .action-buttons-lower button {
         width: 100%;
-        padding: 12px 20px;
+        padding: 14px 20px;
+        font-size: 14px;
+        border-radius: 10px;
+    }
+
+    .virtual-tryon-banner {
+        padding: 12px 15px;
+        margin: 15px 0;
+    }
+
+    .tryon-text h3 {
+        font-size: 14px;
+        max-width: 120px;
+        line-height: 1.3;
+    }
+
+    .tryon-img img {
+        width: 80px;
+        height: 50px;
+    }
+
+    .stock-status {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .price-row {
+        margin: 10px 0;
     }
 
     .trust-badges-refined {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin: 20px 0;
     }
     
     .badge-item {
-        padding: 10px 5px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        padding: 15px;
+        gap: 15px;
+        background: #fcfcfc;
+        border-radius: 12px;
+        border: 1px solid #f0f0f0;
     }
 
     .badge-icon {
-        width: 32px;
-        height: 32px;
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
     }
 
     .badge-text span {
-        font-size: 9px;
+        font-size: 13px;
+        margin-bottom: 2px;
     }
 
     .badge-text p {
-        font-size: 7px;
+        font-size: 11px;
+    }
+
+    .main-image {
+        min-height: 320px;
+        padding: 30px 15px;
+    }
+
+    .main-image img {
+        max-height: 280px;
     }
 
     .products-grid {
@@ -876,6 +948,7 @@
     .similar-products-section .section-header {
         margin-bottom: 25px;
         gap: 10px;
+        padding: 0 5px;
     }
 
     .similar-products-section .section-header h2 {
@@ -887,6 +960,30 @@
         font-size: 12px;
         color: var(--secondary-color);
         white-space: nowrap;
+    }
+
+    .prescription-upload-box {
+        padding: 20px 15px;
+        margin: 15px 0;
+    }
+
+    .prescription-upload-box .upload-icon img {
+        width: 40px;
+    }
+
+    .prescription-upload-box p.drag-text {
+        font-size: 13px;
+        margin: 10px 0;
+    }
+
+    .prescription-upload-box .select-file-btn {
+        font-size: 12px;
+        padding: 10px 15px;
+    }
+
+    .prescription-upload-box p.formats-text {
+        font-size: 10px;
+        margin-top: 10px;
     }
 }
 
