@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import './LensSelectionModal.css';
+import ReadingGlassesPowerSelector from '../ReadingGlassesPowerSelector/ReadingGlassesPowerSelector';
 
 const LensSelectionModal = ({ 
     isOpen, 
@@ -31,6 +32,7 @@ const LensSelectionModal = ({
         right: { sph: '-0.50', cyl: '----', axis: '----', add: '----' },
         left: { sph: '-0.50', cyl: '----', axis: '----', add: '----' }
     });
+    const [readingPower, setReadingPower] = useState({ rightPower: '', leftPower: '', sameForBoth: true });
 
     // Handle Scroll Lock
     useEffect(() => {
@@ -132,53 +134,63 @@ const LensSelectionModal = ({
                         ))}
                     </div>
 
-                    <h2 className="modal-title-small">Power Options - Eye Selection</h2>
-                    <div className="prescription-toggle">
-                        <label>
-                            <input type="radio" name="p-type" checked={prescriptionType === 'Same power for both eyes'} onChange={() => setPrescriptionType('Same power for both eyes')} /> 
-                            <span>Same power for both eyes</span>
-                        </label>
-                        <label>
-                            <input type="radio" name="p-type" checked={prescriptionType === 'Different power for each eye'} onChange={() => setPrescriptionType('Different power for each eye')} /> 
-                            <span>Different power for each eye</span>
-                        </label>
-                    </div>
-
-                    <div className="prescription-input-area">
-                        <h3>Prescription Input Table</h3>
-                        <div className="prescription-table-wrapper">
-                            <table className="prescription-table">
-                                <thead>
-                                    <tr>
-                                        <th>Right Eye</th>
-                                        <th>Left Eye</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, sph: e.target.value } }))}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
-                                            <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, cyl: e.target.value } }))}><option>----</option><option>-0.25</option></select></div>
-                                            <div className="p-row"><span>AXIS</span><select value={prescription.right.axis} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, axis: e.target.value } }))}><option>----</option><option>90</option><option>180</option></select></div>
-                                            <div className="p-row"><span>ADD</span><select value={prescription.right.add} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, add: e.target.value } }))}><option>----</option><option>+1.00</option></select></div>
-                                        </td>
-                                        <td>
-                                            <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, sph: e.target.value } }))}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
-                                            <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, cyl: e.target.value } }))}><option>----</option><option>-0.25</option></select></div>
-                                            <div className="p-row"><span>AXIS</span><select value={prescription.left.axis} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, axis: e.target.value } }))}><option>----</option><option>90</option><option>180</option></select></div>
-                                            <div className="p-row"><span>ADD</span><select value={prescription.left.add} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, add: e.target.value } }))}><option>----</option><option>+1.00</option></select></div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <button 
-                                className="save-btn-green" 
-                                onClick={() => alert('Prescription saved successfully!')}
-                            >
-                                Save
-                            </button>
+                    {product.category === 'Reading Glasses' ? (
+                        <div className="reading-modal-section">
+                            <ReadingGlassesPowerSelector 
+                                onPowerSelected={(power) => setReadingPower(power)}
+                            />
                         </div>
-                    </div>
+                    ) : (
+                        <>
+                            <h2 className="modal-title-small">Power Options - Eye Selection</h2>
+                            <div className="prescription-toggle">
+                                <label>
+                                    <input type="radio" name="p-type" checked={prescriptionType === 'Same power for both eyes'} onChange={() => setPrescriptionType('Same power for both eyes')} /> 
+                                    <span>Same power for both eyes</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="p-type" checked={prescriptionType === 'Different power for each eye'} onChange={() => setPrescriptionType('Different power for each eye')} /> 
+                                    <span>Different power for each eye</span>
+                                </label>
+                            </div>
+
+                            <div className="prescription-input-area">
+                                <h3>Prescription Input Table</h3>
+                                <div className="prescription-table-wrapper">
+                                    <table className="prescription-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Right Eye</th>
+                                                <th>Left Eye</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, sph: e.target.value } }))}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
+                                                    <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, cyl: e.target.value } }))}><option>----</option><option>-0.25</option></select></div>
+                                                    <div className="p-row"><span>AXIS</span><select value={prescription.right.axis} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, axis: e.target.value } }))}><option>----</option><option>90</option><option>180</option></select></div>
+                                                    <div className="p-row"><span>ADD</span><select value={prescription.right.add} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, add: e.target.value } }))}><option>----</option><option>+1.00</option></select></div>
+                                                </td>
+                                                <td>
+                                                    <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, sph: e.target.value } }))}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
+                                                    <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, cyl: e.target.value } }))}><option>----</option><option>-0.25</option></select></div>
+                                                    <div className="p-row"><span>AXIS</span><select value={prescription.left.axis} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, axis: e.target.value } }))}><option>----</option><option>90</option><option>180</option></select></div>
+                                                    <div className="p-row"><span>ADD</span><select value={prescription.left.add} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, add: e.target.value } }))}><option>----</option><option>+1.00</option></select></div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <button 
+                                        className="save-btn-green" 
+                                        onClick={() => alert('Prescription saved successfully!')}
+                                    >
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    )}
 
                     <h2 className="modal-title-small">How will you use these glasses?</h2>
                     <div className="usage-grid">
@@ -221,6 +233,13 @@ const LensSelectionModal = ({
                             disabled={product.stock !== undefined && product.stock <= 0}
                             onClick={async () => {
                                 if (product.stock !== undefined && product.stock <= 0) return;
+                                const isReadingGlasses = product.category === 'Reading Glasses';
+                                // Validate for reading glasses
+                                if (isReadingGlasses && (!readingPower.rightPower || (!readingPower.sameForBoth && !readingPower.leftPower))) {
+                                    import('react-hot-toast').then(({ default: toast }) => toast.error('Please select power for your eyes'));
+                                    return;
+                                }
+
                                 const cartData = {
                                     productId: product.id,
                                     productBrand: product.brand,
@@ -231,16 +250,23 @@ const LensSelectionModal = ({
                                     category: product.category,
                                     specifications: [
                                         ...(product.technicalSpecs || []),
-                                        { label: 'Lens', value: selectedLensType },
-                                        { label: 'Material', value: selectedMaterial },
-                                        { label: 'Style', value: selectedFrameStyle },
-                                        { label: 'Usage', value: selectedUsage },
-                                        { label: 'Prescription', value: prescriptionType }
+                                        { label: 'Size', value: product.size || 'Standard' },
+                                        ...(isReadingGlasses ? [
+                                            { label: 'Lens', value: 'Reading Glass' },
+                                            { label: 'Right Eye Power', value: readingPower.rightPower },
+                                            { label: 'Left Eye Power', value: readingPower.sameForBoth ? readingPower.rightPower : readingPower.leftPower }
+                                        ] : [
+                                            { label: 'Lens', value: selectedLensType },
+                                            { label: 'Material', value: selectedMaterial },
+                                            { label: 'Style', value: selectedFrameStyle },
+                                            { label: 'Usage', value: selectedUsage },
+                                            { label: 'Prescription', value: prescriptionType }
+                                        ])
                                     ],
                                     sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || product.id,
-                                    enhancements: selectedEnhancements,
-                                    prescriptionType,
-                                    prescription,
+                                    enhancements: isReadingGlasses ? [] : selectedEnhancements,
+                                    prescriptionType: isReadingGlasses ? 'Reading Glass Power' : prescriptionType,
+                                    prescription: isReadingGlasses ? { readingPower } : prescription,
                                     totalPrice: calculateTotalPrice()
                                 };
                                 const success = await addItemToCart(cartData);

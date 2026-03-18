@@ -25,7 +25,7 @@ const TrendyCollection = ({ title = "Premium Optical Frames", categoryName = nul
     const cardlist = trendingProducts.map(p => ({
         id: p.id,
         brand: p.brand || "Visionkart",
-        title: p.brand || p.name,
+        title: p.name || p.title || p.productName || p.brand || "Visionkart",
         price: (p.price && p.price.toString().startsWith('₹')) ? p.price : `₹${p.price}`,
         mrpprice: p.originalPrice || (p.price ? (parseInt(p.price) * 1.5).toString() : "0"),
         img: p.photos ? p.photos[0] : (p.mainImage || ''),

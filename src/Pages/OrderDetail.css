@@ -18,9 +18,9 @@
 }
 
 .detail-container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 24px;
+    max-width: 1600px;
+    margin: var(--spacing-lg) auto;
+    padding: 0 var(--spacing-md);
 }
 
 /* Header Section */
@@ -62,7 +62,7 @@
 }
 
 .header-text-luxury h1 {
-    font-size: 32px;
+    font-size: var(--fs-3xl);
     font-weight: 900;
     margin: 0;
     color: var(--text-dark);
@@ -79,8 +79,8 @@
 .tracking-card-luxury {
     background: #fff;
     border-radius: 24px;
-    padding: 40px;
-    margin-bottom: 32px;
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
     box-shadow: var(--card-shadow);
 }
 
@@ -330,7 +330,7 @@
 }
 
 .total-value {
-    font-size: 28px;
+    font-size: var(--fs-3xl);
     font-weight: 900;
     color: var(--primary);
 }

@@ -18,7 +18,8 @@ const VirtualTryOn = () => {
             const data = await getProducts('Spectacles');
             const mappedData = data.slice(0, 5).map(p => ({
                 id: p.id,
-                title: p.brand || p.name,
+                title: p.name || p.title || p.productName || p.brand || "Visionkart",
+
                 price: p.price ? (p.price.startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
                 mrpprice: p.originalPrice || `₹${parseInt(p.price || 0) * 1.5}`,
                 img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),

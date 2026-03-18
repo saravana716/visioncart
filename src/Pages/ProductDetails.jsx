@@ -18,6 +18,7 @@ import Loader from '../Components/Loader/Loader';
 import ImageZoom from '../Components/ImageZoom/ImageZoom';
 // import { MdOutline360 } from "react-icons/md";
 import LensSelectionModal from '../Components/LensSelectionModal/LensSelectionModal';
+import ReadingGlassesPowerSelector from '../Components/ReadingGlassesPowerSelector/ReadingGlassesPowerSelector';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -30,6 +31,8 @@ const ProductDetails = () => {
     const [showLensModal, setShowLensModal] = useState(false);
     const [similarProducts, setSimilarProducts] = useState([]);
     const [lensEnhancements, setLensEnhancements] = useState([]);
+    const [readingPower, setReadingPower] = useState({ rightPower: '', leftPower: '', sameForBoth: true });
+    const [selectedColor, setSelectedColor] = useState(null);
     // const [is360Open, setIs360Open] = useState(false);
     
     const { addItemToCart, setCartOpen, setDrawerTab } = useCart();
@@ -72,7 +75,8 @@ const ProductDetails = () => {
                     id: p.id,
                     img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
                     hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
-                    title: p.brand || p.name,
+                    title: p.name || p.title || p.productName || p.brand || "Visionkart",
+
                     rating: rateimg,
                     ratingcount: p.ratingCount || "0",
                     price: p.price ? (p.price.startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
@@ -258,8 +262,8 @@ const ProductDetails = () => {
                                         category: product.category,
                                         specifications: [
                                             ...(product.technicalSpecs || []),
-                                            { label: 'Color', value: selectedColor?.name || (product.colors ? product.colors[0].name : 'Default') },
-                                            { label: 'Size', value: product.size },
+                                            { label: 'Color', value: selectedColor?.name || (product.colors?.[0]?.name) || 'Default' },
+                                            { label: 'Size', value: product.size || 'Standard' },
                                             { label: 'Lens', value: 'Frame Only' },
                                             { label: 'Material', value: 'Standard' }
                                         ],

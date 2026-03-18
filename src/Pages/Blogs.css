@@ -3,22 +3,24 @@
 }
 
 .blogs-header {
-    padding: 60px 5%;
+    padding: var(--spacing-xl) var(--spacing-md);
     background-color: #f8f9fa;
     text-align: center;
 }
 
 .blogs-header h1 {
-    font-size: 42px;
+    font-size: var(--fs-3xl);
     color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 .blogs-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 40px;
-    padding: 60px 5%;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 20vw, 400px), 1fr));
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xl) var(--spacing-md);
+    max-width: 1800px;
+    margin: 0 auto;
 }
 
 .blog-card {

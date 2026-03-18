@@ -333,6 +333,24 @@ export const getWishlist = async (userId) => {
   }
 };
 
+export const removeFromWishlist = async (userId, productId) => {
+  try {
+    const q = query(
+      collection(db, 'wishlist'),
+      where('userId', '==', userId),
+      where('productId', '==', productId)
+    );
+    const querySnapshot = await getDocs(q);
+    const batch = writeBatch(db);
+    querySnapshot.docs.forEach(d => batch.delete(d.ref));
+    await batch.commit();
+    return { success: true };
+  } catch (error) {
+    console.error("Error removing from wishlist: ", error);
+    return { success: false, error };
+  }
+};
+
 export const addProductReview = async (productId, reviewData) => {
   try {
     const reviewRef = collection(db, 'products', productId, 'reviews');

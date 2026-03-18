@@ -3,7 +3,7 @@
 }
 
 .about-hero {
-    height: 300px;
+    height: clamp(250px, 35vh, 450px);
     background: linear-gradient(rgba(0,35,102,0.8), rgba(0,35,102,0.8)), url('https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=1600');
     background-size: cover;
     background-position: center;
@@ -13,16 +13,17 @@
     align-items: center;
     color: white;
     text-align: center;
+    padding: 0 var(--spacing-md);
 }
 
 .about-hero h1 {
-    font-size: 48px;
-    margin-bottom: 10px;
+    font-size: var(--fs-3xl);
+    margin-bottom: 20px;
 }
 
 .about-content {
-    padding: 80px 10%;
-    max-width: 1000px;
+    padding: var(--spacing-xl) var(--spacing-lg);
+    max-width: 1200px;
     margin: 0 auto;
     text-align: center;
 }

@@ -8,7 +8,7 @@ import './SideDrawer.css';
 
 const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
     const { cartItems, cartCount } = useCart();
-    const { wishlistItems } = useWishlist();
+    const { wishlistItems, cleanupStaleIds } = useWishlist();
     const [recentProducts, setRecentProducts] = useState([]);
     const [wishlistProducts, setWishlistProducts] = useState([]);
     const [activeTab, setActiveTab] = useState(initialTab); // 'cart', 'recent', 'wishlist'
@@ -62,10 +62,16 @@ const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
 
     const fetchWishlistProducts = async () => {
         if (wishlistItems && wishlistItems.length > 0) {
-            const products = await Promise.all(
-                wishlistItems.slice(0, 6).map(id => getProductById(id))
+            const results = await Promise.all(
+                wishlistItems.map(id => getProductById(id).then(p => ({ id, product: p })))
             );
-            setWishlistProducts(products.filter(p => p !== null));
+            const valid = results.filter(r => r.product !== null).map(r => r.product);
+            const staleIds = results.filter(r => r.product === null).map(r => r.id);
+            setWishlistProducts(valid);
+            // Auto-cleanup stale IDs silently so count stays in sync
+            if (staleIds.length > 0) {
+                cleanupStaleIds(staleIds);
+            }
         } else {
             setWishlistProducts([]);
         }

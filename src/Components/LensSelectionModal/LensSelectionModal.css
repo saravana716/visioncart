@@ -73,6 +73,10 @@
     margin-top: 10px;
 }
 
+.reading-modal-section {
+    margin-top: -10px;
+}
+
 /* Lens Type Grid - More Professional Cards */
 .lens-type-grid {
     display: grid;

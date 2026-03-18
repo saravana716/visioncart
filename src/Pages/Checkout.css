@@ -4,9 +4,9 @@
 }
 
 .checkout-container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 0 20px;
+    max-width: 1600px;
+    margin: var(--spacing-lg) auto;
+    padding: 0 var(--spacing-md);
 }
 
 .checkout-steps {
@@ -76,8 +76,8 @@
 
 .checkout-content-grid {
     display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 40px;
+    grid-template-columns: 1fr clamp(350px, 30vw, 450px);
+    gap: var(--spacing-lg);
 }
 
 .checkout-section {
@@ -91,8 +91,8 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    font-size: 24px;
-    margin-bottom: 30px;
+    font-size: var(--fs-xl);
+    margin-bottom: var(--spacing-md);
     font-family: 'Outfit', sans-serif;
 }
 

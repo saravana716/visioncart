@@ -9,7 +9,7 @@ import { useState } from 'react';
 const PropCard = ({ cardlist }) => {
     const navigate = useNavigate();
     const { toggleWishlist, isInWishlist } = useWishlist();
-    const { addItemToCart, setCartOpen, setDrawerTab } = useCart();
+    const { addItemToCart } = useCart();
     
     if (!cardlist) return null;
     
@@ -80,22 +80,18 @@ const PropCard = ({ cardlist }) => {
                                     productId: data.id,
                                     productBrand: data.brand || 'Visionkart',
                                     productName: data.title,
-                                    productImage: data.img,
+                                    productImage: data.img || '',
                                     productPrice: data.price,
                                     totalPrice: data.price,
-                                    category: data.category,
                                     specifications: [
-                                        ...(data.technicalSpecs || []),
-                                        { label: 'Color', value: data.colorName || (data.colors ? data.colors[0].name : 'Standard') },
                                         { label: 'Lens', value: 'Frame Only' },
                                         { label: 'Material', value: 'Standard' }
                                     ],
-                                    sku: data.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || data.id,
+                                    sku: data.id,
                                 };
                                 const success = await addItemToCart(cartData);
                                 if (success) {
-                                    setDrawerTab('cart');
-                                    setCartOpen(true);
+                                    navigate('/cart');
                                 }
                             }}>Add to Cart</button>
                             <button className='btn-view' onClick={(e) => {

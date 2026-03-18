@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { auth } from '../firebase.config';
 import { onAuthStateChanged } from 'firebase/auth';
-import { getWishlist, toggleWishlist as toggleWishlistService } from '../services/firestoreService';
+import { getWishlist, toggleWishlist as toggleWishlistService, removeFromWishlist as removeFromWishlistService } from '../services/firestoreService';
 import toast from 'react-hot-toast';
 
 const WishlistContext = createContext();
@@ -44,10 +44,25 @@ export const WishlistProvider = ({ children }) => {
         }
     };
 
+    // Silently remove stale IDs (products deleted from DB) from wishlist
+    const cleanupStaleIds = async (staleIds) => {
+        if (!user || !staleIds || staleIds.length === 0) return;
+        // Remove each stale ID from local state silently
+        setWishlistItems(prev => prev.filter(id => !staleIds.includes(id)));
+        // Try to remove from Firestore too (best effort, no toast)
+        for (const id of staleIds) {
+            try {
+                await removeFromWishlistService(user.uid, id);
+            } catch (e) {
+                // silent fail
+            }
+        }
+    };
+
     const isInWishlist = (productId) => wishlistItems.includes(productId);
 
     return (
-        <WishlistContext.Provider value={{ wishlistItems, toggleWishlist, isInWishlist }}>
+        <WishlistContext.Provider value={{ wishlistItems, toggleWishlist, isInWishlist, cleanupStaleIds }}>
             {children}
         </WishlistContext.Provider>
     );

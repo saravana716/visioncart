@@ -36,7 +36,7 @@ const RecentlyViewed = ({ excludeId }) => {
                 setViewedProducts(mappedProducts.map(p => ({
                     id: p.id,
                     img: p.photos ? p.photos[0] : (p.mainImage || ''),
-                    title: p.brand || p.name,
+                    title: p.name || p.title || p.productName || p.brand || "Visionkart",
                     price: (p.price && p.price.toString().startsWith('₹')) ? p.price : `₹${p.price}`,
                     mrpprice: p.originalPrice || (p.price ? (parseInt(p.price) * 1.5).toString() : "0"),
                     ratingcount: p.ratingCount || "0",

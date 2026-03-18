@@ -44,8 +44,8 @@ body.no-scroll,
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --primary-color: #002366; /* Deeper, more premium blue */
-  --secondary-color: #FF0075; /* Vibrant signature pink */
+  --primary-color: #002366;
+  --secondary-color: #FF0075;
   --accent-soft: rgba(255, 0, 117, 0.05);
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-border: rgba(255, 255, 255, 0.3);
@@ -54,17 +54,43 @@ body.no-scroll,
   --text-muted: #666666;
   --shadow-premium: 0 10px 30px rgba(0, 35, 102, 0.08);
   --transition-smooth: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+  /* Fluid Typography - proportional, not oversized */
+  --fs-xs: clamp(0.7rem, 0.65rem + 0.2vw, 0.8rem);
+  --fs-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.9rem);
+  --fs-base: clamp(0.875rem, 0.85rem + 0.2vw, 1rem);
+  --fs-md: clamp(1rem, 0.95rem + 0.25vw, 1.1rem);
+  --fs-lg: clamp(1.1rem, 1rem + 0.4vw, 1.3rem);
+  --fs-xl: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  --fs-2xl: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+  --fs-3xl: clamp(1.75rem, 1.5rem + 1vw, 2.5rem);
+
+  /* Fluid Spacing - proportional */
+  --spacing-sm: clamp(0.5rem, 0.4rem + 0.3vw, 0.75rem);
+  --spacing-md: clamp(1rem, 0.8rem + 0.5vw, 1.5rem);
+  --spacing-lg: clamp(1.5rem, 1.2rem + 1vw, 2.5rem);
+  --spacing-xl: clamp(2.5rem, 2rem + 2vw, 4rem);
 }
 
 body {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    min-height: 100vh;
     overflow-x: hidden;
-    font-family: 'Outfit', sans-serif; /* Modern, premium font */
+    font-family: 'Outfit', sans-serif;
     color: var(--text-main);
     background-color: #ffffff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-size: var(--fs-base);
+    line-height: 1.6;
+}
+
+/* Fluid Container */
+.container-fluid {
+    width: 100%;
+    max-width: 1920px; /* Standard 4K/Large screen width */
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
 }
 
 ::view-transition-old(root),

@@ -3,11 +3,12 @@
 }
 
 .product-banner {
-    width: 95%;
-    margin: 30px auto;
-    height: 380px;
+    width: 100%;
+    max-width: 1800px;
+    margin: clamp(20px, 4vw, 40px) auto;
+    height: clamp(250px, 40vh, 450px);
     background: linear-gradient(135deg, #001f54 0%, #000000 100%);
-    border-radius: 30px;
+    border-radius: clamp(15px, 2vw, 40px);
     display: flex;
     align-items: center;
     padding: 0 8%;
@@ -36,14 +37,14 @@
 }
 
 .banner-content h2 {
-    font-size: 50px;
+    font-size: clamp(32px, 3vw, 48px);
     font-weight: 800;
     margin-bottom: 20px;
-    line-height: 1.1;
+    line-height: 1.2;
 }
 
 .banner-content p {
-    font-size: 18px;
+    font-size: clamp(14px, 1vw, 16px);
     opacity: 0.8;
     max-width: 450px;
     line-height: 1.6;
@@ -323,8 +324,20 @@
 
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(clamp(200px, 15vw, 300px), 1fr));
+    gap: var(--spacing-md);
+}
+
+@media (min-width: 1600px) {
+    .product-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (min-width: 2000px) {
+    .product-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
 }
 
 /* Responsive adjustments */
