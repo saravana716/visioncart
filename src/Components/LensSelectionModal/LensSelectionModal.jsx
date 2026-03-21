@@ -71,6 +71,48 @@ const LensSelectionModal = ({
         return `₹${base + extras}`;
     };
 
+    const handlePrescriptionTypeChange = (type) => {
+        setPrescriptionType(type);
+        if (type === 'Same power for both eyes') {
+            // Sync left to right values when switching back to same power
+            setPrescription(prev => ({
+                ...prev,
+                left: { ...prev.right }
+            }));
+        }
+    };
+
+    const handlePrescriptionChange = (eye, field, value) => {
+        setPrescription(prev => {
+            const newState = { ...prev };
+            newState[eye] = { ...newState[eye], [field]: value };
+            
+            if (prescriptionType === 'Same power for both eyes') {
+                const otherEye = eye === 'right' ? 'left' : 'right';
+                newState[otherEye] = { ...newState[otherEye], [field]: value };
+            }
+            return newState;
+        });
+    };
+
+    const handleSavePrescription = () => {
+        import('react-hot-toast').then(({ default: toast }) => {
+            toast.success('Power selection completed', {
+                style: {
+                    borderRadius: '10px',
+                    background: '#001f54',
+                    color: '#fff',
+                    fontWeight: '700',
+                    fontSize: '14px'
+                },
+                iconTheme: {
+                    primary: '#00d285',
+                    secondary: '#fff',
+                },
+            });
+        });
+    };
+
     if (!isOpen || !product) return null;
 
     return ReactDOM.createPortal(
@@ -107,18 +149,18 @@ const LensSelectionModal = ({
 
                     <h2 className="modal-title-small">Select Lens Material</h2>
                     <div className="material-grid">
-                        <label><input type="radio" name="material" checked={selectedMaterial === 'Metal'} onChange={() => setSelectedMaterial('Metal')} /> <span>Metal</span></label>
-                        <label><input type="radio" name="material" checked={selectedMaterial === 'Stainless Steel'} onChange={() => setSelectedMaterial('Stainless Steel')} /> <span>Stainless Steel</span></label>
-                        <label><input type="radio" name="material" checked={selectedMaterial === 'TR90'} onChange={() => setSelectedMaterial('TR90')} /> <span>TR90 <span className="recommended">Recommended</span></span></label>
-                        <label><input type="radio" name="material" checked={selectedMaterial === 'Mixed Material'} onChange={() => setSelectedMaterial('Mixed Material')} /> <span>Mixed Material</span></label>
-                        <label><input type="radio" name="material" checked={selectedMaterial === 'Titanium'} onChange={() => setSelectedMaterial('Titanium')} /> <span>Titanium</span></label>
+                        <label className={selectedMaterial === 'Metal' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Metal'} onChange={() => setSelectedMaterial('Metal')} /> <span>Metal</span></label>
+                        <label className={selectedMaterial === 'Stainless Steel' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Stainless Steel'} onChange={() => setSelectedMaterial('Stainless Steel')} /> <span>Stainless Steel</span></label>
+                        <label className={selectedMaterial === 'TR90' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'TR90'} onChange={() => setSelectedMaterial('TR90')} /> <span>TR90 <span className="recommended">Recommended</span></span></label>
+                        <label className={selectedMaterial === 'Mixed Material' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Mixed Material'} onChange={() => setSelectedMaterial('Mixed Material')} /> <span>Mixed Material</span></label>
+                        <label className={selectedMaterial === 'Titanium' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Titanium'} onChange={() => setSelectedMaterial('Titanium')} /> <span>Titanium</span></label>
                     </div>
 
                     <h2 className="modal-title-small">Select Frame Style</h2>
                     <div className="material-grid">
-                        <label><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimmed'} onChange={() => setSelectedFrameStyle('Rimmed')} /> <span>Rimmed</span></label>
-                        <label><input type="radio" name="f-style" checked={selectedFrameStyle === 'Semi - Rimmed'} onChange={() => setSelectedFrameStyle('Semi - Rimmed')} /> <span>Semi - Rimmed</span></label>
-                        <label><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimless'} onChange={() => setSelectedFrameStyle('Rimless')} /> <span>Rimless</span></label>
+                        <label className={selectedFrameStyle === 'Rimmed' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimmed'} onChange={() => setSelectedFrameStyle('Rimmed')} /> <span>Rimmed</span></label>
+                        <label className={selectedFrameStyle === 'Semi - Rimmed' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Semi - Rimmed'} onChange={() => setSelectedFrameStyle('Semi - Rimmed')} /> <span>Semi - Rimmed</span></label>
+                        <label className={selectedFrameStyle === 'Rimless' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimless'} onChange={() => setSelectedFrameStyle('Rimless')} /> <span>Rimless</span></label>
                     </div>
 
                     <h2 className="modal-title-small">Add Lens Enhancements</h2>
@@ -141,17 +183,17 @@ const LensSelectionModal = ({
                             />
                         </div>
                     ) : (
-                        <>
+                        <div className="prescription-section">
                             <h2 className="modal-title-small">Power Options - Eye Selection</h2>
-                            <div className="prescription-toggle">
-                                <label>
-                                    <input type="radio" name="p-type" checked={prescriptionType === 'Same power for both eyes'} onChange={() => setPrescriptionType('Same power for both eyes')} /> 
+                            <div className="prescription-toggle-container">
+                                <div className={`p-toggle-item ${prescriptionType === 'Same power for both eyes' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Same power for both eyes')}>
+                                    <div className="p-radio-circle"></div>
                                     <span>Same power for both eyes</span>
-                                </label>
-                                <label>
-                                    <input type="radio" name="p-type" checked={prescriptionType === 'Different power for each eye'} onChange={() => setPrescriptionType('Different power for each eye')} /> 
+                                </div>
+                                <div className={`p-toggle-item ${prescriptionType === 'Different power for each eye' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Different power for each eye')}>
+                                    <div className="p-radio-circle"></div>
                                     <span>Different power for each eye</span>
-                                </label>
+                                </div>
                             </div>
 
                             <div className="prescription-input-area">
@@ -167,29 +209,29 @@ const LensSelectionModal = ({
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, sph: e.target.value } }))}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
-                                                    <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, cyl: e.target.value } }))}><option>----</option><option>-0.25</option></select></div>
-                                                    <div className="p-row"><span>AXIS</span><select value={prescription.right.axis} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, axis: e.target.value } }))}><option>----</option><option>90</option><option>180</option></select></div>
-                                                    <div className="p-row"><span>ADD</span><select value={prescription.right.add} onChange={(e) => setPrescription(prev => ({ ...prev, right: { ...prev.right, add: e.target.value } }))}><option>----</option><option>+1.00</option></select></div>
+                                                    <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => handlePrescriptionChange('right', 'sph', e.target.value)}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
+                                                    <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => handlePrescriptionChange('right', 'cyl', e.target.value)}><option>----</option><option>-0.25</option></select></div>
+                                                    <div className="p-row"><span>AXIS</span><select value={prescription.right.axis} onChange={(e) => handlePrescriptionChange('right', 'axis', e.target.value)}><option>----</option><option>90</option><option>180</option></select></div>
+                                                    <div className="p-row"><span>ADD</span><select value={prescription.right.add} onChange={(e) => handlePrescriptionChange('right', 'add', e.target.value)}><option>----</option><option>+1.00</option></select></div>
                                                 </td>
                                                 <td>
-                                                    <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, sph: e.target.value } }))}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
-                                                    <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, cyl: e.target.value } }))}><option>----</option><option>-0.25</option></select></div>
-                                                    <div className="p-row"><span>AXIS</span><select value={prescription.left.axis} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, axis: e.target.value } }))}><option>----</option><option>90</option><option>180</option></select></div>
-                                                    <div className="p-row"><span>ADD</span><select value={prescription.left.add} onChange={(e) => setPrescription(prev => ({ ...prev, left: { ...prev.left, add: e.target.value } }))}><option>----</option><option>+1.00</option></select></div>
+                                                    <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => handlePrescriptionChange('left', 'sph', e.target.value)}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
+                                                    <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => handlePrescriptionChange('left', 'cyl', e.target.value)}><option>----</option><option>-0.25</option></select></div>
+                                                    <div className="p-row"><span>AXIS</span><select value={prescription.left.axis} onChange={(e) => handlePrescriptionChange('left', 'axis', e.target.value)}><option>----</option><option>90</option><option>180</option></select></div>
+                                                    <div className="p-row"><span>ADD</span><select value={prescription.left.add} onChange={(e) => handlePrescriptionChange('left', 'add', e.target.value)}><option>----</option><option>+1.00</option></select></div>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                     <button 
                                         className="save-btn-green" 
-                                        onClick={() => alert('Prescription saved successfully!')}
+                                        onClick={handleSavePrescription}
                                     >
                                         Save
                                     </button>
                                 </div>
                             </div>
-                        </>
+                        </div>
                     )}
 
                     <h2 className="modal-title-small">How will you use these glasses?</h2>

@@ -35,6 +35,7 @@ const RecentlyViewed = ({ excludeId }) => {
                 
                 setViewedProducts(mappedProducts.map(p => ({
                     id: p.id,
+                    brand: p.brand || "Visionkart",
                     img: p.photos ? p.photos[0] : (p.mainImage || ''),
                     title: p.name || p.title || p.productName || p.brand || "Visionkart",
                     price: (p.price && p.price.toString().startsWith('₹')) ? p.price : `₹${p.price}`,
@@ -59,7 +60,9 @@ const RecentlyViewed = ({ excludeId }) => {
     if (loading) {
         return (
             <div className="recently-viewed-section">
-                <h2 className="section-title">Recently Viewed</h2>
+                <div className="section-title-wrapper">
+                    <h2 className="premium-title">Recently Viewed</h2>
+                </div>
                 <div className="products-grid">
                     {[1, 2, 3, 4, 5].map(idx => <Skeleton key={idx} type="product" />)}
                 </div>
@@ -71,7 +74,6 @@ const RecentlyViewed = ({ excludeId }) => {
         <div className="recently-viewed-section fade-in">
             <div className="section-header">
                 <h2>Recently Viewed</h2>
-                <div className="section-line"></div>
             </div>
             <div className="products-grid-viewed">
                 <PropCard cardlist={viewedProducts} />

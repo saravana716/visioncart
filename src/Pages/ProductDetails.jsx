@@ -196,21 +196,22 @@ const ProductDetails = () => {
                             <img src={rateimg} alt="stars" />
                             <span>({product.rating}/5)</span>
                         </div>
-                        <div className="price-row">
+                        <div className="product-pricing">
                             <span className="current-price">{product.price}</span>
-                            <span className="offer-tag">({product.discount})</span>
+                            <span className="offer-tag">{product.discount}</span>
                         </div>
 
-                        <div className={`stock-status ${product.stock > 5 ? 'in-stock' : product.stock > 0 ? 'limited-stock' : 'out-of-stock-alert'}`}>
+                        <div className={`stock-status-pill ${product.stock > 5 ? 'in-stock' : product.stock > 0 ? 'limited-stock' : 'out-of-stock'}`}>
+                            <span className="pulse-dot"></span>
                             {product.stock > 5 
                                 ? `In Stock (${product.stock} available)` 
                                 : product.stock > 0 
-                                    ? `Limited Stock - Only ${product.stock} left!` 
+                                    ? `Only ${product.stock} left!` 
                                     : 'Out of Stock'}
                         </div>
 
                         <div className="color-selection">
-                            <p>Select Color</p>
+                            <p className="selection-label">Select Color</p>
                             <div className="color-dots">
                                 {product.colors.map((color, idx) => (
                                     <span 
@@ -223,18 +224,20 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        <div className="virtual-tryon-banner" onClick={() => window.open('/try-on', '_blank')}>
-                            <div className="tryon-text">
+                        <div className="virtual-tryon-banner-premium" onClick={() => window.open('/try-on', '_blank')}>
+                            <div className="tryon-content">
+                                <span className="tryon-badge">LIVE AR</span>
                                 <h3>3D Virtual Try-On</h3>
+                                <p>See how they look on your face instantly</p>
                             </div>
                             <div className="tryon-img">
-                                <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400" alt="Model" onError={(e) => e.target.src='https://via.placeholder.com/150x100?text=Model'} />
+                                <img src="https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=400" alt="Model AR" />
                             </div>
                         </div>
 
-                        <div className="action-buttons-top">
-                            <button className="pink-action-btn">Prescription Upload</button>
-                            <button className="white-action-btn" onClick={() => setShowLensModal(true)}>Select lens</button>
+                        <div className="action-buttons-group">
+                            <button className="btn-action-primary pink">Prescription Upload</button>
+                            <button className="btn-action-outline blue" onClick={() => setShowLensModal(true)}>Select lens</button>
                         </div>
 
                         <div className="prescription-upload-box">

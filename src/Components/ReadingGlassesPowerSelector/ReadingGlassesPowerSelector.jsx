@@ -50,9 +50,26 @@ const ReadingGlassesPowerSelector = ({ productImage, onPowerSelected }) => {
 
     const handleAgeSelect = (row) => {
         setSelectedAge(row.id);
-        if (row.powers.length === 1) {
-            handleRightPowerChange(row.powers[0]);
+        const powerToSet = row.powers[0]; // Choose first/lower power by default
+        
+        setRightPower(powerToSet);
+        let currentLeft = leftPower;
+        
+        if (sameForBoth) {
+            currentLeft = powerToSet;
+            setLeftPower(powerToSet);
+        } else {
+            // If they are in different mode, update both as a convenient starting point
+            setLeftPower(powerToSet);
+            currentLeft = powerToSet;
         }
+        
+        onPowerSelected?.({ 
+            rightPower: powerToSet, 
+            leftPower: currentLeft, 
+            sameForBoth 
+        });
+        
         setShowTable(false);
     };
 
@@ -101,16 +118,16 @@ const ReadingGlassesPowerSelector = ({ productImage, onPowerSelected }) => {
 
             {/* Age Guide Trigger */}
             <div className="rg-guide-wrapper">
-                <button className="rg-table-trigger" onClick={() => setShowTable(!showTable)}>
-                    <span className="trigger-icon">📊</span>
-                    Age-to-Power Guide
-                    <span className="trigger-arrow">{showTable ? '↑' : '↓'}</span>
-                </button>
+                <div className="rg-guide-pill" onClick={() => setShowTable(!showTable)}>
+                    <span className="pill-icon">📊</span>
+                    <span className="pill-text">Age-to-Power Guide</span>
+                    <span className={`pill-arrow ${showTable ? 'open' : ''}`}>↓</span>
+                </div>
             </div>
 
             {/* Age-Power Table */}
             {showTable && (
-                <div className="rg-table-container">
+                <div className="rg-table-container reveal-down">
                     <table className="rg-guide-table">
                         <thead>
                             <tr>
@@ -122,12 +139,12 @@ const ReadingGlassesPowerSelector = ({ productImage, onPowerSelected }) => {
                             {AGE_POWER_TABLE.map((row) => (
                                 <tr
                                     key={row.id}
-                                    className={selectedAge === row.id ? 'active-row' : ''}
+                                    className={`rg-row-btn ${selectedAge === row.id ? 'active' : ''}`}
                                     onClick={() => handleAgeSelect(row)}
                                 >
                                     <td>{row.age}</td>
                                     <td>
-                                        {row.powers.join(' / ')}
+                                        <span className="power-val">{row.powers.join(' / ')}</span>
                                         {row.powers.length > 1 && <small>*</small>}
                                     </td>
                                 </tr>
@@ -140,58 +157,71 @@ const ReadingGlassesPowerSelector = ({ productImage, onPowerSelected }) => {
 
             {/* Input Section */}
             <div className="rg-inputs-section">
-                {sameForBoth ? (
-                    <div className="rg-input-pair single">
-                        <label>Select Power (OD & OS)</label>
-                        <div className="select-wrapper">
-                            <select
-                                value={rightPower}
-                                onChange={(e) => handleRightPowerChange(e.target.value)}
-                            >
-                                <option value="">-- Choose Power --</option>
-                                {ALL_POWERS.map(p => <option key={p} value={p}>{p}</option>)}
-                            </select>
-                        </div>
+                <div className="rg-input-grid">
+                    <div className="rg-input-item">
+                        <label>RIGHT EYE (OD)</label>
+                        <select
+                            value={rightPower}
+                            onChange={(e) => handleRightPowerChange(e.target.value)}
+                        >
+                            <option value="">Choose Power</option>
+                            {ALL_POWERS.map(p => <option key={p} value={p}>{p}</option>)}
+                        </select>
                     </div>
-                ) : (
-                    <div className="rg-input-pair double">
-                        <div className="eye-input">
-                            <label>Right Eye (OD)</label>
-                            <div className="select-wrapper">
-                                <select
-                                    value={rightPower}
-                                    onChange={(e) => handleRightPowerChange(e.target.value)}
-                                >
-                                    <option value="">Power</option>
-                                    {ALL_POWERS.map(p => <option key={p} value={p}>{p}</option>)}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="eye-input">
-                            <label>Left Eye (OS)</label>
-                            <div className="select-wrapper">
-                                <select
-                                    value={leftPower}
-                                    onChange={(e) => handleLeftPowerChange(e.target.value)}
-                                >
-                                    <option value="">Power</option>
-                                    {ALL_POWERS.map(p => <option key={p} value={p}>{p}</option>)}
-                                </select>
-                            </div>
-                        </div>
+
+                    <div className={`rg-input-item ${sameForBoth ? 'disabled' : ''}`}>
+                        <label>LEFT EYE (OS)</label>
+                        <select
+                            value={sameForBoth ? rightPower : leftPower}
+                            onChange={(e) => handleLeftPowerChange(e.target.value)}
+                            disabled={sameForBoth}
+                        >
+                            <option value="">{sameForBoth ? rightPower : 'Choose Power'}</option>
+                            {!sameForBoth && ALL_POWERS.map(p => <option key={p} value={p}>{p}</option>)}
+                        </select>
                     </div>
-                )}
+                </div>
             </div>
 
             {/* Selection Summary */}
-            {isReady && (
-                <div className="rg-final-summary">
-                    <div className="summary-title">Selected Power</div>
-                    <div className="summary-grid">
-                        <div className="s-eye"><span>OD</span> {rightPower}</div>
-                        <div className="s-eye"><span>OS</span> {leftPower}</div>
+            <div className="rg-selected-display">
+                <div className="display-label">SELECTED POWER</div>
+                <div className="display-grid">
+                    <div className="display-box">
+                        <span className="side">OD</span>
+                        <span className="pwr">{rightPower || '----'}</span>
+                    </div>
+                    <div className="display-box">
+                        <span className="side">OS</span>
+                        <span className="pwr">{sameForBoth ? (rightPower || '----') : (leftPower || '----')}</span>
                     </div>
                 </div>
+            </div>
+
+            {/* Save Button for consistency */}
+            {(rightPower || leftPower) && (
+                <button 
+                    className="rg-save-btn"
+                    onClick={() => {
+                        import('react-hot-toast').then(({ default: toast }) => {
+                            toast.success('Power selection completed', {
+                                style: {
+                                    borderRadius: '10px',
+                                    background: '#001f54',
+                                    color: '#fff',
+                                    fontWeight: '700',
+                                    fontSize: '14px'
+                                },
+                                iconTheme: {
+                                    primary: '#00d285',
+                                    secondary: '#fff',
+                                },
+                            });
+                        });
+                    }}
+                >
+                    Save Selection
+                </button>
             )}
         </div>
     );

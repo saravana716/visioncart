@@ -24,10 +24,11 @@ function App() {
   }
 
   return (
-    <div className='App reveal-in'>
+    <>
       <Toaster 
-        position="top-center" 
+        position="top-right" 
         reverseOrder={false} 
+        containerStyle={{ zIndex: 9999 }}
         toastOptions={{
           success: {
             style: {
@@ -53,8 +54,10 @@ function App() {
           },
         }}
       />
-      <Routing/>
-    </div>
+      <div className='App reveal-in'>
+        <Routing/>
+      </div>
+    </>
   )
 }
 

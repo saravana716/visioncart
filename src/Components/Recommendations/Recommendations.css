@@ -28,7 +28,22 @@
         padding: 20px;
     }
     .products-grid-recommended {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex !important;
+        grid-template-columns: none !important;
+        overflow-x: auto;
         gap: 15px;
+        padding: 10px 0 20px 0;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .products-grid-recommended::-webkit-scrollbar {
+        display: none;
+    }
+
+    .products-grid-recommended > div {
+        flex: 0 0 200px;
+        scroll-snap-align: start;
     }
 }
