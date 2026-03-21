@@ -26,9 +26,9 @@
 }
 
 .marquee-content span {
-    font-size: 64px; /* Large Bold Text */
+    font-size: clamp(32px, 5vw, 64px); /* Fluid large text */
     font-weight: 800;
-    margin: 0 30px;
+    margin: 0 clamp(15px, 3vw, 30px);
     letter-spacing: 2px;
     text-transform: uppercase;
 }
@@ -48,10 +48,16 @@
 /* --- Main Footer Grid --- */
 .footer-main {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr; /* 4 Columns: Promise is wider */
-    gap: 40px;
-    padding: 60px 8%;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: clamp(30px, 4vw, 50px);
+    padding: clamp(30px, 6vh, 80px) 8%;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@media (min-width: 1200px) {
+    .footer-main {
+        grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr;
+    }
 }
 
 .footer-column h3 {

@@ -33,8 +33,16 @@
 
 .category-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
+    gap: 15px;
+    justify-items: center;
+}
+
+@media (max-width: 320px) {
+    .category-grid {
+        grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
+        gap: 8px;
+    }
 }
 
 .category-item {
@@ -47,8 +55,8 @@
 }
 
 .image-container {
-    width: 65px;
-    height: 65px;
+    width: clamp(55px, 8vw, 75px);
+    height: clamp(55px, 8vw, 75px);
     border-radius: 12px;
     overflow: hidden;
     background-color: #f8f9fa;

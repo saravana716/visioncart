@@ -1,11 +1,11 @@
 .our-brands-section {
     width: 100%;
-    padding: 40px 20px;
+    padding: var(--spacing-lg) var(--spacing-md);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
-    margin-bottom: 100px;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
 }
 
 .our-brands-section h1 {
@@ -33,16 +33,15 @@
 }
 
 .brand-card {
-    width: 220px; /* Fixed width */
-    height: 150px;
-    flex-shrink: 0; /* Prevent squishing */
+    width: clamp(160px, 15vw, 220px);
+    height: clamp(100px, 10vw, 150px);
+    flex-shrink: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     background-color: white;
-    /* padding: 10px; */
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 

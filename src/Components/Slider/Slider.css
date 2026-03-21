@@ -1,6 +1,6 @@
 .slider {
     width: 100%;
-    height: 85vh;
+    min-height: clamp(500px, 85vh, 1000px);
     display: flex;
     align-items: center;
     background: url("../../assets/sliderbg.jpg");
@@ -91,7 +91,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 50%;
+    width: clamp(300px, 45%, 800px);
     height: 100%;
     z-index: 5;
     display: flex;

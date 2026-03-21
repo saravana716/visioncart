@@ -75,7 +75,7 @@
 }
 
 .sidebar-filters {
-    width: 300px;
+    width: clamp(250px, 20vw, 320px);
     flex-shrink: 0;
     background: var(--glass-bg);
     backdrop-filter: blur(10px);
@@ -324,7 +324,7 @@
 
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(clamp(200px, 15vw, 300px), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(clamp(220px, 18vw, 340px), 1fr));
     gap: var(--spacing-md);
 }
 
@@ -480,7 +480,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 400px;
+    min-height: clamp(300px, 50vh, 500px);
     background-color: #fcfcfc;
     border-radius: 20px;
     border: 2px dashed #eee;

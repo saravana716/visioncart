@@ -24,11 +24,16 @@
     width: clamp(150px, 15vw, 220px);
     cursor: pointer;
 }
-.navtext{
-    width: 30%;
+.navtext {
+    flex: 1;
+    max-width: 600px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-evenly;
+    margin: 0 var(--spacing-md);
+}
+@media (max-width: 1100px) {
+    .navtext { display: none; }
 }
 .nicon{
     font-size: 18px;
@@ -186,11 +191,13 @@
     color: white;
     position: relative;
 }
-.navleft{
-    width: 60%; /* Increased width to accommodate items comfortably */
+.navleft {
+    flex: 1;
+    max-width: 1200px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: clamp(10px, 2vw, 40px);
 }
 .navleft li{
     list-style: none;
