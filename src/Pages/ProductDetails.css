@@ -1268,3 +1268,52 @@
         padding: 15px;
     }
 }
+
+/* Category Dynamic Descriptions */
+.category-dynamic-desc {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 30px;
+    margin-top: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.category-dynamic-desc h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 15px;
+}
+
+.category-dynamic-desc .desc-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #475569;
+    margin-bottom: 25px;
+}
+
+.highlights-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.highlight-group h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+
+.highlight-group ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.highlight-group li {
+    font-size: 14px;
+    color: #475569;
+}

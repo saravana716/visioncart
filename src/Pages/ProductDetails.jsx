@@ -20,6 +20,109 @@ import ImageZoom from '../Components/ImageZoom/ImageZoom';
 import LensSelectionModal from '../Components/LensSelectionModal/LensSelectionModal';
 import ReadingGlassesPowerSelector from '../Components/ReadingGlassesPowerSelector/ReadingGlassesPowerSelector';
 
+const categoryDescriptions = {
+    'Spectacles': {
+        title: 'Premium Optical Frames – Acetate & Metal',
+        description: 'Upgrade your everyday style with our premium optical frames. Available in high-quality acetate and durable metal, these frames offer comfort, strength, and a modern look. Designed for daily wear, office use, and all face shapes, they provide the perfect balance of style and functionality. Lightweight and comfortable, these frames are ideal for long hours of use.',
+        highlights: [
+            {
+                title: 'Acetate (Plastic) Highlights',
+                items: [
+                    'Premium quality acetate material',
+                    'Lightweight and durable design',
+                    'Smooth finish with stylish colors',
+                    'Comfortable nose fit for all-day wear',
+                    'Perfect for trendy and fashionable looks'
+                ]
+            },
+            {
+                title: 'Metal Frames Highlights',
+                items: [
+                    'Strong and durable metal construction',
+                    'Slim, elegant, and modern design',
+                    'Lightweight for comfortable wear',
+                    'Ideal for office and formal use',
+                    'Perfect for a clean and classy look'
+                ]
+            }
+        ]
+    },
+    'Sunglasses': {
+        title: 'Sunglasses Description',
+        description: 'Protect your eyes in style with our premium sunglasses. Designed to provide UV protection, they help shield your eyes from harmful sun rays while keeping your vision clear and comfortable. Featuring lightweight frames and a comfortable fit, these sunglasses are perfect for daily wear, travel, and outdoor activities. With trendy designs and durable quality, they offer the perfect combination of style, comfort, and protection.',
+        highlights: [
+            {
+                title: 'Sunglasses Highlights',
+                items: [
+                    'UV protection for eye safety',
+                    'Lightweight and comfortable frame',
+                    'Strong and durable design',
+                    'Trendy and stylish look',
+                    'Comfortable fit for daily wear',
+                    'Premium quality materials'
+                ]
+            }
+        ]
+    },
+    'Reading Glasses': {
+        title: 'Reading Glasses Description',
+        description: 'Make everyday reading easy and comfortable with our stylish reading glasses. Designed for clear near vision, they are perfect for reading books, newspapers, and mobile screens, as well as other close-up tasks. With lightweight frames and a comfortable fit, these glasses are ideal for long wear. Available in attractive designs, they offer the perfect mix of clarity, comfort, and style for daily wear.',
+        highlights: [
+            {
+                title: 'Reading Glasses Highlights',
+                items: [
+                    'Clear vision for near reading',
+                    'Lightweight and comfortable frame',
+                    'Stylish and elegant designs',
+                    'Suitable for daily use',
+                    'Comfortable fit for long hours',
+                    'Durable frame quality',
+                    'Ideal for books, mobiles, and close work',
+                    'Available in different styles and powers'
+                ]
+            }
+        ]
+    },
+    'Computer Glasses': {
+        title: 'Computer Glasses Description',
+        description: 'Protect your eyes and improve your screen experience with our computer glasses. Designed to reduce digital eye strain, they help you stay comfortable during long hours of screen time on computers, laptops, and mobile devices. With lightweight frames and a comfortable fit, these glasses are perfect for daily use at work, at school, or at home. Featuring modern designs and durable quality, they offer the ideal combination of style, comfort, and eye protection.',
+        highlights: [
+            {
+                title: 'Computer Glasses Highlights',
+                items: [
+                    'Helps reduce digital eye strain',
+                    'Comfortable for long screen time',
+                    'Lightweight and stylish frame',
+                    'Suitable for computer, laptop, and mobile use',
+                    'Supports better visual comfort',
+                    'Durable and comfortable for daily wear',
+                    'Modern designs for men, women, and unisex use',
+                    'Ideal for office, study, and home use'
+                ]
+            }
+        ]
+    },
+    'Contact Lenses': {
+        title: 'Bausch & Lomb Eyewear / Contact Lenses Description',
+        description: 'Experience trusted vision care with Bausch & Lomb products, known for their quality, comfort, and reliability. Designed to provide clear vision and long-lasting performance, they are ideal for daily use. With advanced technology and premium materials, Bausch & Lomb ensures better eye protection, comfort, and clarity. Suitable for all-day wear, these products are perfect for those seeking dependable, high-quality eye care solutions.',
+        highlights: [
+            {
+                title: 'Bausch & Lomb Highlights',
+                items: [
+                    'Trusted and well-known eye care brand',
+                    'High-quality vision products',
+                    'Clear and comfortable vision',
+                    'Advanced lens technology',
+                    'Suitable for daily use',
+                    'Long-lasting performance',
+                    'Safe and reliable eye care solutions',
+                    'Ideal for all-day comfort'
+                ]
+            }
+        ]
+    }
+};
+
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -323,6 +426,26 @@ const ProductDetails = () => {
                                 </tbody>
                             </table>
                         </div>
+
+                        {product.category && categoryDescriptions[product.category] && (
+                            <div className="category-dynamic-desc">
+                                <h2>{categoryDescriptions[product.category].title}</h2>
+                                <p className="desc-text">{categoryDescriptions[product.category].description}</p>
+                                
+                                <div className="highlights-container">
+                                    {categoryDescriptions[product.category].highlights.map((highlightGroup, idx) => (
+                                        <div key={idx} className="highlight-group">
+                                            <h3>{highlightGroup.title}</h3>
+                                            <ul>
+                                                {highlightGroup.items.map((item, itemIdx) => (
+                                                    <li key={itemIdx}>{item}</li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="info-right-col">
