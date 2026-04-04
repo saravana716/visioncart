@@ -2,40 +2,32 @@ import React from 'react'
 import "./Footer.css"
 import { FaInstagram, FaFacebookF, FaWhatsapp } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
-import eyeIcon from "../../assets/eyeimg.png" // Assuming this is the eye icon used in the marquee
+import logo from "../../assets/vision_cart_logo.png"
 
 const Footers = () => {
   return (
     <footer className='footer-container'>
-        {/* Marquee Section */}
+        {/* Marquee Section - Only Logo Scroll */}
         <div className='footer-marquee'>
             <div className='marquee-content'>
-                <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
             </div>
              <div className='marquee-content'>
-                <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
-                 <span>VISIONKART</span>
-                <img src={eyeIcon} alt="VisionKart Eye" className="marquee-icon" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
+                <img src={logo} alt="VisionKart Logo" className="marquee-logo-only" />
             </div>
         </div>
 
@@ -54,10 +46,10 @@ const Footers = () => {
             <div className='footer-column'>
                 <h3>Quick Links</h3>
                 <ul>
-                    <li>Home</li>
-                    <li>About</li>
-                    <li>Blogs</li>
-                    <li>Contact</li>
+                    <li onClick={() => window.location.href='/'}>Home</li>
+                    <li onClick={() => window.location.href='/about'}>About</li>
+                    <li onClick={() => window.location.href='/blogs'}>Blogs</li>
+                    <li onClick={() => window.location.href='/contact'}>Contact</li>
                 </ul>
             </div>
 
