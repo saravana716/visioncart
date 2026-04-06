@@ -14,15 +14,15 @@ const ContactPage = () => {
                     <div className="contact-details">
                         <div className="contact-item">
                             <strong>Email:</strong>
-                            <span>support@visionkart.com</span>
+                            <span>visionkart.onlinestore@gmail.com</span>
                         </div>
                         <div className="contact-item">
                             <strong>Phone:</strong>
-                            <span>+91 98765 43210</span>
+                            <span>+91 70104 00258</span>
                         </div>
                         <div className="contact-item">
                             <strong>Address:</strong>
-                            <span>123 Eye Street, Optical Hub, Chennai, Tamil Nadu</span>
+                            <span>19,Thiruthangal Road, Near Senaithalaivar kalyana Mandapam, Sivakasi-626123</span>
                         </div>
                     </div>
                 </div>

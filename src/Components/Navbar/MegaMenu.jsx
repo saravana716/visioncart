@@ -4,6 +4,8 @@ import brandPlaceholder from '../../assets/brand.png';
 import promoImage from '../../assets/image 1.png';
 import { useNavigate } from 'react-router-dom';
 
+import contactBrand from '../../assets/brands/contact.jpeg';
+
 const MegaMenu = ({ category: categoryObj, onClose }) => {
     const navigate = useNavigate();
     const categoryName = categoryObj?.name || '';
@@ -47,7 +49,7 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
         },
         'Contact Lenses': {
             lensType: ['Monthly', 'Biweekly', 'Daily'],
-            brands: ['/src/assets/brands/contact.jpeg'], // User-provided brand image
+            brands: [contactBrand], // Imported brand image for production compatibility
             isContactLenses: true
         }
     };

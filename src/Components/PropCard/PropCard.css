@@ -94,6 +94,36 @@
     opacity: 1;
 }
 
+.add-cart-btn {
+    border: none;
+    background: #f1f5f9;
+    color: #001534;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 16px; /* Increased from default */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.view-btn {
+    background: #001534;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 16px; /* Increased from default */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+}
+
 .heart-container {
     position: absolute;
     top: 15px;
