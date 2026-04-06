@@ -11,9 +11,9 @@
     display: flex;
     white-space: nowrap;
     overflow: hidden;
-    background-color: #001A4D; /* Slightly darker than main footer */
-    padding: 30px 0;
-    border-bottom: 2px solid #335599; /* Subtle divider */
+    background-color: #ffffff; 
+    padding: 25px 0;
+    border-bottom: 1px solid #f0f0f0; 
     position: relative;
     width: 100%;
 }
@@ -21,15 +21,15 @@
 .marquee-content {
     display: flex;
     align-items: center;
-    animation: scroll 40s linear infinite; /* Slower, smoother scroll for logos */
+    animation: scroll 40s linear infinite; 
     padding-left: 0;
 }
 
 .marquee-logo-only {
-    height: 35px; /* Increased logo size for better visibility */
+    height: 50px; 
     width: auto;
-    margin: 0 40px; /* Generous spacing between logos */
-    opacity: 0.9;
+    margin: 0 60px; 
+    opacity: 1;
     transition: all 0.3s ease;
 }
 
@@ -55,7 +55,7 @@
 
 @media (min-width: 1200px) {
     .footer-main {
-        grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr;
+        grid-template-columns: 2fr 0.8fr 1fr 0.8fr 1fr;
     }
 }
 

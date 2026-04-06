@@ -3,18 +3,17 @@ import "./UserSlider.css"
 import user from "../../assets/book.png"
 
 const UserSlider = () => {
-    const originalUsers = [
-        { id: 1, name: "jknkh", img: user },
-        { id: 2, name: "jknkh", img: user },
-        { id: 3, name: "jknkh", img: user },
-        { id: 4, name: "jknkh", img: user },
-        { id: 5, name: "jknkh", img: user },
-        { id: 6, name: "jknkh", img: user },
-        { id: 7, name: "jknkh", img: user },
-        { id: 8, name: "jknkh", img: user },
-        { id: 9, name: "jknkh", img: user },
-        { id: 10, name: "jknkh", img: user }
-    ];
+    const images = import.meta.glob('../../assets/role/*.{png,jpg,jpeg,webp}', { eager: true });
+    
+    const originalUsers = Object.entries(images).map(([path, module], index) => {
+        // Extract filename without extension for the title
+        const fileName = path.split('/').pop().replace(/\.[^/.]+$/, "");
+        return {
+            id: index + 1,
+            name: fileName,
+            img: module.default || module
+        };
+    });
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -25,14 +24,15 @@ const UserSlider = () => {
     }, []);
 
     const isMobile = windowWidth <= 768;
-    const cardWidth = isMobile ? 180 : 240; // Dynamic width: 160px card + 20px gap for mobile
+    const cardWidth = isMobile ? 180 : 240; 
+    const gap = isMobile ? 20 : 30; // Matches CSS gap
     const visibleCards = isMobile ? 2 : 5; 
     
-    // Create duplicated list for seamless looping
-    const extendedUsers = [...originalUsers, ...originalUsers.slice(0, visibleCards)];
+    // Create triple-duplicated list for a truly infinite feel even with 4 items
+    const extendedUsers = [...originalUsers, ...originalUsers, ...originalUsers];
 
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(true);
+    const [currentIndex, setCurrentIndex] = useState(originalUsers.length); // Start at the first element of second set
+    const [isTransitioning, setIsTransitioning] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -43,17 +43,18 @@ const UserSlider = () => {
     }, [currentIndex]);
 
     const nextSlide = () => {
-        if (currentIndex >= originalUsers.length) {
-             return;
-        }
         setIsTransitioning(true);
         setCurrentIndex((prev) => prev + 1);
     };
 
     const handleTransitionEnd = () => {
-        if (currentIndex === originalUsers.length) {
+        // Reset to middle set for seamless infinite loop
+        if (currentIndex >= originalUsers.length * 2) {
             setIsTransitioning(false); 
-            setCurrentIndex(0); 
+            setCurrentIndex(originalUsers.length); 
+        } else if (currentIndex <= 0) {
+            setIsTransitioning(false);
+            setCurrentIndex(originalUsers.length);
         }
     };
 
@@ -63,18 +64,19 @@ const UserSlider = () => {
                 <div 
                     className='carousel-track'
                     style={{ 
-                        transform: `translateX(-${currentIndex * cardWidth}px)`,
-                        width: `${extendedUsers.length * cardWidth}px`,
-                        transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none'
+                        transform: `translateX(-${currentIndex * (cardWidth + gap)}px)`,
+                        width: `${extendedUsers.length * (cardWidth + gap)}px`,
+                        transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none',
+                        gap: `${gap}px`
                     }}
                     onTransitionEnd={handleTransitionEnd}
                 >
                     {extendedUsers.map((data, index) => (
-                        <div className='usercard' key={index}>
-                            <div className='userimg'>
+                        <div className='usercard' key={index} style={{ width: `${cardWidth}px` }}>
+                            <div className='role-img-wrapper'>
                                 <img src={data.img} alt="User" />
                             </div>
-                            <p>{data.name}</p>
+                            <p className='role-title'>{data.name}</p>
                         </div>
                     ))}
                 </div>

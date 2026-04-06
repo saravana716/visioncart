@@ -51,9 +51,8 @@
 }
 
 .product-listing-section {
-    padding: 20px 2.5%;
+    padding: 20px 4.5%;
 }
-
 .listing-header {
     margin-bottom: 20px;
 }
@@ -330,13 +329,13 @@
 
 @media (min-width: 1600px) {
     .product-grid {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
 @media (min-width: 2000px) {
     .product-grid {
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(5, 1fr);
     }
 }
 

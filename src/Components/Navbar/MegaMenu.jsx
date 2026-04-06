@@ -15,35 +15,40 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
             style: ['Full Rim', 'Half Rim', 'Rimless'],
             lensType: ['ARC', 'Blue Cut', 'UV Protect', 'Auto Cooling'],
             shape: ['Rectangle', 'Round', 'Cat eye', 'Aviatar', 'Oval', 'Square'],
-            brands: [brandPlaceholder, brandPlaceholder, brandPlaceholder]
+            brands: [] // Removed brands for other categories
         },
         'Sunglasses': {
             gender: ['Men', 'Women', 'Unisex'],
             style: ['Aviator', 'Wayfarer', 'Clubmaster'],
             lensType: ['Polarized', 'UV Protection', 'Gradient'],
             shape: ['Aviator', 'Square', 'Round', 'Oversized'],
-            brands: [brandPlaceholder, brandPlaceholder]
+            brands: []
         },
         'Reading Glasses': {
             gender: ['Men', 'Women', 'Unisex'],
             style: ['Full Rim', 'Rimless', 'Half Rim'],
             lensType: ['Anti-Glare', 'Blue Cut', 'Bifocal'],
             shape: ['Rectangle', 'Round', 'Oval'],
-            brands: [brandPlaceholder]
+            brands: []
         },
         'Computer Glasses': {
             gender: ['Men', 'Women', 'Unisex'],
             style: ['Full Rim', 'Half Rim'],
             lensType: ['Blue Cut', 'Anti-Glare'],
             shape: ['Rectangle', 'Square', 'Round'],
-            brands: [brandPlaceholder, brandPlaceholder]
+            brands: []
         },
         'Kids Collection': {
             gender: ['Boys', 'Girls', 'Unisex'],
             style: ['Full Rim'],
             lensType: ['ARC', 'Blue Cut'],
             shape: ['Round', 'Square', 'Rectangle'],
-            brands: [brandPlaceholder]
+            brands: []
+        },
+        'Contact Lenses': {
+            lensType: ['Monthly', 'Biweekly', 'Daily'],
+            brands: ['/src/assets/brands/contact.jpeg'], // User-provided brand image
+            isContactLenses: true
         }
     };
 
@@ -54,7 +59,7 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
         style: categoryObj?.style || fallbackData[categoryName]?.style || [],
         lensType: categoryObj?.lensType || fallbackData[categoryName]?.lensType || [],
         shape: categoryObj?.shape || fallbackData[categoryName]?.shape || [],
-        brands: categoryObj?.brands || fallbackData[categoryName]?.brands || []
+        brands: categoryName === 'Contact Lenses' ? (fallbackData[categoryName]?.brands || []) : [] // Only show brands for Contact Lenses
     };
 
     const handleItemClick = (type, value) => {
@@ -70,11 +75,13 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
 
     if (!categoryName) return null;
 
+    const isContactLenses = categoryName === 'Contact Lenses';
+
     return (
         <div className="mega-menu" onMouseLeave={onClose}>
             <div className="mega-menu-content">
-                {/* Column 0: Subcategories (Dynamic for categories like Contact Lenses) */}
-                {currentData.subcategories && currentData.subcategories.length > 0 && (
+                {/* Column 0: Subcategories (Dynamic for categories like Contact Lenses) - REMOVED for Contact Lenses */}
+                {!isContactLenses && currentData.subcategories && currentData.subcategories.length > 0 && (
                     <div className="menu-column">
                         <h3>Sub Categories</h3>
                         <ul>
@@ -122,7 +129,7 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
                 )}
 
                 {/* Column 4: Shape */}
-                 {currentData.shape && currentData.shape.length > 0 && (
+                {!isContactLenses && currentData.shape && currentData.shape.length > 0 && (
                     <div className="menu-column">
                         <h3>Shape</h3>
                         <ul>
@@ -133,28 +140,32 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
                     </div>
                 )}
 
-                {/* Column 5: Our Brand */}
-                 {currentData.brands && currentData.brands.length > 0 && (
+                {/* Column 5: Shop By Brand (Only for Contact Lenses) */}
+                 {isContactLenses && (
                     <div className="menu-column brand-column">
-                        <h3>Our Brand</h3>
+                        <h3>Shop By Brand</h3>
                         <div className="brand-grid">
                             {currentData.brands.map((brandImg, index) => (
-                                <div key={index} className="brand-item">
+                                <div key={index} className="brand-item" style={{width: '200px', height: '100px'}}>
                                     <img src={brandImg} alt="Brand" />
                                 </div>
                             ))}
+                        </div>
+                        <div className="shop-all-brands" onClick={() => navigate('/products?category=Contact Lenses&brands=all')}>
+                            Shop All Brands
                         </div>
                     </div>
                 )}
 
                 {/* Column 6: Promo Image */}
-                <div className="menu-column promo-column">
-                    <img src={promoImage} alt="Promo" className="promo-image" />
-                </div>
+                {!isContactLenses && (
+                    <div className="menu-column promo-column">
+                        <img src={promoImage} alt="Promo" className="promo-image" />
+                    </div>
+                )}
             </div>
         </div>
     );
 };
-
 
 export default MegaMenu;

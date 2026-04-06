@@ -23,7 +23,7 @@ const RecentlyViewed = ({ excludeId }) => {
                     return;
                 }
 
-                const productsToFetch = filteredIds.slice(0, 5);
+                const productsToFetch = filteredIds.slice(0, 4);
                 const productPromises = productsToFetch.map(id => getProductById(id));
                 const fetchedProducts = await Promise.all(productPromises);
 
@@ -64,7 +64,7 @@ const RecentlyViewed = ({ excludeId }) => {
                     <h2 className="premium-title">Recently Viewed</h2>
                 </div>
                 <div className="products-grid">
-                    {[1, 2, 3, 4, 5].map(idx => <Skeleton key={idx} type="product" />)}
+                    {[1, 2, 3, 4].map(idx => <Skeleton key={idx} type="product" />)}
                 </div>
             </div>
         );

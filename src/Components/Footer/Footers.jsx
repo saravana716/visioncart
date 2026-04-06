@@ -36,11 +36,6 @@ const Footers = () => {
             <div className='footer-column brand-column'>
                 <h3>The VisionKart Promise</h3>
                 <p>Your trusted destination for high-quality, affordable eyewear. See better, feel better, and express your style effortlessly.</p>
-                
-                <div className='footer-mini-links'>
-                    <a href="#">FAQ</a>
-                    <a href="#">Terms & Condition</a>
-                </div>
             </div>
 
             <div className='footer-column'>
@@ -61,6 +56,16 @@ const Footers = () => {
                     <li>Contact Lenses</li>
                     <li>Computer Glasses</li>
                     <li>Kids Collection</li>
+                </ul>
+            </div>
+
+            <div className='footer-column'>
+                <h3>Legal</h3>
+                <ul>
+                    <li>FAQ</li>
+                    <li>Terms & Condition</li>
+                    <li>Privacy Policy</li>
+                    <li>Shipping Policy</li>
                 </ul>
             </div>
 

@@ -248,6 +248,44 @@ const ProductDetails = () => {
 
     if (loading) return <Loader fullPage={true} />;
     if (!product) return <div style={{padding: '100px', textAlign: 'center', fontSize: '20px'}}>Product not found</div>;
+    
+    const renderTechnicalInfo = (viewType) => (
+        <div className={`info-left-col ${viewType === 'desktop' ? 'hide-on-mobile' : 'hide-on-desktop'}`}>
+            <div className="technical-info-section">
+                <h2>Technical Information</h2>
+                <table className="tech-table">
+                    <tbody>
+                        {product.technicalSpecs.map((spec, idx) => (
+                            <tr key={idx}>
+                                <td>{spec.label}</td>
+                                <td>{spec.value}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            {product.category && categoryDescriptions[product.category] && (
+                <div className="category-dynamic-desc">
+                    <h2>{categoryDescriptions[product.category].title}</h2>
+                    <p className="desc-text">{categoryDescriptions[product.category].description}</p>
+                    
+                    <div className="highlights-container">
+                        {categoryDescriptions[product.category].highlights.map((highlightGroup, idx) => (
+                            <div key={idx} className="highlight-group">
+                                <h3>{highlightGroup.title}</h3>
+                                <ul>
+                                    {highlightGroup.items.map((item, itemIdx) => (
+                                        <li key={itemIdx}>{item}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
 
     return (
         <div className="product-details-page">
@@ -265,29 +303,29 @@ const ProductDetails = () => {
                 </div>
 
                 <div className="main-info-grid scroll-reveal">
-                    {/* Left: Gallery */}
-                    <div className="product-gallery">
-                        <div className="thumbnails">
-                            {product.thumbnails.map((img, idx) => (
-                                <img 
-                                    key={idx} 
-                                    src={img} 
-                                    alt="thumb" 
-                                    className={selectedImg === img ? 'active' : ''}
-                                    onClick={() => setSelectedImg(img)}
-                                />
-                            ))}
-                        </div>
-                        <div className="gallery-main-col">
-                            <div className="main-image">
-                                <ImageZoom src={selectedImg} alt={product.title} />
-                                <button className="wishlist-btn-abs">♡</button>
-                                {/* <button className="btn-360-trigger" onClick={() => setIs360Open(true)}>
-                                    <MdOutline360 />
-                                    <span>360° View</span>
-                                </button> */}
+                    {/* Left: Gallery & Technical info */}
+                    <div className="product-main-left">
+                        <div className="product-gallery">
+                            <div className="thumbnails">
+                                {product.thumbnails.map((img, idx) => (
+                                    <img 
+                                        key={idx} 
+                                        src={img} 
+                                        alt="thumb" 
+                                        className={selectedImg === img ? 'active' : ''}
+                                        onClick={() => setSelectedImg(img)}
+                                    />
+                                ))}
+                            </div>
+                            <div className="gallery-main-col">
+                                <div className="main-image">
+                                    <ImageZoom src={selectedImg} alt={product.title} />
+                                    <button className="wishlist-btn-abs">♡</button>
+                                </div>
                             </div>
                         </div>
+
+                        {renderTechnicalInfo('desktop')}
                     </div>
 
                     {/* Right: Info */}
@@ -413,39 +451,8 @@ const ProductDetails = () => {
 
                 <div className="middle-info-grid scroll-reveal">
                     <div className="info-left-col">
-                        <div className="technical-info-section">
-                            <h2>Technical Information</h2>
-                            <table className="tech-table">
-                                <tbody>
-                                    {product.technicalSpecs.map((spec, idx) => (
-                                        <tr key={idx}>
-                                            <td>{spec.label}</td>
-                                            <td>{spec.value}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {product.category && categoryDescriptions[product.category] && (
-                            <div className="category-dynamic-desc">
-                                <h2>{categoryDescriptions[product.category].title}</h2>
-                                <p className="desc-text">{categoryDescriptions[product.category].description}</p>
-                                
-                                <div className="highlights-container">
-                                    {categoryDescriptions[product.category].highlights.map((highlightGroup, idx) => (
-                                        <div key={idx} className="highlight-group">
-                                            <h3>{highlightGroup.title}</h3>
-                                            <ul>
-                                                {highlightGroup.items.map((item, itemIdx) => (
-                                                    <li key={itemIdx}>{item}</li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+                        {renderTechnicalInfo('mobile')}
+                        <ReviewsSection productId={id} />
                     </div>
 
                     <div className="info-right-col">
@@ -489,8 +496,6 @@ const ProductDetails = () => {
                             </div>
                             <p className="delivery-status available">Delivered in 4-6 days</p>
                         </div>
-
-                        <ReviewsSection productId={id} />
                     </div>
                 </div>
 

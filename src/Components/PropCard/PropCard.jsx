@@ -68,10 +68,10 @@ const PropCard = ({ cardlist }) => {
                                 <span className="current-price">{data.price}</span>
                                 <span className="old-price">{data.mrpprice}</span>
                             </div>
-                            <div className="product-variants">
+                            {/* <div className="product-variants">
                                 {data.color && <img src={data.color} alt="colors" className="color-dots" />}
                                 <span className="variant-count">{data.colorcount} +</span>
-                            </div>
+                            </div> */}
                         </div>
                         <div className="product-actions">
                             <button className='btn-add' onClick={async (e) => {

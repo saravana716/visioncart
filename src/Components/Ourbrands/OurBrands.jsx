@@ -3,17 +3,14 @@ import brand from "../../assets/brand.png"
 import "./OurBrands.css"
 
 const OurBrands = () => {
-    const originalBrands = [
-        { id: 1, img: brand },
-        { id: 2, img: brand },
-        { id: 3, img: brand },
-        { id: 4, img: brand },
-        { id: 5, img: brand },
-        { id: 6, img: brand },
-        { id: 7, img: brand },
-        { id: 8, img: brand },
-        { id: 9, img: brand }
-    ];
+    const images = import.meta.glob('../../assets/mybrands/*.{png,jpg,jpeg,webp,svg}', { eager: true });
+    
+    const originalBrands = Object.entries(images).map(([path, module], index) => {
+        return {
+            id: index + 1,
+            img: module.default || module
+        };
+    });
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -24,16 +21,14 @@ const OurBrands = () => {
     }, []);
 
     const isMobile = windowWidth <= 768;
-    const cardWidth = isMobile ? 180 : 240; // Dynamic width: 160px card + 20px gap
-    const visibleCards = isMobile ? 2 : 5; 
+    const cardWidth = isMobile ? 180 : 240; 
+    const gap = isMobile ? 20 : 30; // Matches CSS gap
     
-    // Create an extended list: Original + First few items (buffer)
-    // We need enough buffer to cover the view while resetting
-    const extendedBrands = [...originalBrands, ...originalBrands.slice(0, visibleCards)];
+    // Create triple-duplicated list for a truly infinite feel even with 4 items
+    const extendedBrands = [...originalBrands, ...originalBrands, ...originalBrands];
 
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(true);
-    const timeoutRef = useRef(null);
+    const [currentIndex, setCurrentIndex] = useState(originalBrands.length); // Start at the first element of second set
+    const [isTransitioning, setIsTransitioning] = useState(false);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -44,21 +39,18 @@ const OurBrands = () => {
     }, [currentIndex]);
 
     const nextSlide = () => {
-        if (currentIndex >= originalBrands.length) {
-            // We are at the end buffer, logic handled in transitionEnd, but safe guard here
-             return;
-        }
-        
         setIsTransitioning(true);
         setCurrentIndex((prev) => prev + 1);
     };
 
     const handleTransitionEnd = () => {
-        // Check if we've reached the duplicated part (the buffer start)
-        // logic: if currentIndex == originalBrands.length, we are showing the first item again (but it's the duplicate)
-        if (currentIndex === originalBrands.length) {
-            setIsTransitioning(false); // Disable transition for instant jump
-            setCurrentIndex(0); // Jump back to real start
+        // Reset to middle set for seamless infinite loop
+        if (currentIndex >= originalBrands.length * 2) {
+            setIsTransitioning(false); 
+            setCurrentIndex(originalBrands.length); 
+        } else if (currentIndex <= 0) {
+            setIsTransitioning(false);
+            setCurrentIndex(originalBrands.length);
         }
     };
 
@@ -70,14 +62,15 @@ const OurBrands = () => {
                 <div 
                     className='carousel-track'
                     style={{ 
-                        transform: `translateX(-${currentIndex * cardWidth}px)`,
-                        width: `${extendedBrands.length * cardWidth}px`,
-                        transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none'
+                        transform: `translateX(-${currentIndex * (cardWidth + gap)}px)`,
+                        width: `${extendedBrands.length * (cardWidth + gap)}px`,
+                        transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none',
+                        gap: `${gap}px`
                     }}
                     onTransitionEnd={handleTransitionEnd}
                 >
                     {extendedBrands.map((data, index) => (
-                        <div className='brand-card' key={index}>
+                        <div className='brand-card' key={index} style={{ width: `${cardWidth}px` }}>
                             <img src={data.img} alt="Our Brand" />
                         </div>
                     ))}

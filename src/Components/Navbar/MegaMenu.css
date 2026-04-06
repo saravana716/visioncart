@@ -59,24 +59,47 @@
 
 .brand-grid {
     display: flex;
+    flex-wrap: wrap;
     gap: 15px;
+    margin-bottom: 20px;
 }
 
 .brand-item {
-    width: 80px;
-    height: 50px;
+    background: white;
     border: 1px solid #eee;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
-    padding: 5px;
+    border-radius: 8px;
+    padding: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.brand-item:hover {
+    border-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
 }
 
 .brand-item img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+}
+
+.shop-all-brands {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--secondary-color);
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.2s;
+    margin-top: 10px;
+}
+
+.shop-all-brands:hover {
+    color: var(--primary-color);
 }
 
 /* Promo Image */

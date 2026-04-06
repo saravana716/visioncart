@@ -82,7 +82,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #F2F4F8; /* Premium light blue-grey */
+    background-color: white; /* Premium light blue-grey */
     border-radius: 8px;
     overflow: hidden;
 }

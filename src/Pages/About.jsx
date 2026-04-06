@@ -3,7 +3,7 @@ import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import './About.css';
 import lifestyleHero from '../assets/lifestyle_hero.png';
-import materialsImg from '../assets/materials_detail.png';
+import aboutUsImg from '../assets/aboutus.png';
 import craftsmanshipImg from '../assets/craftsmanship.png';
 import { 
     FiCheck, 
@@ -84,7 +84,7 @@ const About = () => {
             <section className="materials-section">
                 <div className="container-v2 grid-2">
                     <div className="materials-image scroll-reveal">
-                        <img src={materialsImg} alt="Premium Materials Detail" />
+                        <img src={aboutUsImg} alt="About VisionKart" />
                         <div className="image-overlay-card">
                             <span>Innovation</span>
                             <p>Crafted for a Superior Way to Shop</p>
