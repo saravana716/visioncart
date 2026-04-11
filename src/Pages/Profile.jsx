@@ -32,7 +32,7 @@ const Profile = () => {
     const [editingAddress, setEditingAddress] = useState(null);
     
     // Form States
-    const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phone: '', location: '' });
+    const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', phoneNumber: '', location: '', email: '' });
     const [addressForm, setAddressForm] = useState({ name: '', phone: '', address: '', landmark: '', city: '', state: '', pincode: '', type: 'Home' });
 
     const navigate = useNavigate();
@@ -55,8 +55,9 @@ const Profile = () => {
                         setProfileForm({
                             firstName: data.firstName || '',
                             lastName: data.lastName || '',
-                            phone: data.phone || '',
-                            location: data.location || ''
+                            phoneNumber: data.phoneNumber || data.phone || '',
+                            location: data.location || '',
+                            email: data.email || currentUser.email || ''
                         });
                     }
                     await fetchAddresses(currentUser.uid);
@@ -141,8 +142,7 @@ const Profile = () => {
                     </div>
                     <div className="hero-text">
                         <h1>{userData ? `${userData.firstName} ${userData.lastName || ''}` : 'VisionCart User'}</h1>
-                        <p>{user?.email || user?.phoneNumber}</p>
-                        <span className="member-badge">VisionCart Member</span>
+                        <p>{userData?.email || user?.email || userData?.phoneNumber || user?.phoneNumber}</p>
                     </div>
                 </div>
             </div>
@@ -188,14 +188,14 @@ const Profile = () => {
                                         <div className="detail-icon"><FaEnvelope /></div>
                                         <div className="detail-info">
                                             <label>Email Address</label>
-                                            <p>{user?.email || 'Not connected'}</p>
+                                            <p>{userData?.email || user?.email || 'Not connected'}</p>
                                         </div>
                                     </div>
                                     <div className="detail-card">
                                         <div className="detail-icon"><FaPhoneAlt /></div>
                                         <div className="detail-info">
                                             <label>Phone Number</label>
-                                            <p>{userData?.phone || user?.phoneNumber || 'Not connected'}</p>
+                                            <p>{userData?.phoneNumber || user?.phoneNumber || 'Not connected'}</p>
                                         </div>
                                     </div>
                                     <div className="detail-card">
@@ -309,8 +309,12 @@ const Profile = () => {
                                 </div>
                             </div>
                             <div className="form-group">
+                                <label>Email Address</label>
+                                <input type="email" value={profileForm.email} onChange={e => setProfileForm({...profileForm, email: e.target.value})} required />
+                            </div>
+                            <div className="form-group">
                                 <label>Phone Number</label>
-                                <input type="tel" value={profileForm.phone} onChange={e => setProfileForm({...profileForm, phone: e.target.value})} required />
+                                <input type="tel" value={profileForm.phoneNumber} onChange={e => setProfileForm({...profileForm, phoneNumber: e.target.value})} required />
                             </div>
                             <div className="form-group">
                                 <label>Location</label>
