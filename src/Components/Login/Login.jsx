@@ -75,21 +75,13 @@ const Login = () => {
   }; */
 
     const setupRecaptcha = async () => {
-      // If we need to reset, clear it completely
-      if (window.recaptchaVerifier) {
-          try { window.recaptchaVerifier.clear(); } catch(e) {}
-          window.recaptchaVerifier = null;
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 
+          'size': 'invisible' 
+        });
+        await window.recaptchaVerifier.render();
       }
-      
-      // Inject a fresh DOM element to prevent "already rendered" conflicts
-      let container = document.getElementById('recaptcha-container');
-      if (container) container.innerHTML = ''; 
-
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 
-        'size': 'invisible' 
-      });
-      await window.recaptchaVerifier.render();
-    }
+    };
 
     const handleSendOtp = async (e) => {
     e.preventDefault();
