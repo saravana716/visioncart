@@ -2,20 +2,24 @@
     width: 100%;
 }
 
+.product-banner-wrapper {
+    width: 100%; /* Cleanly fills the container edge-to-edge, matching the Navbar exactly */
+    height: 50vh; /* Exactly as requested by user */
+    overflow: hidden; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+}
+
 .product-banner {
     width: 100%;
-    max-width: 1800px;
-    margin: clamp(20px, 4vw, 40px) auto;
-    height: clamp(250px, 40vh, 450px);
-    background: linear-gradient(135deg, #001f54 0%, #000000 100%);
-    border-radius: clamp(15px, 2vw, 40px);
-    display: flex;
-    align-items: center;
-    padding: 0 8%;
-    color: white;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    height: 100%;
+    max-width: none;
+    object-fit: cover; /* Keeps aspect ratio while covering the whole width/height */
+    display: block;
+    transform: scale(1.18); /* Increased zoom slightly to guarantee the white borders molded into the images are pushed completely off-screen */
+    transform-origin: center center;
 }
 
 .product-banner::after {
@@ -323,7 +327,7 @@
 
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(clamp(220px, 18vw, 340px), 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--spacing-md);
 }
 
@@ -450,8 +454,8 @@
     }
 
     .product-banner {
-        height: 250px;
-        padding: 0 5%;
+        height: auto;
+        padding: 0;
     }
 
     .banner-content h1 {

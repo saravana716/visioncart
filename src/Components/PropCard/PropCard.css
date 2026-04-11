@@ -2,31 +2,31 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    background: transparent;
+    background: white; /* Changed to white by default */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Default shadow applied */
     transition: var(--transition-smooth);
     cursor: pointer;
     border-radius: 16px;
     padding: 10px;
+    border: 1px solid #edf2f7;
 }
 
 .propcard:hover {
-    background: white;
-    box-shadow: var(--shadow-premium);
-    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 35, 102, 0.08); /* Stronger shadow on hover */
+    transform: translateY(-4px);
+    border-color: #e2e8f0;
 }
 
 .propcardimg {
     width: 100%;
-    height: 260px;
+    height: 180px; /* Reduced from 260px to fix overly lengthy cards */
     display: flex;
     align-items: center;
     justify-content: center;
-    /* background-color: #fcfcfc; */
-    /* background-image: radial-gradient(circle at center, #ffffff 0%, #f4f7ff 100%); */
     border-radius: 12px;
     position: relative;
     overflow: hidden;
-    padding: 10px; /* Reduced padding to allow larger uniform images */
+    padding: 10px; 
     transition: var(--transition-smooth);
     object-fit: cover;
 }
@@ -50,8 +50,11 @@
 }
 
 .propcard:hover .main-product-img {
-    opacity: 0;
     transform: scale(1.1);
+}
+
+.propcard:hover .has-hover .main-product-img {
+    opacity: 0;
 }
 
 .img-wrapper {
@@ -205,7 +208,7 @@
     flex: 1;
     padding: 10px 5px;
     border-radius: 50px;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 600;
     border: none;
     cursor: pointer;
@@ -334,7 +337,7 @@
 
     .btn-add, .btn-view {
         padding: 8px 6px;
-        font-size: 10px;
+        font-size: 14px;
         border-radius: 8px;
         white-space: nowrap;
         overflow: hidden;
@@ -364,7 +367,7 @@
     }
 
     .product-title {
-        font-size: 12px; /* Reduced from 13px */
+        font-size: 14px; /* Reduced from 13px */
         white-space: normal;
         display: -webkit-box;
         -webkit-line-clamp: 2;

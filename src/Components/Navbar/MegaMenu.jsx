@@ -1,7 +1,11 @@
 import React from 'react';
 import './MegaMenu.css';
 import brandPlaceholder from '../../assets/brand.png';
-import promoImage from '../../assets/image 1.png';
+import frame1 from '../../assets/Frames/1.png';
+import frame2 from '../../assets/Frames/2.png';
+import frame3 from '../../assets/Frames/3.png';
+import frame4 from '../../assets/Frames/4.png';
+import frame5 from '../../assets/Frames/5.png';
 import { useNavigate } from 'react-router-dom';
 
 import contactBrand from '../../assets/brands/contact.jpeg';
@@ -48,7 +52,7 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
             brands: []
         },
         'Contact Lenses': {
-            lensType: ['Monthly', 'Biweekly', 'Daily'],
+            lensType: ['Monthly', 'Biweekly', 'Daily', 'Yearly'],
             brands: [contactBrand], // Imported brand image for production compatibility
             isContactLenses: true
         }
@@ -159,10 +163,27 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
                     </div>
                 )}
 
-                {/* Column 6: Promo Image */}
+                {/* Column 6: Frames Showcase */}
                 {!isContactLenses && (
                     <div className="menu-column promo-column">
-                        <img src={promoImage} alt="Promo" className="promo-image" />
+                        <h3 style={{marginBottom: '15px'}}>Trending Styles</h3>
+                        <div className="frames-dropdown-grid">
+                            <div className="frame-dropdown-item" onClick={() => { navigate(`/products?category=${categoryName}`); onClose(); }}>
+                                <img src={frame1} alt="Frame Style 1" />
+                            </div>
+                            <div className="frame-dropdown-item" onClick={() => { navigate(`/products?category=${categoryName}`); onClose(); }}>
+                                <img src={frame2} alt="Frame Style 2" />
+                            </div>
+                            <div className="frame-dropdown-item" onClick={() => { navigate(`/products?category=${categoryName}`); onClose(); }}>
+                                <img src={frame3} alt="Frame Style 3" />
+                            </div>
+                            <div className="frame-dropdown-item" onClick={() => { navigate(`/products?category=${categoryName}`); onClose(); }}>
+                                <img src={frame4} alt="Frame Style 4" />
+                            </div>
+                            <div className="frame-dropdown-item" onClick={() => { navigate(`/products?category=${categoryName}`); onClose(); }}>
+                                <img src={frame5} alt="Frame Style 5" />
+                            </div>
+                        </div>
                     </div>
                 )}
             </div>

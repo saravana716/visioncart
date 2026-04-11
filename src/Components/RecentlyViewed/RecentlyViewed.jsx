@@ -37,6 +37,7 @@ const RecentlyViewed = ({ excludeId }) => {
                     id: p.id,
                     brand: p.brand || "Visionkart",
                     img: p.photos ? p.photos[0] : (p.mainImage || ''),
+                    hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
                     title: p.name || p.title || p.productName || p.brand || "Visionkart",
                     price: (p.price && p.price.toString().startsWith('₹')) ? p.price : `₹${p.price}`,
                     mrpprice: p.originalPrice || (p.price ? (parseInt(p.price) * 1.5).toString() : "0"),

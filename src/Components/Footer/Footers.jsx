@@ -8,7 +8,7 @@ const Footers = () => {
   const navigate = useNavigate();
 
   const openWhatsApp = () => {
-    window.open("https://wa.me/917010400258", "_blank");
+    window.open("https://wa.me/919344116571", "_blank");
   };
 
   return (
@@ -53,6 +53,7 @@ const Footers = () => {
                     <li onClick={() => navigate('/products')}>Reading Glasses</li>
                     <li onClick={() => navigate('/products')}>Computer Glasses</li>
                     <li onClick={() => navigate('/products')}>Kids Collection</li>
+                    <li onClick={() => navigate('/products')}>Contact Lenses</li>
                 </ul>
             </div>
 

@@ -23,7 +23,7 @@ const PropCard = ({ cardlist }) => {
                 >
                     <div className='propcardimg'>
                         {data.tryOn && <div className="tryon-tag">3D Try-On</div>}
-                        <div className="img-wrapper">
+                        <div className={`img-wrapper ${data.hoverImg ? 'has-hover' : ''}`}>
                             {data.img ? (
                                 <img 
                                     src={data.img} 
@@ -57,12 +57,9 @@ const PropCard = ({ cardlist }) => {
                     </div>
 
                     <div className='propcontent'>
-                        {data.brand && <span className="product-brand">{data.brand}</span>}
+
                         <h5 className="product-title">{data.title}</h5>
-                        <div className="product-reviews">
-                            {data.rating && <img src={data.rating} alt="rating" className="rating-stars" />}
-                            <span className="review-count">({data.ratingcount} reviews)</span>
-                        </div>
+
                         <div className='product-footer'>
                             <div className="product-pricing">
                                 <span className="current-price">{data.price}</span>

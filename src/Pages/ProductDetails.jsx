@@ -330,7 +330,7 @@ const ProductDetails = () => {
 
                     {/* Right: Info */}
                     <div className="product-info-panel">
-                        <p className="brand-name">{product.brand}</p>
+
                         <h1>{product.title}</h1>
                         <p className="size-info">Size: {product.size}</p>
                         <div className="rating-row">
@@ -351,19 +351,7 @@ const ProductDetails = () => {
                                     : 'Out of Stock'}
                         </div>
 
-                        <div className="color-selection">
-                            <p className="selection-label">Select Color</p>
-                            <div className="color-dots">
-                                {product.colors.map((color, idx) => (
-                                    <span 
-                                        key={idx}
-                                        className={`dot ${idx === 0 ? 'active' : ''}`} 
-                                        style={{background: color.hex}}
-                                        title={color.name}
-                                    ></span>
-                                ))}
-                            </div>
-                        </div>
+
 
                         <div className="virtual-tryon-banner-premium" onClick={() => window.open('/try-on', '_blank')}>
                             <div className="tryon-content">

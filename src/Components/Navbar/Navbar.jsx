@@ -271,7 +271,7 @@ const Navbar = () => {
                     <li>Blogs</li>
                     <li>Contact Us</li>
                     <li className="sidebar-section-title">Premium Services</li>
-                    <li onClick={() => handleNavigation('/home-try-on')}>Home Try-On</li>
+                    {/* <li onClick={() => handleNavigation('/home-try-on')}>Home Try-On</li> */}
                     <li onClick={() => handleNavigation('/virtual-try-on')}>3D Virtual Try-On</li>
                 </ul>
             </div>
@@ -291,7 +291,7 @@ const Navbar = () => {
                 ))}
             </div>
             <div className='navright-actions'>
-                <button className='btn-home-tryon' onClick={() => navigate('/home-try-on')}>Home Try-On</button>
+                {/* <button className='btn-home-tryon' onClick={() => navigate('/home-try-on')}>Home Try-On</button> */}
                 <button className='btn-virtual-tryon' onClick={() => navigate('/virtual-try-on')}>3D Virtual Try-On</button>
             </div>
             {activeCategory && <MegaMenu category={activeCategory} onClose={handleMouseLeave} />}

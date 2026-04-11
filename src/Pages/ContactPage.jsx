@@ -1,9 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import './ContactPage.css';
+import { db } from '../firebase.config';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import toast from 'react-hot-toast';
 
 const ContactPage = () => {
+    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!formData.name || !formData.email || !formData.message) {
+            toast.error('Please fill all required fields.');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            await addDoc(collection(db, 'contact'), {
+                name: formData.name,
+                email: formData.email,
+                message: formData.message,
+                createdAt: serverTimestamp()
+            });
+
+            toast.success('Your message has been sent successfully!');
+            setFormData({ name: '', email: '', message: '' }); // Reset form
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            toast.error('Failed to send message. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="contact-page-wrapper">
             <Navbar />
@@ -18,7 +51,7 @@ const ContactPage = () => {
                         </div>
                         <div className="contact-item">
                             <strong>Phone:</strong>
-                            <span>+91 70104 00258</span>
+                            <span>+91 93441 16571</span>
                         </div>
                         <div className="contact-item">
                             <strong>Address:</strong>
@@ -27,11 +60,28 @@ const ContactPage = () => {
                     </div>
                 </div>
                 <div className="contact-form-section scroll-reveal">
-                    <form className="premium-form">
-                        <input type="text" placeholder="Full Name" />
-                        <input type="email" placeholder="Email Address" />
-                        <textarea placeholder="Your Message" rows="5"></textarea>
-                        <button type="submit" className="submit-btn">Send Message</button>
+                    <form className="premium-form" onSubmit={handleSubmit}>
+                        <input 
+                            type="text" 
+                            placeholder="Full Name" 
+                            value={formData.name}
+                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        />
+                        <input 
+                            type="email" 
+                            placeholder="Email Address" 
+                            value={formData.email}
+                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        />
+                        <textarea 
+                            placeholder="Your Message" 
+                            rows="5"
+                            value={formData.message}
+                            onChange={(e) => setFormData({...formData, message: e.target.value})}
+                        ></textarea>
+                        <button type="submit" className="submit-btn" disabled={loading}>
+                            {loading ? 'Sending...' : 'Send Message'}
+                        </button>
                     </form>
                 </div>
             </div>

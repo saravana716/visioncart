@@ -3,6 +3,7 @@ import logo from "../../assets/vision_cart_logo.png"
 import googleicon from "../../assets/google_icon.png"
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import "./SignUp.css"
 import { auth, db } from '../../firebase.config'
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
@@ -18,6 +19,7 @@ const SignUp = () => {
     phoneNumber: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -43,6 +45,7 @@ const SignUp = () => {
         lastName: formData.lastName,
         email: formData.email,
         phoneNumber: formData.phoneNumber,
+        password: formData.password,
         createdAt: new Date().toISOString()
       });
 
@@ -116,16 +119,32 @@ const SignUp = () => {
           required
         />
     </div>
-    <div className='forminput'>
+    <div className='forminput' style={{ position: 'relative' }}>
         <h4>Password</h4>
         <input 
-          type="password" 
+          type={showPassword ? "text" : "password"} 
           name="password"
           placeholder='Enter Your Password' 
           value={formData.password}
           onChange={handleChange}
           required
+          style={{ paddingRight: '45px' }}
         />
+        <span 
+          onClick={() => setShowPassword(!showPassword)}
+          style={{
+              position: 'absolute',
+              right: '15px',
+              top: '42px',
+              cursor: 'pointer',
+              color: '#64748b',
+              display: 'flex',
+              alignItems: 'center'
+          }}
+          title={showPassword ? "Hide password" : "Show password"}
+        >
+          {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+        </span>
     </div>
     <div className='forminput'>
         <h4>Phone Number</h4>

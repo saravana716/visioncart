@@ -64,7 +64,7 @@ const FAQ = () => {
                 <div className="cta-support">
                     <h3>Still have questions?</h3>
                     <p>Our support team is here to help you 10:00 AM - 08:00 PM</p>
-                    <a href="https://wa.me/919342508799" target="_blank" rel="noopener noreferrer" className="support-wa-btn">
+                    <a href="https://wa.me/919344116571" target="_blank" rel="noopener noreferrer" className="support-wa-btn">
                         Chat on WhatsApp
                     </a>
                 </div>

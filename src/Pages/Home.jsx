@@ -4,6 +4,7 @@ import Slider from '../Components/Slider/Slider'
 import Discover from '../Components/Discover/Discover'
 import TrendyCollection from '../Components/TrendyCollection/TrendyCollection'
 import ContactLens from '../Components/Contact/ContactLens'
+import LensCollection from '../Components/LensCollection/LensCollection'
 import BookAppointment from '../Components/BookAppointment/BookAppointment'
 import UserSlider from '../Components/Userslider/UserSlider'
 import OurBrands from '../Components/Ourbrands/OurBrands'
@@ -79,6 +80,7 @@ const Home = () => {
           ))}
           
           <div className="scroll-reveal"><BookAppointment/></div>
+          <div className="scroll-reveal"><LensCollection/></div>
           
           {categories.slice(2).map((cat, index) => (
             <React.Fragment key={cat.id}>

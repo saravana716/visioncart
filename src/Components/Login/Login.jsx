@@ -3,6 +3,7 @@ import logo from "../../assets/vision_cart_logo.png"
 import googleicon from "../../assets/google_icon.png"
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import "../SignUp/SignUp.css"
 import { auth, db } from '../../firebase.config'
 import { collection, query, where, getDocs } from 'firebase/firestore'
@@ -25,6 +26,7 @@ const Login = () => {
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -72,17 +74,28 @@ const Login = () => {
     }
   }; */
 
-  const handleSendOtp = async (e) => {
+    const setupRecaptcha = async () => {
+      // If we need to reset, clear it completely
+      if (window.recaptchaVerifier) {
+          try { window.recaptchaVerifier.clear(); } catch(e) {}
+          window.recaptchaVerifier = null;
+      }
+      
+      // Inject a fresh DOM element to prevent "already rendered" conflicts
+      let container = document.getElementById('recaptcha-container');
+      if (container) container.innerHTML = ''; 
+
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 
+        'size': 'invisible' 
+      });
+      await window.recaptchaVerifier.render();
+    }
+
+    const handleSendOtp = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-      }
-      
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 
-        'size': 'invisible'
-      });
+      await setupRecaptcha();
       
       const appVerifier = window.recaptchaVerifier;
       let formattedPhone = phoneNumber.trim();
@@ -105,20 +118,11 @@ const Login = () => {
       setConfirmationResult(confirmation);
       toast.success("OTP sent successfully!");
     } catch (err) {
-      console.error("Full Phone Auth Error Object:", err);
-      console.error("Error Code:", err.code);
-      console.error("Error Message:", err.message);
+      console.error("Full Phone Auth Error:", err);
       
-      if (err.code === 'auth/invalid-app-credential') {
-        toast.error("Firebase cannot verify this request. Try opening the site in an Incognito window.");
-      } else {
-        toast.error(err.message);
-      }
+      // Print the EXACT raw message from Firebase into the UI so we can debug it
+      toast.error(`Google Error: ${err.message}`, { duration: 6000 });
       
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = null;
-      }
     } finally {
       setLoading(false);
     }
@@ -220,15 +224,31 @@ const Login = () => {
                 required
               />
           </div>
-          <div className='forminput'>
+          <div className='forminput' style={{ position: 'relative' }}>
               <h4>Password</h4>
               <input 
-                type="password" 
+                type={showPassword ? "text" : "password"} 
                 placeholder='Enter your password' 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                style={{ paddingRight: '45px' }}
               />
+              <span 
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                    position: 'absolute',
+                    right: '15px',
+                    top: '42px',
+                    cursor: 'pointer',
+                    color: '#64748b',
+                    display: 'flex',
+                    alignItems: 'center'
+                }}
+                title={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+              </span>
           </div>
           <div className='formButtons'>
               <button type="submit" disabled={loading}>

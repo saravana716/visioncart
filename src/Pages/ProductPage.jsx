@@ -11,6 +11,22 @@ import colorimg from '../assets/color.png';
 import './ProductPage.css';
 import Loader from '../Components/Loader/Loader';
 
+import bannerSpectacles from '../assets/categoryimage/1.png';
+import bannerSunglasses from '../assets/categoryimage/2.png';
+import bannerReading from '../assets/categoryimage/3.png';
+import bannerComputer from '../assets/categoryimage/4.png';
+import bannerKids from '../assets/categoryimage/5.png';
+import bannerContact from '../assets/categoryimage/6.png';
+
+const categoryImages = {
+    'Spectacles': bannerComputer,
+    'Sunglasses': bannerSunglasses,
+    'Reading Glasses': bannerSpectacles,
+    'Computer Glasses': bannerContact,
+    'Kids Collection': bannerKids,
+    'Contact Lenses': bannerReading
+};
+
 const fallbackData = {
     'Spectacles': {
         gender: ['Men', 'Women', 'Unisex', 'Kids'],
@@ -201,6 +217,7 @@ const ProductPage = () => {
             price: displayPrice ? (displayPrice.toString().startsWith('₹') ? displayPrice : `₹${displayPrice}`) : '₹0',
             mrpprice: p.price || p.originalPrice || '0',
             img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
+            hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
             rating: rateimg,
             color: colorimg,
             ratingcount: p.ratingCount || "0",
@@ -232,19 +249,12 @@ const ProductPage = () => {
             <Navbar />
             
             {/* Banner Section */}
-            <div 
-                className="product-banner" 
-                style={categoryConfig?.imageUrl || categoryConfig?.image || categoryConfig?.bannerImage ? {
-                    backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${categoryConfig.imageUrl || categoryConfig.image || categoryConfig.bannerImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                } : {}}
-            >
-                <div className="banner-content">
-                    <h1>{bannerInfo.title}</h1>
-                    <h2>{bannerInfo.subtitle}</h2>
-                    <p>{bannerInfo.desc}</p>
-                </div>
+            <div className="product-banner-wrapper">
+                <img 
+                    className="product-banner" 
+                    src={categoryImages[category] || categoryConfig?.imageUrl || categoryConfig?.image || categoryConfig?.bannerImage || bannerSpectacles}
+                    alt={`${category} Banner`}
+                />
             </div>
 
             <div className="product-listing-section">
@@ -385,28 +395,7 @@ const ProductPage = () => {
                                 </div>
                             )}
 
-                            {/* Frame Color */}
-                            {currentFilters.color.length > 0 && (
-                                <div className="filter-group">
-                                    <div className="filter-title" onClick={() => toggleFilter('frameColor')}>
-                                        <span>Frame Color</span>
-                                        <span className={`arrow ${openFilters.frameColor ? 'open' : ''}`}>▾</span>
-                                    </div>
-                                    {openFilters.frameColor && (
-                                        <div className="filter-options">
-                                            {currentFilters.color.map((opt, i) => (
-                                                <label key={i}>
-                                                    <input 
-                                                        type="checkbox" 
-                                                        checked={selectedFilters.frameColor.includes(opt)}
-                                                        onChange={() => handleFilterChange('frameColor', opt)}
-                                                    /> {opt}
-                                                </label>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+
 
                             {/* Frame Size */}
                             {currentFilters.size.length > 0 && (
