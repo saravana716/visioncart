@@ -244,6 +244,28 @@ const ProductDetails = () => {
         return () => observer.disconnect();
     }, [loading]);
 
+    const handleAddToCart = async () => {
+        const cartData = {
+            productId: id,
+            productBrand: product.brand,
+            productName: product.title,
+            productImage: product.mainImage,
+            productPrice: product.price,
+            productSize: product.size,
+            totalPrice: product.price,
+            category: product.category,
+            specifications: [
+                ...(product.technicalSpecs || []),
+                { label: 'Color', value: selectedColor?.name || (product.colors?.[0]?.name) || 'Default' },
+                { label: 'Size', value: product.size || 'Standard' },
+                { label: 'Lens', value: 'Frame Only' },
+                { label: 'Material', value: 'Standard' }
+            ],
+            sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || id,
+        };
+        return await addItemToCart(cartData);
+    };
+
 
 
     if (loading) return <Loader fullPage={true} />;
@@ -383,25 +405,7 @@ const ProductDetails = () => {
                             <button 
                                 className="action-primary-btn"
                                 onClick={async () => {
-                                    const cartData = {
-                                        productId: id,
-                                        productBrand: product.brand,
-                                        productName: product.title,
-                                        productImage: product.mainImage,
-                                        productPrice: product.price,
-                                        productSize: product.size,
-                                        totalPrice: product.price,
-                                        category: product.category,
-                                        specifications: [
-                                            ...(product.technicalSpecs || []),
-                                            { label: 'Color', value: selectedColor?.name || (product.colors?.[0]?.name) || 'Default' },
-                                            { label: 'Size', value: product.size || 'Standard' },
-                                            { label: 'Lens', value: 'Frame Only' },
-                                            { label: 'Material', value: 'Standard' }
-                                        ],
-                                        sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || id,
-                                    };
-                                    const success = await addItemToCart(cartData);
+                                    const success = await handleAddToCart();
                                     if (success) {
                                         setDrawerTab('cart');
                                         setCartOpen(true);
@@ -412,6 +416,12 @@ const ProductDetails = () => {
                             </button>
                             <button 
                                 className="action-secondary-btn"
+                                onClick={async () => {
+                                    const success = await handleAddToCart();
+                                    if (success) {
+                                        navigate('/checkout');
+                                    }
+                                }}
                             >
                                 Buy Now
                             </button>

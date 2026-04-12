@@ -27,18 +27,37 @@
 
 .lens-grid {
     display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
-    justify-content: center;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    width: max-content;
+    animation: scroll-lenses 100s linear infinite;
+    gap: 30px;
+}
+
+.carousel-viewport {
+    width: 100%;
+    overflow: hidden;
+}
+
+.carousel-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scroll-lenses {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 .lens-card {
-    flex: 1 1 calc(25% - 25px);
-    min-width: 250px;
-    max-width: 350px;
+    flex: 0 0 320px;
+    width: 320px;
     background: white;
     border-radius: 16px;
-    padding: 20px;
+    padding: 24px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     display: flex;
@@ -92,24 +111,19 @@
 }
 
 /* Responsive Rules */
-@media (max-width: 1024px) {
-    .lens-card {
-        flex: 1 1 calc(33.333% - 25px);
-    }
-}
-
 @media (max-width: 768px) {
+    .lens-grid {
+        animation-duration: 60s; /* Slightly faster on mobile */
+        gap: 20px;
+    }
+
     .lens-card {
-        flex: 1 1 calc(50% - 25px);
+        flex: 0 0 280px; 
+        max-width: 280px;
+        min-width: 280px;
     }
     
     .lens-collection-container {
-        padding: 40px 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .lens-card {
-        flex: 1 1 100%;
+        padding: 40px 10px;
     }
 }

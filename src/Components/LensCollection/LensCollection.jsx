@@ -21,6 +21,9 @@ const lensData = [
 ];
 
 const LensCollection = () => {
+  // Doubling the array for a seamless loop scroll on mobile
+  const displayLenses = [...lensData, ...lensData];
+
   return (
     <div className="lens-collection-container scroll-reveal">
       <div className="lens-header">
@@ -28,18 +31,20 @@ const LensCollection = () => {
         <p>Explore our wide collection of high-quality lenses tailored perfectly for your lifestyle and vision zero compromises.</p>
       </div>
 
-      <div className="lens-grid">
-        {lensData.map((lens) => (
-          <div key={lens.id} className="lens-card">
-            <div className="lens-image-wrapper">
-              <img src={lens.image} alt={lens.name} className="lens-image" />
+      <div className="carousel-viewport">
+        <div className="lens-grid carousel-track">
+          {displayLenses.map((lens, index) => (
+            <div key={`${lens.id}-${index}`} className={`lens-card ${index >= lensData.length ? 'duplicate' : ''}`}>
+              <div className="lens-image-wrapper">
+                <img src={lens.image} alt={lens.name} className="lens-image" />
+              </div>
+              <div className="lens-info">
+                <h3>{lens.name}</h3>
+                <p>{lens.description}</p>
+              </div>
             </div>
-            <div className="lens-info">
-              <h3>{lens.name}</h3>
-              <p>{lens.description}</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,15 @@ import "./Slider.css";
 const Slider = () => {
     const slides = [
         {
+            heading: 'Look',
+            highlight: 'Better',
+            subheading: 'Elevate Your Style with Premium Frames.',
+            desc1: 'Choose from a wide range of curated collections that match your personality',
+            desc2: 'and make a statement wherever you go.',
+            image: sliderimg,
+            color: '#FF0075'
+        },
+        {
             heading: 'See',
             highlight: 'Better',
             subheading: 'Find Your Perfect Eyewear. Try Before You Buy.',
@@ -22,15 +31,6 @@ const Slider = () => {
             desc1: 'Lightweight materials and ergonomic designs ensuring all-day comfort',
             desc2: 'without compromising on the trendiest looks.',
             image: image1,
-            color: '#FF0075'
-        },
-        {
-            heading: 'Look',
-            highlight: 'Better',
-            subheading: 'Elevate Your Style with Premium Frames.',
-            desc1: 'Choose from a wide range of curated collections that match your personality',
-            desc2: 'and make a statement wherever you go.',
-            image: sliderimg,
             color: '#FF0075'
         }
     ];

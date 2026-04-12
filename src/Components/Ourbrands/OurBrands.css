@@ -27,7 +27,7 @@
     display: flex;
     padding: 20px 0;
     width: max-content;
-    animation: scroll-brands 40s linear infinite;
+    animation: scroll-brands 100s linear infinite;
     gap: 30px;
 }
 
@@ -77,7 +77,7 @@
     }
 
     .our-brands-section h1 {
-        font-size: 20px; /* Matched with other section headers */
+        font-size: 32px; /* Increased for better visibility on mobile */
     }
 
     .carousel-track {

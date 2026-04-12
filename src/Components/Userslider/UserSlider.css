@@ -25,7 +25,7 @@
     display: flex;
     padding: 0;
     width: max-content;
-    animation: scroll 60s linear infinite; /* Slower, more elegant scroll */
+    animation: scroll 120s linear infinite; /* Much slower, very premium feel */
 }
 
 .userslider-section:hover .carousel-track {
@@ -57,7 +57,7 @@
         width: 180px; /* Smaller on mobile */
     }
     .userslider-section .carousel-track {
-        animation-duration: 20s; /* Slightly faster feel on mobile */
+        animation-duration: 80s; /* Slower on mobile too */
     }
 }
 

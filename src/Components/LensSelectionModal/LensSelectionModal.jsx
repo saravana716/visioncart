@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 import { FaPhoneAlt } from 'react-icons/fa';
 import './LensSelectionModal.css';
 import ReadingGlassesPowerSelector from '../ReadingGlassesPowerSelector/ReadingGlassesPowerSelector';
@@ -13,6 +14,8 @@ const LensSelectionModal = ({
     setCartOpen, 
     setDrawerTab 
 }) => {
+    const navigate = useNavigate();
+
     // Selection States
     const [selectedLensType, setSelectedLensType] = useState('Single Vision');
     const [selectedMaterial, setSelectedMaterial] = useState('TR90');
@@ -104,6 +107,57 @@ const LensSelectionModal = ({
             }
             return newState;
         });
+    };
+
+    const handleInternalAddToCart = async () => {
+        if (product.stock !== undefined && product.stock <= 0) return false;
+        const isReadingGlasses = product.category === 'Reading Glasses';
+        
+        // Validate for reading glasses
+        if (isReadingGlasses && (!readingPower.rightPower || (!readingPower.sameForBoth && !readingPower.leftPower))) {
+            const { default: toast } = await import('react-hot-toast');
+            toast.error('Please select power for your eyes');
+            return false;
+        }
+
+        const cartData = {
+            productId: product.id,
+            productBrand: product.brand,
+            productName: product.title,
+            productImage: product.mainImage,
+            productPrice: product.price,
+            productSize: product.size,
+            category: product.category,
+            specifications: [
+                ...(product.technicalSpecs || []),
+                { label: 'Size', value: product.size || 'Standard' },
+                ...(isReadingGlasses ? [
+                    { label: 'Lens', value: 'Reading Glass' },
+                    { label: 'Right Eye Power', value: readingPower.rightPower },
+                    { label: 'Left Eye Power', value: readingPower.sameForBoth ? readingPower.rightPower : readingPower.leftPower }
+                ] : [
+                    { label: 'Lens', value: selectedLensType },
+                    { label: 'Material', value: selectedMaterial },
+                    { label: 'Style', value: selectedFrameStyle },
+                    { label: 'Usage', value: selectedUsage },
+                    { label: 'Prescription', value: prescriptionType }
+                ])
+            ],
+            sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || product.id,
+            enhancements: isReadingGlasses || product.category === 'Contact Lenses' ? [] : selectedEnhancements,
+            prescriptionType: isReadingGlasses ? 'Reading Glass Power' : (product.category === 'Contact Lenses' ? (contactLensPowerOption === 'manual' ? 'Manual Contact Lens Power' : 'Submit Later') : prescriptionType),
+            prescription: product.category === 'Contact Lenses' ? {
+                rightSelected: clRightEyeSelected,
+                leftSelected: clLeftEyeSelected,
+                rightPower: clRightEyeSelected ? clRightSph : null,
+                leftPower: clLeftEyeSelected ? clLeftSph : null,
+                rightBoxes: clRightEyeSelected ? clRightBoxes : 0,
+                leftBoxes: clLeftEyeSelected ? clLeftBoxes : 0,
+            } : (isReadingGlasses ? { readingPower } : prescription),
+            totalPrice: calculateTotalPrice()
+        };
+        
+        return await addItemToCart(cartData);
     };
 
     const handleSavePrescription = () => {
@@ -409,51 +463,7 @@ const LensSelectionModal = ({
                             className={`modal-add-cart ${product.stock !== undefined && product.stock <= 0 ? 'disabled' : ''}`} 
                             disabled={product.stock !== undefined && product.stock <= 0}
                             onClick={async () => {
-                                if (product.stock !== undefined && product.stock <= 0) return;
-                                const isReadingGlasses = product.category === 'Reading Glasses';
-                                // Validate for reading glasses
-                                if (isReadingGlasses && (!readingPower.rightPower || (!readingPower.sameForBoth && !readingPower.leftPower))) {
-                                    import('react-hot-toast').then(({ default: toast }) => toast.error('Please select power for your eyes'));
-                                    return;
-                                }
-
-                                const cartData = {
-                                    productId: product.id,
-                                    productBrand: product.brand,
-                                    productName: product.title,
-                                    productImage: product.mainImage,
-                                    productPrice: product.price,
-                                    productSize: product.size,
-                                    category: product.category,
-                                    specifications: [
-                                        ...(product.technicalSpecs || []),
-                                        { label: 'Size', value: product.size || 'Standard' },
-                                        ...(isReadingGlasses ? [
-                                            { label: 'Lens', value: 'Reading Glass' },
-                                            { label: 'Right Eye Power', value: readingPower.rightPower },
-                                            { label: 'Left Eye Power', value: readingPower.sameForBoth ? readingPower.rightPower : readingPower.leftPower }
-                                        ] : [
-                                            { label: 'Lens', value: selectedLensType },
-                                            { label: 'Material', value: selectedMaterial },
-                                            { label: 'Style', value: selectedFrameStyle },
-                                            { label: 'Usage', value: selectedUsage },
-                                            { label: 'Prescription', value: prescriptionType }
-                                        ])
-                                    ],
-                                    sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || product.id,
-                                    enhancements: isReadingGlasses || product.category === 'Contact Lenses' ? [] : selectedEnhancements,
-                                    prescriptionType: isReadingGlasses ? 'Reading Glass Power' : (product.category === 'Contact Lenses' ? (contactLensPowerOption === 'manual' ? 'Manual Contact Lens Power' : 'Submit Later') : prescriptionType),
-                                    prescription: product.category === 'Contact Lenses' ? {
-                                        rightSelected: clRightEyeSelected,
-                                        leftSelected: clLeftEyeSelected,
-                                        rightPower: clRightEyeSelected ? clRightSph : null,
-                                        leftPower: clLeftEyeSelected ? clLeftSph : null,
-                                        rightBoxes: clRightEyeSelected ? clRightBoxes : 0,
-                                        leftBoxes: clLeftEyeSelected ? clLeftBoxes : 0,
-                                    } : (isReadingGlasses ? { readingPower } : prescription),
-                                    totalPrice: calculateTotalPrice()
-                                };
-                                const success = await addItemToCart(cartData);
+                                const success = await handleInternalAddToCart();
                                 if (success) {
                                     onClose();
                                     setDrawerTab('cart');
@@ -466,7 +476,13 @@ const LensSelectionModal = ({
                         <button 
                             className={`modal-buy-now ${product.stock !== undefined && product.stock <= 0 ? 'disabled' : ''}`} 
                             disabled={product.stock !== undefined && product.stock <= 0}
-                            onClick={onClose}
+                            onClick={async () => {
+                                const success = await handleInternalAddToCart();
+                                if (success) {
+                                    onClose();
+                                    navigate('/checkout');
+                                }
+                            }}
                         >
                             Buy Now
                         </button>

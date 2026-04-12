@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IoCloseOutline, IoCartOutline, IoTimeOutline, IoHeartOutline } from "react-icons/io5";
+import { IoCloseOutline, IoCartOutline, IoTimeOutline, IoHeartOutline, IoTrashOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
@@ -7,8 +7,8 @@ import { getProductById } from '../../services/firestoreService';
 import './SideDrawer.css';
 
 const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
-    const { cartItems, cartCount } = useCart();
-    const { wishlistItems, cleanupStaleIds } = useWishlist();
+    const { cartItems, cartCount, removeItemFromCart } = useCart();
+    const { wishlistItems, cleanupStaleIds, toggleWishlist } = useWishlist();
     const [recentProducts, setRecentProducts] = useState([]);
     const [wishlistProducts, setWishlistProducts] = useState([]);
     const [activeTab, setActiveTab] = useState(initialTab); // 'cart', 'recent', 'wishlist'
@@ -128,6 +128,15 @@ const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
                                                 <h4>{item.productName}</h4>
                                                 <p>{item.totalPrice}</p>
                                             </div>
+                                            <button 
+                                                className="remove-item-btn" 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    removeItemFromCart(item.id);
+                                                }}
+                                            >
+                                                <IoTrashOutline />
+                                            </button>
                                         </div>
                                     ))}
                                     <div className="drawer-footer">
@@ -158,6 +167,16 @@ const SideDrawer = ({ isOpen, onClose, initialTab = 'cart' }) => {
                                                 <h4>{p.name || p.brand}</h4>
                                                 <p>₹{p.price}</p>
                                             </div>
+                                            <button 
+                                                className="remove-item-btn" 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    toggleWishlist(p.id);
+                                                    fetchWishlistProducts(); // Refresh local list after toggling
+                                                }}
+                                            >
+                                                <IoTrashOutline />
+                                            </button>
                                         </div>
                                     ))}
                                     <div className="drawer-footer">

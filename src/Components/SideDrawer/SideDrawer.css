@@ -166,6 +166,30 @@
     color: #ff0066;
 }
 
+.remove-item-btn {
+    background: #fdf2f5;
+    color: #ff0066;
+    border: 1px solid rgba(255, 0, 102, 0.1);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    margin-left: auto; /* Push to right */
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.remove-item-btn:hover {
+    background: #ff0066;
+    color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(255, 0, 102, 0.2);
+}
+
 .empty-state {
     text-align: center;
     padding: 60px 20px;
