@@ -14,7 +14,6 @@ import {
     FaTruck,
     FaFileInvoice
 } from 'react-icons/fa';
-import './OrderDetail.css';
 import Loader from '../Components/Loader/Loader';
 
 const OrderDetail = () => {

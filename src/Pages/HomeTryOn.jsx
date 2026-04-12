@@ -7,7 +7,6 @@ import rateimg from '../assets/star.png';
 import { MdVerified, MdCleanHands, MdGroups } from "react-icons/md";
 import { GiMicroscope } from "react-icons/gi";
 import { IoReceiptOutline } from "react-icons/io5";
-import './HomeTryOn.css';
 
 const HomeTryOn = () => {
     const navigate = useNavigate();

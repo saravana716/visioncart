@@ -8,7 +8,6 @@ import { getProducts, getCategoryByName } from '../services/firestoreService';
 import { IoIosSearch } from "react-icons/io";
 import rateimg from '../assets/star.png';
 import colorimg from '../assets/color.png';
-import './ProductPage.css';
 import Loader from '../Components/Loader/Loader';
 
 import bannerSpectacles from '../assets/categoryimage/1.png';

@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { FaTimesCircle, FaExclamationTriangle, FaArrowLeft } from 'react-icons/fa';
-import './OrderFailed.css';
 
 const OrderFailed = () => {
     const navigate = useNavigate();

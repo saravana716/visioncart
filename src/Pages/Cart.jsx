@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import { FaTrashAlt, FaRegFileAlt } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { getCoupon } from '../services/firestoreService';
-import './Cart.css';
 
 const Cart = () => {
     const { cartItems, removeItemFromCart, cartCount } = useCart();

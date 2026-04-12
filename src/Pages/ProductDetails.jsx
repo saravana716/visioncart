@@ -12,7 +12,6 @@ import ReviewsSection from '../Components/Reviews/ReviewsSection';
 import RecentlyViewed from '../Components/RecentlyViewed/RecentlyViewed';
 import Recommendations from '../Components/Recommendations/Recommendations';
 import rateimg from '../assets/star.png';
-import './ProductDetails.css';
 import Loader from '../Components/Loader/Loader';
 // import Product360Viewer from '../Components/Product360Viewer/Product360Viewer';
 import ImageZoom from '../Components/ImageZoom/ImageZoom';

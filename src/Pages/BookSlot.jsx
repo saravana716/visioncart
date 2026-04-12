@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { IoSearchOutline } from "react-icons/io5";
-import './BookSlot.css';
 
 const BookSlot = () => {
     const [step, setStep] = useState(2); // Starting at Address step as per design

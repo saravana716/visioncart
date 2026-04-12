@@ -13,7 +13,6 @@ import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { FaShippingFast, FaCreditCard, FaCheckCircle, FaMapMarkerAlt } from 'react-icons/fa';
 import toast from 'react-hot-toast';
-import './Checkout.css';
 import Loader from '../Components/Loader/Loader';
 
 const Checkout = () => {
