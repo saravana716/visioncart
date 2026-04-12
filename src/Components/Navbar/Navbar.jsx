@@ -251,6 +251,7 @@ const Navbar = () => {
                 <ul className="sidebar-nav">
                     <li onClick={() => handleNavigation('/')}>Home</li>
                     <li onClick={() => handleNavigation('/products')}>All Products</li>
+                    <li onClick={() => handleNavigation('/about')}>About</li>
                     <li className="sidebar-section-title">Categories</li>
                     {categories.map((category) => (
                         <li key={category.id || category.name} onClick={() => handleCategoryClick(category)}>{category.name}</li>
@@ -268,8 +269,8 @@ const Navbar = () => {
                         </>
                     )}
                     <li className="sidebar-section-title">Others</li>
-                    <li>Blogs</li>
-                    <li>Contact Us</li>
+                    <li onClick={() => handleNavigation('/blogs')}>Blogs</li>
+                    <li onClick={() => handleNavigation('/contact')}>Contact Us</li>
                     <li className="sidebar-section-title">Premium Services</li>
                     {/* <li onClick={() => handleNavigation('/home-try-on')}>Home Try-On</li> */}
                     <li onClick={() => handleNavigation('/virtual-try-on')}>3D Virtual Try-On</li>

@@ -53,18 +53,18 @@
 }
 
 .lens-card {
-    flex: 0 0 320px;
-    width: 320px;
+    flex: 0 0 280px;
+    width: 280px;
     background: white;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    border-radius: 20px;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    border: 1px solid transparent;
+    overflow: hidden;
+    border: 1px solid #edf2f7;
 }
 
 .lens-card:hover {
@@ -75,12 +75,11 @@
 
 .lens-image-wrapper {
     width: 100%;
-    height: 160px;
+    height: 280px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 20px;
-    border-radius: 12px;
+    margin-bottom: 0;
     background: #fcfcfc;
     overflow: hidden;
 }
@@ -88,27 +87,16 @@
 .lens-image {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    transform: scale(2.2); /* Scaled heavily to overcome massive built-in transparent borders */
-    transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    object-fit: cover;
+    transform: scale(2.0); /* Keeps slight zoom to crop any remaining borders */
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .lens-card:hover .lens-image {
-    transform: scale(2.4);
+    transform: scale(2.2);
 }
 
-.lens-info h3 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.lens-info p {
-    font-size: 14px;
-    color: #777;
-    line-height: 1.5;
-}
+/* Lens info styles removed as text is hidden */
 
 /* Responsive Rules */
 @media (max-width: 768px) {

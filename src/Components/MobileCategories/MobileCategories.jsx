@@ -27,19 +27,19 @@ const MobileCategories = () => {
 
     if (catName.includes('Contact')) {
       return [
-        { name: 'Lens', img: 'https://images.unsplash.com/photo-1617300320498-330691238d9e?auto=format&fit=crop&w=150&q=80', params: 'Lens' },
-        { name: 'Color', img: 'https://images.unsplash.com/photo-1596704017254-9b121068fb29?auto=format&fit=crop&w=150&q=80', params: 'Color' },
-        { name: 'Solution', img: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=150&q=80', params: 'Solution' },
-        { name: 'Accessories', img: 'https://images.unsplash.com/photo-1605633511283-bc2a29774577?auto=format&fit=crop&w=150&q=80', params: 'Accessories' }
+        { name: 'Lens', img: 'https://images.unsplash.com/photo-1544256718-3bcf237f3974?w=200&q=80', params: 'Lens' },
+        { name: 'Color', img: 'https://images.unsplash.com/photo-1525904097878-94fb15835963?w=200&q=80', params: 'Color' },
+        { name: 'Solution', img: 'https://images.unsplash.com/photo-1581594693702-fbdc51b2763b?w=200&q=80', params: 'Solution' },
+        { name: 'Accessories', img: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200&q=80', params: 'Accessories' }
       ];
     }
-
+    
     if (catName === 'Reading Glasses' || catName === 'Computer Glasses') {
       return [
-        { name: 'ARC', img: 'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?auto=format&fit=crop&w=150&q=80', params: 'ARC' },
-        { name: 'Blue Cut', img: 'https://images.unsplash.com/photo-1511499767390-90342f56771f?auto=format&fit=crop&w=150&q=80', params: 'Blue Cut' },
-        { name: 'UV Protect', img: 'https://images.unsplash.com/photo-1605633511283-bc2a29774577?auto=format&fit=crop&w=150&q=80', params: 'UV' },
-        { name: 'Auto Cool', img: 'https://images.unsplash.com/photo-1508243771214-6e95d13742f0?auto=format&fit=crop&w=150&q=80', params: 'Auto' }
+        { name: 'ARC', img: 'https://images.unsplash.com/photo-1574258495973-f010dfbb5371?w=200&q=80', params: 'ARC' },
+        { name: 'Blue Cut', img: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=200&q=80', params: 'Blue Cut' },
+        { name: 'UV Protect', img: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=200&q=80', params: 'UV' },
+        { name: 'Auto Cool', img: 'https://images.unsplash.com/photo-1556306535-0f09a537f0a3?w=200&q=80', params: 'Auto' }
       ];
     }
     

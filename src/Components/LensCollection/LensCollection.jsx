@@ -38,10 +38,6 @@ const LensCollection = () => {
               <div className="lens-image-wrapper">
                 <img src={lens.image} alt={lens.name} className="lens-image" />
               </div>
-              <div className="lens-info">
-                <h3>{lens.name}</h3>
-                <p>{lens.description}</p>
-              </div>
             </div>
           ))}
         </div>
