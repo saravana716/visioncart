@@ -21,6 +21,7 @@
 @import './Pages/NotFound.css';
 @import './Pages/FAQ/FAQ.css';
 @import './Pages/Legal/LegalPage.css';
+@import './Pages/ComingSoon.css';
 *{
   padding: 0;
   margin: 0;

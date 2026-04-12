@@ -9,6 +9,8 @@ import SignUp from './Components/SignUp/SignUp'
 import Login from './Components/Login/Login'
 import Routing from './Routing/Routing'
 import Loader from './Components/Loader/Loader'
+import ComingSoon from './Pages/ComingSoon'
+import { config } from './config'
 
 function App() {
   const [initialLoading, setInitialLoading] = useState(true);
@@ -23,6 +25,16 @@ function App() {
 
   if (initialLoading) {
     return <Loader fullPage={true} />;
+  }
+
+  // If maintenance mode is on, only show Coming Soon page
+  if (config.isMaintenanceMode) {
+    return (
+      <>
+        <Toaster position="top-right" />
+        <ComingSoon />
+      </>
+    );
   }
 
   return (

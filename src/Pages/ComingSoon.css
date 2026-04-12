@@ -1,0 +1,224 @@
+.coming-soon-container {
+    min-height: 100vh;
+    width: 100%;
+    background: radial-gradient(circle at center, #001a4d 0%, #000b1a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Background Animated Elements */
+.coming-soon-container::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: var(--secondary-color);
+    filter: blur(150px);
+    opacity: 0.15;
+    top: -50px;
+    right: -50px;
+    animation: float 10s ease-in-out infinite alternate;
+}
+
+.coming-soon-container::after {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: var(--primary-color);
+    filter: blur(180px);
+    opacity: 0.2;
+    bottom: -100px;
+    left: -100px;
+    animation: float 15s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes float {
+    from { transform: translate(0, 0); }
+    to { transform: translate(50px, 50px); }
+}
+
+.cs-content {
+    max-width: 800px;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    padding: 3rem;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+.cs-logo {
+    width: 180px;
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+}
+
+.cs-tag {
+    display: inline-block;
+    padding: 0.5rem 1.2rem;
+    background: rgba(255, 0, 117, 0.1);
+    color: var(--secondary-color);
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 0, 117, 0.2);
+}
+
+.cs-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #a5a5a5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.cs-description {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Countdown Styles */
+.cs-countdown {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.countdown-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.countdown-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--secondary-color);
+}
+
+.countdown-value {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.countdown-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 5px;
+}
+
+/* Newsletter Styles */
+.cs-notify-form {
+    display: flex;
+    gap: 10px;
+    max-width: 500px;
+    margin: 0 auto 3rem;
+}
+
+.cs-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    color: #ffffff;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.cs-input:focus {
+    border-color: var(--secondary-color);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.cs-btn {
+    background: var(--secondary-color);
+    color: #ffffff;
+    border: none;
+    padding: 0 2rem;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cs-btn:hover {
+    background: #ff1a85;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(255, 0, 117, 0.4);
+}
+
+/* Social Links */
+.cs-socials {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.social-link {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.social-link:hover {
+    background: var(--secondary-color);
+    border-color: var(--secondary-color);
+    transform: translateY(-3px);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .cs-content {
+        padding: 2rem 1.5rem;
+    }
+
+    .cs-countdown {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .cs-notify-form {
+        flex-direction: column;
+    }
+
+    .cs-btn {
+        padding: 1rem;
+    }
+}
