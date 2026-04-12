@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
-import './About.css';
 import lifestyleHero from '../assets/lifestyle_hero.png';
 import aboutUsImg from '../assets/aboutus.png';
 import craftsmanshipImg from '../assets/craftsmanship.png';
