@@ -1,224 +1,291 @@
+:root {
+    --cs-primary: #002366;
+    --cs-secondary: #FF0075;
+    --cs-bg: #030816;
+    --cs-text: #ffffff;
+    --cs-text-muted: rgba(255, 255, 255, 0.6);
+    --cs-glass: rgba(255, 255, 255, 0.03);
+    --cs-border: rgba(255, 255, 255, 0.08);
+}
+
 .coming-soon-container {
     min-height: 100vh;
     width: 100%;
-    background: radial-gradient(circle at center, #001a4d 0%, #000b1a 100%);
+    background-color: var(--cs-bg);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2rem;
     position: relative;
     overflow: hidden;
-    color: #ffffff;
+    color: var(--cs-text);
     font-family: 'Outfit', sans-serif;
 }
 
-/* Background Animated Elements */
-.coming-soon-container::before {
-    content: '';
+/* Sophisticated Ambient Background */
+.ambient-bg {
     position: absolute;
-    width: 300px;
-    height: 300px;
-    background: var(--secondary-color);
-    filter: blur(150px);
-    opacity: 0.15;
-    top: -50px;
-    right: -50px;
-    animation: float 10s ease-in-out infinite alternate;
+    inset: 0;
+    z-index: 1;
 }
 
-.coming-soon-container::after {
-    content: '';
+.blob {
     position: absolute;
-    width: 400px;
-    height: 400px;
-    background: var(--primary-color);
-    filter: blur(180px);
-    opacity: 0.2;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.3;
+    mix-blend-mode: screen;
+    animation: blob-drift 25s infinite ease-in-out alternate;
+}
+
+.blob-1 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--cs-secondary) 0%, transparent 70%);
+    top: -150px;
+    right: -100px;
+}
+
+.blob-2 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--cs-primary) 0%, transparent 70%);
     bottom: -100px;
     left: -100px;
-    animation: float 15s ease-in-out infinite alternate-reverse;
+    animation-delay: -5s;
 }
 
-@keyframes float {
-    from { transform: translate(0, 0); }
-    to { transform: translate(50px, 50px); }
+.blob-3 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #3d0066 0%, transparent 70%);
+    top: 40%;
+    left: 20%;
+    animation-delay: -12s;
+}
+
+@keyframes blob-drift {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    33% { transform: translate(40px, -60px) rotate(10deg) scale(1.1); }
+    66% { transform: translate(-30px, 30px) rotate(-10deg) scale(0.95); }
+    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
 }
 
 .cs-content {
-    max-width: 800px;
-    width: 100%;
-    text-align: center;
+    position: relative;
     z-index: 10;
-    backdrop-filter: blur(10px);
-    padding: 3rem;
-    border-radius: 30px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    max-width: 850px;
+    width: 100%;
+    background: var(--cs-glass);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    border: 1px solid var(--cs-border);
+    border-radius: 40px;
+    padding: clamp(2rem, 5vw, 4.5rem);
+    text-align: center;
+    box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
+    animation: slide-up-fade 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@keyframes slide-up-fade {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.cs-logo-container {
+    margin-bottom: 3.5rem;
+    position: relative;
+    display: inline-block;
 }
 
 .cs-logo {
-    width: 180px;
-    margin-bottom: 2rem;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.1));
+}
+
+.cs-tag-wrapper {
+    margin-bottom: 2.5rem;
 }
 
 .cs-tag {
-    display: inline-block;
-    padding: 0.5rem 1.2rem;
-    background: rgba(255, 0, 117, 0.1);
-    color: var(--secondary-color);
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 1.5rem;
-    border: 1px solid rgba(255, 0, 117, 0.2);
+    letter-spacing: 5px;
+    color: var(--cs-secondary);
+    display: inline-block;
+    padding-bottom: 8px;
+    position: relative;
+}
+
+.cs-tag::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 15%;
+    right: 15%;
+    height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--cs-secondary), transparent);
 }
 
 .cs-title {
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
     font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, #ffffff 0%, #a5a5a5 100%);
+    line-height: 1.05;
+    margin-bottom: 2rem;
+    letter-spacing: -1.5px;
+    background: linear-gradient(180deg, #ffffff 30%, rgba(255, 255, 255, 0.4) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .cs-description {
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 3rem;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: var(--cs-text-muted);
     max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 4rem;
+    font-weight: 400;
 }
 
-/* Countdown Styles */
+/* Countdown Redesign - Modern & Minimal */
 .cs-countdown {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    display: flex;
+    justify-content: center;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    margin-bottom: 5rem;
 }
 
 .countdown-item {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 1.5rem;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: transform 0.3s ease;
-}
-
-.countdown-item:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: var(--secondary-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
 }
 
 .countdown-value {
-    display: block;
-    font-size: 2.5rem;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
     font-weight: 700;
     color: #ffffff;
     line-height: 1;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 0.6rem;
 }
 
 .countdown-label {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.7rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 5px;
+    letter-spacing: 2px;
+    color: var(--cs-secondary);
+    opacity: 0.9;
 }
 
-/* Newsletter Styles */
+/* Newsletter Form - Ultra Clean */
 .cs-notify-form {
     display: flex;
-    gap: 10px;
-    max-width: 500px;
-    margin: 0 auto 3rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--cs-border);
+    padding: 6px;
+    border-radius: 24px;
+    max-width: 520px;
+    margin: 0 auto 4rem;
+    transition: var(--transition-smooth);
+}
+
+.cs-notify-form:focus-within {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 40px rgba(255, 0, 117, 0.12);
 }
 
 .cs-input {
     flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 1rem 1.5rem;
-    border-radius: 12px;
+    background: transparent;
+    border: none;
+    padding: 1rem 1.8rem;
     color: #ffffff;
+    font-size: 1rem;
     font-family: inherit;
-    transition: all 0.3s ease;
+    outline: none;
 }
 
-.cs-input:focus {
-    border-color: var(--secondary-color);
-    background: rgba(255, 255, 255, 0.1);
+.cs-input::placeholder {
+    color: rgba(255, 255, 255, 0.25);
 }
 
 .cs-btn {
-    background: var(--secondary-color);
-    color: #ffffff;
+    background: #ffffff;
+    color: #030816;
     border: none;
-    padding: 0 2rem;
-    border-radius: 12px;
-    font-weight: 600;
+    padding: 0 2.2rem;
+    border-radius: 18px;
+    font-weight: 700;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
 }
 
 .cs-btn:hover {
-    background: #ff1a85;
-    transform: scale(1.05);
-    box-shadow: 0 0 20px rgba(255, 0, 117, 0.4);
+    background: var(--cs-secondary);
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
-/* Social Links */
+/* Social Footer */
 .cs-socials {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 35px;
 }
 
 .social-link {
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 1.4rem;
     text-decoration: none;
-    transition: all 0.3s ease;
-    font-size: 1.2rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .social-link:hover {
-    background: var(--secondary-color);
-    border-color: var(--secondary-color);
-    transform: translateY(-3px);
+    color: var(--cs-secondary);
+    transform: translateY(-6px);
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .cs-content {
-        padding: 2rem 1.5rem;
+        padding: 3rem 1.5rem;
+        border-radius: 30px;
     }
 
     .cs-countdown {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        gap: 1.2rem;
+    }
+
+    .countdown-value {
+        font-size: 2.2rem;
     }
 
     .cs-notify-form {
         flex-direction: column;
+        background: transparent;
+        border: none;
+        padding: 0;
+        gap: 12px;
+    }
+
+    .cs-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--cs-border);
+        border-radius: 18px;
+        text-align: center;
     }
 
     .cs-btn {
-        padding: 1rem;
+        padding: 1.1rem;
+        border-radius: 18px;
     }
 }

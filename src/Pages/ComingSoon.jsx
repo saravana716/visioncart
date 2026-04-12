@@ -36,66 +36,42 @@ const ComingSoon = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Placeholder for subscription logic
-        alert('Thank you! We will notify you when we go live.');
+        alert('Stay tuned! We will notify you at ' + e.target[0].value);
     };
 
     return (
         <div className="coming-soon-container">
-            <div className="cs-content reveal-in">
-                <img src={logo} alt="VisionCart Logo" className="cs-logo" />
+            {/* Ambient Background Layer */}
+            <div className="ambient-bg">
+                <div className="blob blob-1"></div>
+                <div className="blob blob-2"></div>
+                <div className="blob blob-3"></div>
+            </div>
+
+            {/* Main Center Content */}
+            <div className="cs-content">
+                <div className="cs-logo-container">
+                    <img src={logo} alt="VisionCart Logo" className="cs-logo" />
+                </div>
                 
-                <span className="cs-tag">Something big is coming</span>
+                <div className="cs-tag-wrapper">
+                    <span className="cs-tag">Launching Soon</span>
+                </div>
                 
-                <h1 className="cs-title">Our Vision is<br />Coming to Life</h1>
+                <h1 className="cs-title">Something Special<br />is in Sight</h1>
                 
                 <p className="cs-description">
-                    We're working hard to bring you a premium eyewear shopping experience. 
-                    Get ready to see the world differently.
+                    We're working hard behind the scenes to bring you a premium eyewear shopping experience. 
+                    Thank you for your patience.
                 </p>
 
-                <div className="cs-countdown">
-                    <div className="countdown-item">
-                        <span className="countdown-value">{timeLeft.days}</span>
-                        <span className="countdown-label">Days</span>
-                    </div>
-                    <div className="countdown-item">
-                        <span className="countdown-value">{timeLeft.hours}</span>
-                        <span className="countdown-label">Hours</span>
-                    </div>
-                    <div className="countdown-item">
-                        <span className="countdown-value">{timeLeft.minutes}</span>
-                        <span className="countdown-label">Minutes</span>
-                    </div>
-                    <div className="countdown-item">
-                        <span className="countdown-value">{timeLeft.seconds}</span>
-                        <span className="countdown-label">Seconds</span>
-                    </div>
-                </div>
-
-                <form className="cs-notify-form" onSubmit={handleSubmit}>
-                    <input 
-                        type="email" 
-                        placeholder="Enter your email for updates" 
-                        className="cs-input"
-                        required 
-                    />
-                    <button type="submit" className="cs-btn">Notify Me</button>
-                </form>
-
                 <div className="cs-socials">
-                    <a href={config.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="social-link">
+                    {/* <a href={config.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="social-link">
                         <FaInstagram />
                     </a>
                     <a href={config.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="social-link">
                         <FaFacebookF />
-                    </a>
-                    <a href={config.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="social-link">
-                        <FaTwitter />
-                    </a>
-                    <a href={config.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="social-link">
-                        <FaLinkedinIn />
-                    </a>
+                    </a> */}
                 </div>
             </div>
         </div>
