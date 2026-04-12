@@ -46,15 +46,20 @@
     opacity: 0;
 }
 
+.zoom-container.is-zoomed {
+    touch-action: none; /* Prevents scrolling while panning image on mobile */
+}
+
 @media (max-width: 1024px) {
     .zoom-container {
         cursor: default;
+        height: auto;
+        aspect-ratio: 1/1;
     }
     .zoom-hint {
-        display: none;
+        opacity: 0.9;
     }
     .base-image {
-        transition: none;
-        transform: none !important;
+        max-height: 80vh;
     }
 }

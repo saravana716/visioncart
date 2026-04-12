@@ -23,17 +23,42 @@
 
 .userslider-section .carousel-track {
     display: flex;
-    padding: 0; /* Removed vertical padding for a more compact fill */
+    padding: 0;
+    width: max-content;
+    animation: scroll 60s linear infinite; /* Slower, more elegant scroll */
+}
+
+.userslider-section:hover .carousel-track {
+    animation-play-state: paused;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%); /* Shifts by 3 sets (half of 6), creating a perfect loop */
+    }
 }
 
 .usercard {
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center content in card */
+    align-items: center;
     gap: 15px;
     transition: transform 0.3s ease;
-    padding: 20px; /* Optional: adds internal breathing room while container is full width */
+    padding: 20px;
+    width: 250px; /* Fixed width for better control */
+}
+
+@media (max-width: 768px) {
+    .usercard {
+        width: 180px; /* Smaller on mobile */
+    }
+    .userslider-section .carousel-track {
+        animation-duration: 20s; /* Slightly faster feel on mobile */
+    }
 }
 
 .usercard:hover {

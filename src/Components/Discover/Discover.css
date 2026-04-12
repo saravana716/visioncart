@@ -54,7 +54,22 @@
 
 .carousel-track {
     display: flex;
-    align-items: center; /* Vertically center cards */
+    align-items: center;
+    width: max-content;
+    animation: scroll-discover 35s linear infinite;
+}
+
+.discoverright:hover .carousel-track {
+    animation-play-state: paused;
+}
+
+@keyframes scroll-discover {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 .discoverright .DiscoverCard{
