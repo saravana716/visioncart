@@ -1,14 +1,15 @@
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
-import { FaCheckCircle, FaShoppingBag } from 'react-icons/fa';
+import { FaCheckCircle, FaShoppingBag, FaPrint } from 'react-icons/fa';
 import './OrderSuccess.css';
 
 const OrderSuccess = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const orderId = location.state?.orderId || "VC-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+    const [searchParams] = useSearchParams();
+    const orderId = location.state?.orderId || searchParams.get('order_id') || "VC-" + Math.random().toString(36).substr(2, 9).toUpperCase();
 
     return (
         <div className="success-page">
@@ -28,6 +29,9 @@ const OrderSuccess = () => {
                     <div className="success-actions">
                         <button className="view-orders-btn" onClick={() => navigate('/profile')}>
                             <FaShoppingBag /> View My Orders
+                        </button>
+                        <button className="invoice-btn-luxury" onClick={() => navigate(`/invoice/${orderId}`)}>
+                            <FaPrint /> View Invoice
                         </button>
                         <button className="continue-btn" onClick={() => navigate('/')}>
                             Continue Shopping

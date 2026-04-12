@@ -23,6 +23,7 @@ const Checkout = () => {
     const [loading, setLoading] = useState(false);
     const [savedAddresses, setSavedAddresses] = useState([]);
     const [showSavedAddresses, setShowSavedAddresses] = useState(false);
+    const [paymentMethod, setPaymentMethod] = useState('ccavenue');
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
@@ -87,6 +88,78 @@ const Checkout = () => {
     };
 
     const handlePlaceOrder = async () => {
+        if (paymentMethod === 'ccavenue') {
+            await handleCCAvenuePayment();
+        } else {
+            await handleSimulatedPayment();
+        }
+    };
+
+    const handleCCAvenuePayment = async () => {
+        setLoading(true);
+        try {
+            const apiBase = "http://localhost:3000"; // Backend URL
+            const payload = {
+                amount: total.toString(),
+                currency: 'INR',
+                customer_name: form.fullName,
+                email: form.email,
+                phone: form.phone,
+                address: {
+                    billing_address: form.address,
+                    billing_city: form.city,
+                    billing_zip: form.zip,
+                    billing_state: form.state
+                }
+            };
+
+            const response = await fetch(`${apiBase}/create-order`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to initialize payment");
+            }
+
+            const data = await response.json();
+
+            // Create a hidden form and submit it to CCAvenue
+            const mapForm = document.createElement("form");
+            mapForm.target = "_self";
+            mapForm.method = "POST";
+            mapForm.action = data.ccavenue_url;
+
+            const merchantIdInput = document.createElement("input");
+            merchantIdInput.type = "hidden";
+            merchantIdInput.name = "merchant_id";
+            merchantIdInput.value = data.merchant_id;
+            mapForm.appendChild(merchantIdInput);
+
+            const accessCodeInput = document.createElement("input");
+            accessCodeInput.type = "hidden";
+            accessCodeInput.name = "access_code";
+            accessCodeInput.value = data.access_code;
+            mapForm.appendChild(accessCodeInput);
+
+            const encRequestInput = document.createElement("input");
+            encRequestInput.type = "hidden";
+            encRequestInput.name = "encRequest";
+            encRequestInput.value = data.encRequest;
+            mapForm.appendChild(encRequestInput);
+
+            document.body.appendChild(mapForm);
+            mapForm.submit();
+
+        } catch (error) {
+            console.error("CCAvenue Error:", error);
+            toast.error("Payment initialization failed. Please try again.");
+            setLoading(false);
+        }
+    };
+
+    const handleSimulatedPayment = async () => {
         setLoading(true);
         const orderData = {
             items: cartItems,
@@ -244,25 +317,46 @@ const Checkout = () => {
 
                         {step === 2 && (
                             <div className="checkout-section fade-in">
-                                <h2><FaCreditCard /> Payment Method</h2>
-                                <div className="payment-simulation">
-                                    <div className="payment-card active">
-                                        <div className="card-top">
+                                <h2><FaCreditCard /> Select Payment Method</h2>
+                                <div className="payment-options">
+                                    <div 
+                                        className={`payment-method-card ${paymentMethod === 'ccavenue' ? 'active' : ''}`}
+                                        onClick={() => setPaymentMethod('ccavenue')}
+                                    >
+                                        <div className="card-selector">
+                                            <div className="radio-circle"></div>
+                                            <div className="card-info">
+                                                <span className="method-name">CCAvenue Secure Payment</span>
+                                                <span className="method-desc">Credit/Debit Cards, UPI, NetBanking</span>
+                                            </div>
+                                        </div>
+                                        <div className="method-icon">
                                             <FaCreditCard />
-                                            <span>Simulated Payment</span>
-                                        </div>
-                                        <p>This is a simulated secure payment gateway. No real transaction will occur.</p>
-                                        <div className="sim-details">
-                                            <div className="sim-row"><span>Order Total:</span> <span>₹{total.toLocaleString()}</span></div>
-                                            <div className="sim-row"><span>Status:</span> <span className="secure-text">Ready to Process</span></div>
                                         </div>
                                     </div>
-                                    <div className="checkout-btns">
-                                        <button className="checkout-back-btn" onClick={() => setStep(1)}>Back</button>
-                                        <button className="checkout-place-btn" onClick={handlePlaceOrder} disabled={loading}>
-                                            {loading ? 'Processing...' : `Pay ₹${total.toLocaleString()}`}
-                                        </button>
+
+                                    <div 
+                                        className={`payment-method-card ${paymentMethod === 'simulated' ? 'active' : ''}`}
+                                        onClick={() => setPaymentMethod('simulated')}
+                                    >
+                                        <div className="card-selector">
+                                            <div className="radio-circle"></div>
+                                            <div className="card-info">
+                                                <span className="method-name">Simulated Payment (Test)</span>
+                                                <span className="method-desc">No real money will be deducted</span>
+                                            </div>
+                                        </div>
+                                        <div className="method-icon">
+                                            <FaCheckCircle />
+                                        </div>
                                     </div>
+                                </div>
+
+                                <div className="checkout-btns">
+                                    <button className="checkout-back-btn" onClick={() => setStep(1)}>Back</button>
+                                    <button className="checkout-place-btn" onClick={handlePlaceOrder} disabled={loading}>
+                                        {loading ? 'Processing...' : `Pay ₹${total.toLocaleString()}`}
+                                    </button>
                                 </div>
                             </div>
                         )}

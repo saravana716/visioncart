@@ -419,3 +419,90 @@
 .address-option-card:hover .use-this-text {
     opacity: 1;
 }
+/* Payment Method Options */
+.payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.payment-method-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border: 2px solid #edf1f7;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.payment-method-card:hover {
+    border-color: var(--primary-color);
+    background: #fdfdff;
+}
+
+.payment-method-card.active {
+    border-color: var(--secondary-color);
+    background: #fff5f9;
+}
+
+.card-selector {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.radio-circle {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.payment-method-card.active .radio-circle {
+    border-color: var(--secondary-color);
+}
+
+.payment-method-card.active .radio-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: var(--secondary-color);
+    border-radius: 50%;
+    animation: scaleIn 0.2s ease-out;
+}
+
+.card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.method-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.method-desc {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.method-icon {
+    font-size: 24px;
+    color: #94a3b8;
+    transition: color 0.2s;
+}
+
+.payment-method-card.active .method-icon {
+    color: var(--secondary-color);
+}

@@ -11,7 +11,8 @@ import {
     FaClock, 
     FaCheckCircle, 
     FaChevronRight, 
-    FaTruck 
+    FaTruck,
+    FaFileInvoice
 } from 'react-icons/fa';
 import './OrderDetail.css';
 import Loader from '../Components/Loader/Loader';
@@ -73,6 +74,9 @@ const OrderDetail = () => {
                         <h1>Ref: #{order.id.slice(0, 8).toUpperCase()}</h1>
                         <p className="subtitle-luxury">Placed on {formatDate(order.createdAt)}</p>
                     </div>
+                    <button className="invoice-action-btn" onClick={() => navigate(`/invoice/${order.id}`)}>
+                        <FaFileInvoice /> View Invoice
+                    </button>
                 </div>
 
                 <div className="tracking-card-luxury">

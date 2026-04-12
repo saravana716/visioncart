@@ -1,0 +1,261 @@
+/* Corporate Invoice Styling - Strict GST Standard */
+
+.corporate-invoice-container {
+    background-color: #525659; /* Standard dark PDF viewer background */
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Control Bar (Hidden on Print) */
+.invoice-controls {
+    width: 210mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.back-link {
+    color: white;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.print-btn-corporate {
+    background: #002366;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* The Paper Sheet */
+.invoice-document.paper {
+    background: white;
+    width: 210mm; /* A4 Width */
+    min-height: 297mm; /* A4 Height */
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    color: #000;
+    line-height: 1.3;
+}
+
+.doc-section {
+    border: 1px solid #000;
+    margin-top: -1px; /* Collapse borders */
+}
+
+.border-top { border-top: 1px solid #000; }
+.border-left { border-left: 1px solid #000; }
+
+/* Header Section */
+.header-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.doc-logo {
+    height: 55px;
+    object-fit: contain;
+}
+
+.type-cell h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0;
+    text-align: right;
+    color: #002366;
+}
+
+/* Address Grid */
+.address-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+}
+
+.grid-cell {
+    padding: 10px 15px;
+}
+
+.cell-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #002366;
+    margin-bottom: 8px;
+}
+
+.cell-content p {
+    margin: 2px 0;
+    font-size: 13px;
+}
+
+.org-name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #002366;
+}
+
+.cell-content span {
+    font-weight: 700;
+    width: 90px;
+    display: inline-block;
+}
+
+/* Table Design */
+.corporate-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.corporate-table th, .corporate-table td {
+    border: 1px solid #000;
+    padding: 8px;
+    font-size: 12px;
+}
+
+.corporate-table th {
+    background-color: #f2f2f2;
+    font-weight: 700;
+    color: #002366;
+}
+
+.item-name-bold {
+    font-weight: 700;
+    margin: 0;
+}
+
+.item-sub-desc {
+    font-size: 10px;
+    color: #555;
+    margin: 2px 0 0 0;
+}
+
+.bold-label {
+    font-weight: 700;
+    background-color: #f2f2f2;
+}
+
+/* Words Section */
+.words-section {
+    padding: 10px 15px;
+}
+
+.words-section p {
+    margin: 0;
+    font-size: 12px;
+}
+
+.words-section span {
+    font-size: 10px;
+    color: #444;
+}
+
+/* Tax Summary Table */
+.tax-summary-table {
+    border-top: none;
+}
+
+/* Footer Section */
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    min-height: 120px;
+}
+
+.terms-list {
+    font-size: 10px;
+    padding-left: 20px;
+    margin: 5px 0;
+}
+
+.tiny-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-decoration: underline;
+    margin-bottom: 5px;
+}
+
+.payment-note {
+    font-size: 11px;
+    margin-top: 15px;
+}
+
+.payment-note span {
+    font-weight: 700;
+    color: #002366;
+}
+
+.auth-cell {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 15px;
+}
+
+.sign-for {
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.sign-label {
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.bottom-tag {
+    text-align: center;
+    border: none;
+    padding-top: 10px;
+}
+
+.bottom-tag p {
+    font-size: 10px;
+    color: #666;
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Print Mode Overrides */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    .corporate-invoice-container {
+        background: none;
+        padding: 0;
+    }
+    .invoice-document.paper {
+        box-shadow: none;
+        width: 100%;
+        margin: 0;
+    }
+    .corporate-table th {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+    }
+    .bold-label {
+        background-color: #f2f2f2 !important;
+        -webkit-print-color-adjust: exact;
+    }
+}
+
+/* Standard UI spacing */
+.spacer-large {
+    flex-grow: 1;
+}

@@ -76,6 +76,27 @@
 }
 
 /* Tracking Card */
+.invoice-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 25px;
+    background: white;
+    color: var(--primary-color, #002366);
+    border: 1px solid var(--primary-color, #002366);
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: fit-content;
+}
+
+.invoice-action-btn:hover {
+    background: var(--primary-color, #002366);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 35, 102, 0.15);
+}
+
 .tracking-card-luxury {
     background: #fff;
     border-radius: 24px;

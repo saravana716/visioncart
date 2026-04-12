@@ -12,6 +12,7 @@ import BookSlot from '../Pages/BookSlot'
 import Cart from '../Pages/Cart'
 import Checkout from '../Pages/Checkout'
 import OrderSuccess from '../Pages/OrderSuccess'
+import OrderFailed from '../Pages/OrderFailed'
 import Orders from '../Pages/Orders'
 import Wishlist from '../Pages/Wishlist'
 import OrderDetail from '../Pages/OrderDetail'
@@ -19,6 +20,7 @@ import About from '../Pages/About'
 import Blogs from '../Pages/Blogs'
 import ContactPage from '../Pages/ContactPage'
 import NotFound from '../Pages/NotFound'
+import Invoice from '../Pages/Invoice'
 import Terms from '../Pages/Legal/Terms'
 import Privacy from '../Pages/Legal/Privacy'
 import Refund from '../Pages/Legal/Refund'
@@ -66,8 +68,10 @@ const Routing = () => {
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/order-failed" element={<OrderFailed />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/orders/:orderId" element={<OrderDetail />} />
+        <Route path="/invoice/:orderId" element={<Invoice />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/about" element={<About />} />
         <Route path="/blogs" element={<Blogs />} />
