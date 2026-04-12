@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { Toaster } from 'react-hot-toast'
+import './index.css'
+import './App.css'
 /* Global Page Bundle - Fix for production CSS loading */
 import './Pages/About.css'
 import './Pages/Blogs.css'
