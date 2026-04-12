@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
-import './ContactPage.css';
 import { db } from '../firebase.config';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
