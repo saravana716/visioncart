@@ -130,6 +130,31 @@
     outline: none;
 }
 
+.form-group.has-error input {
+    border-color: #ef4444;
+    background-color: #fffafb;
+}
+
+.form-group.has-error input:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+.error-message {
+    display: block;
+    color: #ef4444;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-left: 4px;
+    animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
 .checkout-next-btn {
     background: var(--secondary-color);
     color: #fff;
@@ -217,90 +242,340 @@
     cursor: pointer;
 }
 
-.order-summary-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    padding: 30px;
+/* Premium & Luxury Checkout Sidebar Styling */
+.premium-sidebar-card {
+    background: #ffffff;
     border-radius: 24px;
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-premium);
-    position: sticky;
-    top: 100px;
+    padding: var(--spacing-lg);
+    box-shadow: 0 10px 30px rgba(0, 15, 45, 0.05);
+    border: 1px solid #f0f4f8;
+    margin-bottom: var(--spacing-md);
+    transition: var(--transition-smooth);
 }
 
-.order-summary-card h3 {
-    margin-bottom: 20px;
-    font-family: 'Outfit', sans-serif;
+.premium-sidebar-card:hover {
+    box-shadow: 0 20px 40px rgba(0, 15, 45, 0.08);
 }
 
-.summary-items {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-}
-
-.summary-item {
+.card-header-with-icon {
     display: flex;
-    gap: 15px;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #f5f5f5;
+    gap: 12px;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-.summary-item img {
-    width: 60px;
-    height: 45px;
-    object-fit: contain;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.item-info .name {
-    font-weight: 600;
-    font-size: 14px;
+.card-header-with-icon h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
     margin: 0;
 }
 
-.item-info .config {
-    font-size: 12px;
-    color: #888;
-    margin: 4px 0 0;
+.header-icon {
+    color: var(--secondary-color);
+    font-size: 18px;
 }
 
-.summary-item .price {
-    margin-left: auto;
-    font-weight: 700;
-    font-size: 14px;
-}
-
-.summary-pricing {
+/* Coupon Luxury Entry */
+.input-with-button {
     display: flex;
-    flex-direction: column;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 4px;
+    transition: all 0.3s;
+}
+
+.input-with-button:focus-within {
+    border-color: var(--primary-color);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 35, 102, 0.05);
+}
+
+.input-with-button input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    text-transform: uppercase;
+}
+
+.input-with-button input::placeholder {
+    text-transform: none;
+    font-weight: 400;
+    color: #94a3b8;
+}
+
+.premium-apply-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.premium-apply-btn:hover:not(:disabled) {
+    background: #001a4d;
+    transform: scale(1.02);
+}
+
+.premium-apply-btn.btn-success-locked {
+    background: #00b894;
+    cursor: default;
+}
+
+/* Luxury Coupon Badge */
+.luxury-coupon-badge {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 1px solid #bbf7d0;
+    padding: 10px 14px;
+    border-radius: 12px;
+}
+
+.badge-content {
+    display: flex;
+    align-items: center;
     gap: 12px;
 }
 
-.pricing-row {
+.dot-pulse {
+    width: 6px;
+    height: 6px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+}
+
+.code-text {
+    font-weight: 800;
+    font-size: 12px;
+    color: #166534;
+    letter-spacing: 1px;
+}
+
+.discount-pill {
+    background: #166534;
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.remove-coupon-btn {
+    background: none;
+    border: none;
+    color: #166534;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: 0.2s;
+}
+
+.remove-coupon-btn:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+/* Premium Summary Row */
+.summary-item-premium {
     display: flex;
-    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.item-preview {
+    position: relative;
+    width: 64px;
+    height: 48px;
+    background: #f8fafc;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+
+.item-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.item-qty {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #1e293b;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-name {
+    font-weight: 700;
     font-size: 14px;
-    color: #666;
+    color: #1e293b;
+    margin: 0;
 }
 
-.pricing-row.free span:last-child {
-    color: #00b894;
-    font-weight: 600;
+.item-config {
+    font-size: 12px;
+    color: #64748b;
+    margin: 2px 0 0;
 }
 
-.total-row {
+.item-price-premium {
+    margin-left: auto;
+    font-weight: 800;
+    font-size: 14px;
+    color: #0f172a;
+}
+
+/* Luxury Breakdown Table */
+.pricing-master-breakdown {
+    margin-top: 20px;
+}
+
+.pricing-segment {
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.pricing-row-lux {
     display: flex;
     justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+    color: #64748b;
+}
+
+.pricing-row-lux:last-child {
+    margin-bottom: 0;
+}
+
+.pricing-row-lux .value {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.discount-row {
+    color: #e11d48;
+}
+
+.discount-row .value {
+    color: #e11d48;
+    font-weight: 700;
+}
+
+.subtotal-line {
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.tax-detail {
+    font-size: 12.5px;
+    opacity: 0.8;
+}
+
+.shipping-free {
+    color: #059669 !important;
+    font-weight: 800 !important;
+}
+
+/* Grand Total Finale */
+.grand-total-section {
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+.total-main-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 15px;
+}
+
+.total-label-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.grand-total-label {
+    font-size: 18px;
+    font-weight: 800;
+    color: #0f172a;
+    font-family: 'Outfit', sans-serif;
+}
+
+.tax-inclusive-tag {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.total-value-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    color: var(--secondary-color);
+}
+
+.total-value-wrapper .currency {
     font-size: 18px;
     font-weight: 700;
-    color: #1a1a1a;
-    border-top: 1px dashed #ddd;
-    margin-top: 15px;
-    padding-top: 15px;
+}
+
+.total-value-wrapper .amount {
+    font-size: 32px;
+    font-weight: 900;
+    font-family: 'Outfit', sans-serif;
+    line-height: 1;
+}
+
+.secure-checkout-badge {
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 @media (max-width: 992px) {
