@@ -479,7 +479,7 @@ const ProductPage = () => {
                     </div>
 
                     {/* Product Grid Area */}
-                    <div className="product-grid-area scroll-reveal">
+                    <div className="product-grid-area">
                         <div className="grid-controls">
                             <div className="mobile-controls">
                                 <button className="mobile-sort-toggle" onClick={() => setShowSortModal(true)}>
