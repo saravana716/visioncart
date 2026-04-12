@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './ContactPage.css';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { db } from '../firebase.config';

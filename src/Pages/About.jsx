@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import './About.css';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import lifestyleHero from '../assets/lifestyle_hero.png';

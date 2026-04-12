@@ -1,4 +1,5 @@
 import React from 'react';
+import './Blogs.css';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 
