@@ -14,6 +14,7 @@ import Footers from '../Components/Footer/Footers';
 import { FaShippingFast, FaCreditCard, FaCheckCircle, FaMapMarkerAlt } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import Loader from '../Components/Loader/Loader';
+import './Checkout.css';
 
 const Checkout = () => {
     const { cartItems, cartCount, clearCart } = useCart();

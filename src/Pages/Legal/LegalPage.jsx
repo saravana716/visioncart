@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import './LegalPage.css';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footers from '../../Components/Footer/Footers';
 import { MdChevronRight, MdMenuOpen } from 'react-icons/md';

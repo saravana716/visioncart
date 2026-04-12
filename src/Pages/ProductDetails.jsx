@@ -13,6 +13,7 @@ import RecentlyViewed from '../Components/RecentlyViewed/RecentlyViewed';
 import Recommendations from '../Components/Recommendations/Recommendations';
 import rateimg from '../assets/star.png';
 import Loader from '../Components/Loader/Loader';
+import './ProductDetails.css';
 // import Product360Viewer from '../Components/Product360Viewer/Product360Viewer';
 import ImageZoom from '../Components/ImageZoom/ImageZoom';
 // import { MdOutline360 } from "react-icons/md";

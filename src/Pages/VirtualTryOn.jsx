@@ -6,6 +6,7 @@ import { getProducts } from '../services/firestoreService';
 import rateimg from '../assets/star.png';
 import colorimg from '../assets/color.png';
 import modelImg from '../assets/discoverimg.png'; // Fallback model image
+import './VirtualTryOn.css';
 import Loader from '../Components/Loader/Loader';
 
 const VirtualTryOn = () => {

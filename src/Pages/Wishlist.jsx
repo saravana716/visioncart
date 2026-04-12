@@ -8,6 +8,7 @@ import { FaHeart } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import rateimg from "../assets/star.png";
 import colorimg from "../assets/color.png";
+import './Wishlist.css';
 import Loader from '../Components/Loader/Loader';
 
 const Wishlist = () => {

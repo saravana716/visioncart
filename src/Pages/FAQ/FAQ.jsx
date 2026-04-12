@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './FAQ.css';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footers from '../../Components/Footer/Footers';
 import { MdExpandMore } from 'react-icons/md';

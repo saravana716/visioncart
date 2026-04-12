@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
+import './Blogs.css';
 
 const Blogs = () => {
     const blogPosts = [

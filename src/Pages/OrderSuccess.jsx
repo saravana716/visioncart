@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { FaCheckCircle, FaShoppingBag, FaPrint } from 'react-icons/fa';
+import './OrderSuccess.css';
 
 const OrderSuccess = () => {
     const location = useLocation();

@@ -9,6 +9,7 @@ import { IoIosSearch } from "react-icons/io";
 import rateimg from '../assets/star.png';
 import colorimg from '../assets/color.png';
 import Loader from '../Components/Loader/Loader';
+import './ProductPage.css';
 
 import bannerSpectacles from '../assets/categoryimage/1.png';
 import bannerSunglasses from '../assets/categoryimage/2.png';

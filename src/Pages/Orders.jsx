@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import { FaShoppingBag, FaBox, FaClock, FaCheckCircle, FaChevronRight, FaMapMarkerAlt, FaCreditCard, FaReceipt } from 'react-icons/fa';
+import './Orders.css';
 import Loader from '../Components/Loader/Loader';
 
 const Orders = () => {

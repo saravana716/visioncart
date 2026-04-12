@@ -18,6 +18,7 @@ import {
     FaShieldAlt, FaChevronRight, FaSignOutAlt, FaEnvelope, 
     FaPhoneAlt, FaEdit 
 } from 'react-icons/fa';
+import "./Profile.css";
 import Loader from '../Components/Loader/Loader';
 
 const Profile = () => {

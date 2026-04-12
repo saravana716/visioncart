@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getOrderById } from '../services/firestoreService';
 import { FaPrint, FaArrowLeft } from 'react-icons/fa';
+import './Invoice.css';
 import Loader from '../Components/Loader/Loader';
 import logo from '../assets/vision_cart_logo.png';
 
