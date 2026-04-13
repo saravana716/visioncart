@@ -255,6 +255,36 @@
     }
 }
 
+/* Sync Status Indicators */
+.sync-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.syncing-text {
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.synced-text {
+    color: #4ade80;
+    font-weight: 700;
+}
+
+.spin {
+    animation: fa-spin 2s infinite linear;
+}
+
+@keyframes fa-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
+}
+
 /* Standard UI spacing */
 .spacer-large {
     flex-grow: 1;

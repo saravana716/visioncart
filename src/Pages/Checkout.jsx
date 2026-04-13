@@ -11,10 +11,22 @@ import {
 } from '../services/firestoreService';
 import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
-import { FaShippingFast, FaCreditCard, FaCheckCircle, FaMapMarkerAlt, FaTicketAlt, FaShoppingBag, FaShieldAlt } from 'react-icons/fa';
+import { 
+    FaShippingFast, 
+    FaCreditCard, 
+    FaCheckCircle, 
+    FaMapMarkerAlt, 
+    FaTicketAlt, 
+    FaShoppingBag, 
+    FaShieldAlt,
+    FaCloudUploadAlt
+} from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import Loader from '../Components/Loader/Loader';
+import { fulfillOrderInvoicing } from '../services/fulfillmentService';
+import InvoiceDocument from '../Components/InvoiceDocument';
 import './Checkout.css';
+import qrScannerImg from '../assets/qrscanner.jpeg';
 
 const Checkout = () => {
     const { cartItems, cartCount, clearCart } = useCart();
@@ -23,12 +35,15 @@ const Checkout = () => {
     const [loading, setLoading] = useState(false);
     const [savedAddresses, setSavedAddresses] = useState([]);
     const [showSavedAddresses, setShowSavedAddresses] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('ccavenue');
+    const [paymentMethod, setPaymentMethod] = useState('upi_qr'); // Default to QR workaround
     const [couponInput, setCouponInput] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [isFulfilling, setIsFulfilling] = useState(false);
+    const [capturedOrder, setCapturedOrder] = useState(null);
+    const [captureId, setCaptureId] = useState(null);
     const navigate = useNavigate();
 
-    const [form, setForm] = useState({
+    const [billingForm, setBillingForm] = useState({
         fullName: '',
         email: '',
         phone: '',
@@ -37,13 +52,24 @@ const Checkout = () => {
         zip: '',
         state: 'Tamil Nadu'
     });
+
+    const [shippingForm, setShippingForm] = useState({
+        fullName: '',
+        address: '',
+        city: '',
+        zip: '',
+        state: 'Tamil Nadu'
+    });
+
+    const [shipToDifferent, setShipToDifferent] = useState(false);
     const [errors, setErrors] = useState({});
+    const [shippingErrors, setShippingErrors] = useState({});
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 setUser(currentUser);
-                setForm(prev => ({ 
+                setBillingForm(prev => ({ 
                     ...prev, 
                     email: currentUser.email || '', 
                     phone: currentUser.phoneNumber || '' 
@@ -61,35 +87,41 @@ const Checkout = () => {
         return () => unsubscribe();
     }, [navigate]);
 
-    const validateShippingForm = () => {
+    const validateCheckoutForms = () => {
         const newErrors = {};
+        const newShippingErrors = {};
         
-        if (!form.fullName.trim()) newErrors.fullName = "Full name is required";
+        // Billing Validation
+        if (!billingForm.fullName.trim()) newErrors.fullName = "Name required";
         
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!form.email.trim()) {
-            newErrors.email = "Email is required";
-        } else if (!emailRegex.test(form.email)) {
-            newErrors.email = "Invalid email format";
+        if (!billingForm.email.trim()) {
+            newErrors.email = "Email required";
+        } else if (!emailRegex.test(billingForm.email)) {
+            newErrors.email = "Invalid format";
         }
 
-        if (!form.phone.trim()) {
-            newErrors.phone = "Phone number is required";
-        } else if (!/^\d{10}$/.test(form.phone)) {
-            newErrors.phone = "Must be a 10-digit number";
+        if (!billingForm.phone.trim()) {
+            newErrors.phone = "Phone required";
+        } else if (!/^\d{10}$/.test(billingForm.phone)) {
+            newErrors.phone = "10 digits";
         }
 
-        if (!form.address.trim()) newErrors.address = "Street address is required";
-        if (!form.city.trim()) newErrors.city = "City is required";
-        
-        if (!form.zip.trim()) {
-            newErrors.zip = "ZIP code is required";
-        } else if (!/^\d{6}$/.test(form.zip)) {
-            newErrors.zip = "Must be a 6-digit PIN code";
+        if (!billingForm.address.trim()) newErrors.address = "Required";
+        if (!billingForm.city.trim()) newErrors.city = "Required";
+        if (!billingForm.zip.trim()) newErrors.zip = "Required";
+
+        // Shipping Validation (if different)
+        if (shipToDifferent) {
+            if (!shippingForm.fullName.trim()) newShippingErrors.fullName = "Name required";
+            if (!shippingForm.address.trim()) newShippingErrors.address = "Required";
+            if (!shippingForm.city.trim()) newShippingErrors.city = "Required";
+            if (!shippingForm.zip.trim()) newShippingErrors.zip = "Required";
         }
 
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        setShippingErrors(newShippingErrors);
+        return Object.keys(newErrors).length === 0 && Object.keys(newShippingErrors).length === 0;
     };
 
     const calculateTotal = () => {
@@ -115,7 +147,8 @@ const Checkout = () => {
         const discountFactor = discountedSubtotal / rawSubtotal;
 
         let totalTax = 0;
-        let isIntraState = form.state?.toLowerCase() === 'karnataka';
+        const currentShippingAddress = shipToDifferent ? shippingForm : billingForm;
+        let isIntraState = currentShippingAddress.state?.toLowerCase() === 'tamil nadu';
 
         const itemBreakdown = cartItems.map(item => {
             const originalPrice = parseInt(item.totalPrice?.toString().replace(/[^0-9]/g, '') || '0');
@@ -137,14 +170,15 @@ const Checkout = () => {
 
         const cgst = isIntraState ? totalTax / 2 : 0;
         const sgst = isIntraState ? totalTax / 2 : 0;
+        const totalTaxableValue = itemBreakdown.reduce((sum, item) => sum + item.taxableValue, 0);
         const igst = isIntraState ? 0 : totalTax;
 
         return { 
-            subtotal: Math.round(discountedSubtotal), 
+            subtotal: Math.round(totalTaxableValue), 
             rawSubtotal: Math.round(rawSubtotal),
             discount: Math.round(discount),
             tax: Math.round(totalTax), 
-            total: Math.round(discountedSubtotal + totalTax),
+            total: Math.round(discountedSubtotal),
             taxDetails: {
                 cgst: Math.round(cgst),
                 sgst: Math.round(sgst),
@@ -190,20 +224,30 @@ const Checkout = () => {
         setLoading(false);
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e, targetForm = 'billing') => {
         const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
-        // Clear error when user types
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: null }));
+        if (targetForm === 'billing') {
+            setBillingForm(prev => ({ ...prev, [name]: value }));
+            if (errors[name]) setErrors(prev => ({ ...prev, [name]: null }));
+        } else {
+            setShippingForm(prev => ({ ...prev, [name]: value }));
+            if (shippingErrors[name]) setShippingErrors(prev => ({ ...prev, [name]: null }));
         }
     };
 
     const handleSelectAddress = (addr) => {
-        setForm({
+        const mappedAddr = {
             fullName: addr.name || '',
             email: user?.email || '',
             phone: addr.phone || '',
+            address: addr.address || '',
+            city: addr.city || '',
+            zip: addr.pincode || '',
+            state: addr.state || 'Tamil Nadu'
+        };
+        setBillingForm(mappedAddr);
+        setShippingForm({
+            fullName: addr.name || '',
             address: addr.address || '',
             city: addr.city || '',
             zip: addr.pincode || '',
@@ -215,8 +259,68 @@ const Checkout = () => {
     const handlePlaceOrder = async () => {
         if (paymentMethod === 'ccavenue') {
             await handleCCAvenuePayment();
+        } else if (paymentMethod === 'upi_qr') {
+            await handleQRPayment();
         } else {
             await handleSimulatedPayment();
+        }
+    };
+
+    const handleQRPayment = async () => {
+        if (!validateCheckoutForms()) {
+            toast.error("Please fill all required address fields correctly");
+            return;
+        }
+
+        setLoading(true);
+        const orderData = {
+            items: cartItems,
+            billingAddress: billingForm,
+            shippingAddress: shipToDifferent ? shippingForm : billingForm,
+            paymentMethod: 'UPI QR Code',
+            amounts: { subtotal, rawSubtotal, discount, tax, total, taxDetails },
+            appliedCoupon: appliedCoupon ? {
+                code: appliedCoupon.code,
+                discountValue: appliedCoupon.discountValue,
+                discountType: appliedCoupon.discountType
+            } : null,
+            userId: user.uid,
+            status: 'Awaiting Verification'
+        };
+
+        const result = await placeOrder(user.uid, orderData);
+        if (result.success) {
+            // Decrement stock
+            for (const item of cartItems) {
+                if (item.productId) {
+                    await decrementStock(item.productId, 1);
+                }
+            }
+            await clearUserCart(user.uid);
+            
+            // PREPARE FOR CLOUD SYNC
+            const finalOrder = { ...orderData, id: result.id, createdAt: new Date() };
+            setCapturedOrder(finalOrder);
+            setCaptureId(result.id);
+            setIsFulfilling(true);
+
+            toast.success("Order Placed! Securing your invoice...");
+            
+            // Trigger background sync while showing loader (Reduced delay for speed)
+            setTimeout(async () => {
+                try {
+                    await fulfillOrderInvoicing(result.id, 'checkout-capture-area');
+                    clearCart();
+                    navigate('/orders');
+                } catch (err) {
+                    console.error("Fulfillment failed in checkout:", err);
+                    clearCart();
+                    navigate('/orders');
+                }
+                setIsFulfilling(false);
+            }, 1500);
+        } else {
+            setLoading(false);
         }
     };
 
@@ -227,14 +331,14 @@ const Checkout = () => {
             const payload = {
                 amount: total.toString(),
                 currency: 'INR',
-                customer_name: form.fullName,
-                email: form.email,
-                phone: form.phone,
+                customer_name: billingForm.fullName,
+                email: billingForm.email,
+                phone: billingForm.phone,
                 address: {
-                    billing_address: form.address,
-                    billing_city: form.city,
-                    billing_zip: form.zip,
-                    billing_state: form.state
+                    billing_address: billingForm.address,
+                    billing_city: billingForm.city,
+                    billing_zip: billingForm.zip,
+                    billing_state: billingForm.state
                 }
             };
 
@@ -285,10 +389,16 @@ const Checkout = () => {
     };
 
     const handleSimulatedPayment = async () => {
+        if (!validateCheckoutForms()) {
+            toast.error("Please fill all required address fields correctly");
+            return;
+        }
+
         setLoading(true);
         const orderData = {
             items: cartItems,
-            shippingAddress: form,
+            billingAddress: billingForm,
+            shippingAddress: shipToDifferent ? shippingForm : billingForm,
             paymentMethod: 'Prepaid (Simulated)',
             amounts: { subtotal, rawSubtotal, discount, tax, total, taxDetails },
             appliedCoupon: appliedCoupon ? {
@@ -297,23 +407,50 @@ const Checkout = () => {
                 discountType: appliedCoupon.discountType
             } : null,
             userId: user.uid,
-            status: 'Processing'
+            status: 'Ordered'
         };
 
         const result = await placeOrder(user.uid, orderData);
         if (result.success) {
-            toast.success("Order placed successfully!");
             for (const item of cartItems) {
                 if (item.productId) {
                     await decrementStock(item.productId, 1);
                 }
             }
             await clearUserCart(user.uid);
-            clearCart();
-            navigate('/order-success', { state: { orderId: result.id } });
+            
+            // PREPARE FOR CLOUD SYNC
+            const finalOrder = { ...orderData, id: result.id, createdAt: new Date() };
+            setCapturedOrder(finalOrder);
+            setCaptureId(result.id);
+            setIsFulfilling(true);
+
+            toast.success("Order Confirmed! Securing your invoice...");
+
+            // Trigger background sync while showing loader (Reduced delay for speed)
+            setTimeout(async () => {
+                try {
+                    await fulfillOrderInvoicing(result.id, 'checkout-capture-area');
+                    clearCart();
+                    navigate('/orders');
+                } catch (err) {
+                    console.error("Fulfillment failed in checkout:", err);
+                    clearCart();
+                    navigate('/orders');
+                }
+                setIsFulfilling(false);
+            }, 1500);
+        } else {
+            setLoading(false);
         }
-        setLoading(false);
     };
+
+    useEffect(() => {
+        // PERMANENT GUARD: If we have a captured order, NEVER redirect to cart from this page
+        if (cartCount === 0 && step !== 3 && !isFulfilling && !capturedOrder) {
+            navigate('/cart');
+        }
+    }, [cartCount, step, navigate, isFulfilling, capturedOrder]);
 
     useEffect(() => {
         if (loading) return;
@@ -337,12 +474,31 @@ const Checkout = () => {
         return () => observer.disconnect();
     }, [step, loading]);
 
-    if (cartCount === 0 && step !== 3) {
-        navigate('/cart');
+    if (cartCount === 0 && step !== 3 && !isFulfilling && !capturedOrder) {
         return null;
     }
 
-    if (loading) return <Loader fullPage={true} />;
+    if (isFulfilling) {
+        return (
+            <div className="fulfillment-overlay">
+                <Navbar />
+                <div className="fulfillment-loader-card">
+                    <FaCloudUploadAlt className="fulfillment-sync-icon spin" />
+                    <h2>Payment Confirmed!</h2>
+                    <p>We are securing your professional Tax Invoice and archiving it to the cloud...</p>
+                    <div className="fulfillment-progress-bar">
+                        <div className="progress-fill"></div>
+                    </div>
+                </div>
+                {capturedOrder && (
+                    <div className="hidden-capture-wrapper" style={{ position: 'fixed', left: '-5000px', top: 0, visibility: 'visible' }}>
+                        <InvoiceDocument order={capturedOrder} id="checkout-capture-area" />
+                    </div>
+                )}
+                <Footers />
+            </div>
+        );
+    }
 
     return (
         <div className="checkout-page">
@@ -404,47 +560,111 @@ const Checkout = () => {
                                 )}
 
                                 <div className="checkout-form">
-                                    <div className={`form-group full ${errors.fullName ? 'has-error' : ''}`}>
-                                        <label>Full Name</label>
-                                        <input type="text" name="fullName" value={form.fullName} onChange={handleInputChange} placeholder="John Doe" />
-                                        {errors.fullName && <span className="error-message">{errors.fullName}</span>}
-                                    </div>
                                     <div className="form-row">
-                                        <div className={`form-group ${errors.email ? 'has-error' : ''}`}>
-                                            <label>Email Address</label>
-                                            <input type="email" name="email" value={form.email} onChange={handleInputChange} />
-                                            {errors.email && <span className="error-message">{errors.email}</span>}
+                                        <div className={`form-group ${errors.fullName ? 'has-error' : ''}`}>
+                                            <label>Full Name</label>
+                                            <input type="text" name="fullName" value={billingForm.fullName} onChange={handleInputChange} placeholder="Cardholder/Legal Name" />
+                                            {errors.fullName && <span className="error-message">{errors.fullName}</span>}
                                         </div>
                                         <div className={`form-group ${errors.phone ? 'has-error' : ''}`}>
                                             <label>Phone Number</label>
-                                            <input type="tel" name="phone" value={form.phone} onChange={handleInputChange} />
+                                            <input type="text" name="phone" value={billingForm.phone} onChange={handleInputChange} placeholder="10-digit mobile" />
                                             {errors.phone && <span className="error-message">{errors.phone}</span>}
                                         </div>
                                     </div>
-                                    <div className={`form-group full ${errors.address ? 'has-error' : ''}`}>
-                                        <label>Street Address</label>
-                                        <input type="text" name="address" value={form.address} onChange={handleInputChange} placeholder="House No, Street, Landmark" />
+                                    <div className={`form-group ${errors.email ? 'has-error' : ''}`}>
+                                        <label>Email Address</label>
+                                        <input type="email" name="email" value={billingForm.email} onChange={handleInputChange} placeholder="For receipt & tracking" />
+                                        {errors.email && <span className="error-message">{errors.email}</span>}
+                                    </div>
+                                    <div className={`form-group ${errors.address ? 'has-error' : ''}`}>
+                                        <label>Billing Address</label>
+                                        <input type="text" name="address" value={billingForm.address} onChange={handleInputChange} placeholder="House/Flat No, Street Name" />
                                         {errors.address && <span className="error-message">{errors.address}</span>}
                                     </div>
                                     <div className="form-row">
                                         <div className={`form-group ${errors.city ? 'has-error' : ''}`}>
                                             <label>City</label>
-                                            <input type="text" name="city" value={form.city} onChange={handleInputChange} />
+                                            <input type="text" name="city" value={billingForm.city} onChange={handleInputChange} />
                                             {errors.city && <span className="error-message">{errors.city}</span>}
                                         </div>
                                         <div className={`form-group ${errors.zip ? 'has-error' : ''}`}>
-                                            <label>ZIP/Postal Code</label>
-                                            <input type="text" name="zip" value={form.zip} onChange={handleInputChange} />
+                                            <label>PIN Code</label>
+                                            <input type="text" name="zip" value={billingForm.zip} onChange={handleInputChange} />
                                             {errors.zip && <span className="error-message">{errors.zip}</span>}
                                         </div>
                                     </div>
+                                    <div className="form-group">
+                                        <label>State</label>
+                                        <select name="state" value={billingForm.state} onChange={handleInputChange}>
+                                            <option value="Tamil Nadu">Tamil Nadu</option>
+                                            <option value="Karnataka">Karnataka</option>
+                                            <option value="Kerala">Kerala</option>
+                                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                            <option value="Telangana">Telangana</option>
+                                            <option value="Maharashtra">Maharashtra</option>
+                                            <option value="Delhi">Delhi</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="ship-different-toggle">
+                                        <label className="checkbox-container">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={shipToDifferent} 
+                                                onChange={(e) => setShipToDifferent(e.target.checked)} 
+                                            />
+                                            <span className="checkmark"></span>
+                                            Ship to a different address?
+                                        </label>
+                                    </div>
+
+                                    {shipToDifferent && (
+                                        <div className="shipping-address-fields fade-in">
+                                            <h3 className="section-subtitle">Shipping Details</h3>
+                                            <div className="form-row">
+                                                <div className={`form-group ${shippingErrors.fullName ? 'has-error' : ''}`}>
+                                                    <label>Recipient Name</label>
+                                                    <input type="text" name="fullName" value={shippingForm.fullName} onChange={(e) => handleInputChange(e, 'shipping')} placeholder="Who is receiving?" />
+                                                </div>
+                                            </div>
+                                            <div className={`form-group ${shippingErrors.address ? 'has-error' : ''}`}>
+                                                <label>Shipping Address</label>
+                                                <input type="text" name="address" value={shippingForm.address} onChange={(e) => handleInputChange(e, 'shipping')} placeholder="Full delivery address" />
+                                            </div>
+                                            <div className="form-row">
+                                                <div className={`form-group ${shippingErrors.city ? 'has-error' : ''}`}>
+                                                    <label>City</label>
+                                                    <input type="text" name="city" value={shippingForm.city} onChange={(e) => handleInputChange(e, 'shipping')} />
+                                                </div>
+                                                <div className={`form-group ${shippingErrors.zip ? 'has-error' : ''}`}>
+                                                    <label>PIN Code</label>
+                                                    <input type="text" name="zip" value={shippingForm.zip} onChange={(e) => handleInputChange(e, 'shipping')} />
+                                                </div>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>State</label>
+                                                <select name="state" value={shippingForm.state} onChange={(e) => handleInputChange(e, 'shipping')}>
+                                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                                    <option value="Karnataka">Karnataka</option>
+                                                    <option value="Kerala">Kerala</option>
+                                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                                    <option value="Telangana">Telangana</option>
+                                                    <option value="Maharashtra">Maharashtra</option>
+                                                    <option value="Delhi">Delhi</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
                                     <button className="checkout-next-btn" onClick={() => {
-                                        if (validateShippingForm()) {
-                                            setStep(2);
-                                        } else {
-                                            toast.error("Please fix the errors in the form.");
-                                        }
-                                    }}>Continue to Payment</button>
+                                        if (validateCheckoutForms()) setStep(2);
+                                        else toast.error("Please fill all required fields");
+                                    }}>
+                                        Continue to Payment
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -454,6 +674,22 @@ const Checkout = () => {
                                 <h2><FaCreditCard /> Select Payment Method</h2>
                                 <div className="payment-options">
                                     <div 
+                                        className={`payment-method-card ${paymentMethod === 'upi_qr' ? 'active' : ''}`}
+                                        onClick={() => setPaymentMethod('upi_qr')}
+                                    >
+                                        <div className="card-selector">
+                                            <div className="radio-circle"></div>
+                                            <div className="card-info">
+                                                <span className="method-name">UPI PhonePe / GPay (Scan QR)</span>
+                                                <span className="method-desc">Fast & Secure via any UPI App</span>
+                                            </div>
+                                        </div>
+                                        <div className="method-icon">
+                                            <FaCheckCircle style={{color: '#673ab7'}} />
+                                        </div>
+                                    </div>
+
+                                    <div 
                                         className={`payment-method-card ${paymentMethod === 'ccavenue' ? 'active' : ''}`}
                                         onClick={() => setPaymentMethod('ccavenue')}
                                     >
@@ -461,35 +697,32 @@ const Checkout = () => {
                                             <div className="radio-circle"></div>
                                             <div className="card-info">
                                                 <span className="method-name">CCAvenue Secure Payment</span>
-                                                <span className="method-desc">Credit/Debit Cards, UPI, NetBanking</span>
+                                                <span className="method-desc">Credit/Debit Cards, NetBanking</span>
                                             </div>
                                         </div>
                                         <div className="method-icon">
                                             <FaCreditCard />
                                         </div>
                                     </div>
+                                </div>
 
-                                    <div 
-                                        className={`payment-method-card ${paymentMethod === 'simulated' ? 'active' : ''}`}
-                                        onClick={() => setPaymentMethod('simulated')}
-                                    >
-                                        <div className="card-selector">
-                                            <div className="radio-circle"></div>
-                                            <div className="card-info">
-                                                <span className="method-name">Simulated Payment (Test)</span>
-                                                <span className="method-desc">No real money will be deducted</span>
-                                            </div>
+                                {paymentMethod === 'upi_qr' && (
+                                    <div className="qr-payment-container fade-in">
+                                        <div className="qr-instructions">
+                                            <h3>Scan this QR to Pay ₹{total.toLocaleString()}</h3>
+                                            <p>Scan with PhonePe, Google Pay, PayTM or any UPI app</p>
                                         </div>
-                                        <div className="method-icon">
-                                            <FaCheckCircle />
+                                        <div className="qr-image-wrapper">
+                                            <img src={qrScannerImg} alt="Payment QR Code" className="payment-qr-image" />
+                                            <div className="qr-scan-badge">Scan & Pay</div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
 
                                 <div className="checkout-btns">
                                     <button className="checkout-back-btn" onClick={() => setStep(1)}>Back</button>
                                     <button className="checkout-place-btn" onClick={handlePlaceOrder} disabled={loading}>
-                                        {loading ? 'Processing...' : `Pay ₹${total.toLocaleString()}`}
+                                        {loading ? 'Processing...' : paymentMethod === 'upi_qr' ? 'Confirm Order' : `Pay ₹${total.toLocaleString()}`}
                                     </button>
                                 </div>
                             </div>

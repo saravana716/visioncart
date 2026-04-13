@@ -18,31 +18,36 @@ const OrderSuccess = () => {
     const [order, setOrder] = useState(null);
     const [status, setStatus] = useState('pending'); // pending, generating, complete, error
     const [invoiceUrl, setInvoiceUrl] = useState(null);
+    const [syncError, setSyncError] = useState(null);
 
     useEffect(() => {
         if (!orderId) return;
 
         const processFulfillment = async () => {
             try {
-                // 1. Fetch Order Data
                 const orderData = await getOrderById(orderId);
                 if (!orderData) throw new Error("Order not found");
                 setOrder(orderData);
 
-                // 2. Short delay to ensure InvoiceDocument renders in the hidden div
+                if (orderData.invoiceUrl) {
+                    setInvoiceUrl(orderData.invoiceUrl);
+                    setStatus('complete');
+                    return;
+                }
+
                 setStatus('generating');
                 setTimeout(async () => {
                     try {
                         const url = await fulfillOrderInvoicing(orderId, 'hidden-invoice-capture');
                         setInvoiceUrl(url);
                         setStatus('complete');
-                        toast.success("Professional invoice secured in cloud!");
+                        toast.success("Invoice synced to cloud!");
                     } catch (err) {
                         console.error("Fulfillment failed:", err);
+                        setSyncError(err.message || "Capture/Storage error");
                         setStatus('error');
                     }
-                }, 2000);
-
+                }, 3000);
             } catch (err) {
                 console.error("Order fetch failed:", err);
                 setStatus('error');
@@ -52,10 +57,28 @@ const OrderSuccess = () => {
         processFulfillment();
     }, [orderId]);
 
+    const handleManualSync = async () => {
+        if (!orderId || status === 'generating') return;
+        setStatus('generating');
+        try {
+            console.log("Retrying manual cloud sync...");
+            const url = await fulfillOrderInvoicing(orderId, 'hidden-invoice-capture');
+            setInvoiceUrl(url);
+            setStatus('complete');
+            toast.success("Invoice synced manually!");
+        } catch (err) {
+            console.error("Manual sync failed:", err);
+            setSyncError(err.message);
+            setStatus('error');
+            toast.error("Cloud storage sync failed.");
+        }
+    };
+
     const handleDownload = () => {
         if (invoiceUrl) {
             window.open(invoiceUrl, '_blank');
         } else {
+            // Fallback to manual print page if cloud URL is missing
             navigate(`/invoice/${orderId}`);
         }
     };
@@ -64,8 +87,18 @@ const OrderSuccess = () => {
         <div className="success-page">
             <Navbar />
             
-            {/* Hidden Invoice for Background PDF Capture */}
-            <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', opacity: 0 }}>
+            {/* Hidden Invoice for Background PDF Capture - Positioned off-screen but visible to the engine */}
+            <div 
+                id="invoice-capture-container"
+                style={{ 
+                    position: 'fixed', 
+                    left: '-10000px', 
+                    top: '0', 
+                    width: '794px', // A4 Width in pixels at 96 DPI
+                    background: '#fff',
+                    zIndex: -1
+                }}
+            >
                 {order && <InvoiceDocument order={order} id="hidden-invoice-capture" />}
             </div>
 
@@ -79,24 +112,35 @@ const OrderSuccess = () => {
                     
                     <div className="fulfillment-status-bar">
                         {status === 'generating' && (
-                            <p className="status-loading"><FaCloudUploadAlt className="spin" /> Securing professional invoice to cloud...</p>
+                            <p className="status-loading">
+                                <FaCloudUploadAlt className="spin" /> 
+                                Generating professional GST invoice...
+                            </p>
                         )}
                         {status === 'complete' && (
-                            <p className="status-complete"><FaFilePdf /> Government-ready invoice is now available.</p>
+                            <p className="status-complete">
+                                <FaFilePdf /> 
+                                Government-ready invoice is secured in your account.
+                            </p>
                         )}
                         {status === 'error' && (
-                            <p className="status-error">Note: Automatic cloud sync failed. You can still print manually.</p>
+                            <div className="status-error-group">
+                                <p className="status-error">Note: Cloud sync issue ({syncError || 'timeout'}).</p>
+                                <button className="retry-sync-link" onClick={handleManualSync}>
+                                    Try Syncing Again
+                                </button>
+                            </div>
                         )}
                     </div>
 
                     <p className="success-msg">
                         Thank you for shopping with VisionCart! Your eyewear is being processed 
-                        and will be shipped shortly. A confirmation email has been sent.
+                        and will be shipped shortly. You can now download your official Tax Invoice.
                     </p>
                     
                     <div className="success-actions">
                         <button className="view-orders-btn" onClick={() => navigate('/profile')}>
-                            <FaShoppingBag /> View My Orders
+                            <FaShoppingBag /> My Orders
                         </button>
                         
                         <button 
@@ -106,7 +150,7 @@ const OrderSuccess = () => {
                             {status === 'generating' ? (
                                 <><span className="mini-loader"></span> Processing...</>
                             ) : (
-                                <><FaPrint /> {status === 'complete' ? 'Download PDF Invoice' : 'View Invoice'}</>
+                                <><FaPrint /> {status === 'complete' ? 'Download PDF Invoice' : 'View & Print Invoice'}</>
                             )}
                         </button>
 

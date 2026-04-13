@@ -61,19 +61,20 @@ const InvoiceDocument = ({ order, id }) => {
                     <h4 className="cell-label">SOLD BY:</h4>
                     <div className="cell-content">
                         <p className="org-name">VisionKart Optical</p>
-                        <p>#123, Commercial Plaza, Ground Floor</p>
-                        <p>Indiranagar, Bangalore - 560038</p>
-                        <p>Karnataka, State Code: 29</p>
-                        <p><strong>GSTIN: 29AAACV1234F1Z1</strong></p>
+                        <p>19,Thiruthangal Road, Near Senaithalaivar kalyana Mandapam</p>
+                        <p>Sivakasi - 626123, Tamil Nadu</p>
+                        <p>Phone: +91 93441 16571</p>
+                        <p>Email: visionkart.onlinestore@gmail.com</p>
+                        <p><strong>GSTIN: 33CKRPK8245C1Z1</strong></p>
                     </div>
                 </div>
                 <div className="grid-cell right-align border-left">
                     <h4 className="cell-label">INVOICE PARTICULARS:</h4>
                     <div className="cell-content">
-                        <p><span>Invoice No:</span> {order.id?.slice(-8).toUpperCase()}</p>
-                        <p><span>Order No:</span> {order.id?.slice(0, 8).toUpperCase()}</p>
+                        <p><span>Invoice No:</span> VC/{new Date().getFullYear().toString().slice(-2)}/{order.id?.slice(-6).toUpperCase()}</p>
+                        <p><span>Order No:</span> {order.id?.slice(0, 10).toUpperCase()}</p>
                         <p><span>Date:</span> {formatDate(order.createdAt)}</p>
-                        <p><span>Place of Supply:</span> Karnataka (29)</p>
+                        <p><span>Place of Supply:</span> Tamil Nadu (33)</p>
                     </div>
                 </div>
             </div>
@@ -82,10 +83,10 @@ const InvoiceDocument = ({ order, id }) => {
                 <div className="grid-cell left-align">
                     <h4 className="cell-label">BILL TO:</h4>
                     <div className="cell-content">
-                        <p><strong>{order.shippingAddress?.fullName}</strong></p>
-                        <p>{order.shippingAddress?.address}</p>
-                        <p>{order.shippingAddress?.city}, {order.shippingAddress?.zip}</p>
-                        <p>{order.shippingAddress?.state || "Karnataka"}, Code: {order.shippingAddress?.stateCode || "29"}</p>
+                        <p><strong>{order.billingAddress?.fullName || order.shippingAddress?.fullName}</strong></p>
+                        <p>{order.billingAddress?.address || order.shippingAddress?.address}</p>
+                        <p>{order.billingAddress?.city || order.shippingAddress?.city}, {order.billingAddress?.zip || order.shippingAddress?.zip}</p>
+                        <p>{order.billingAddress?.state || "Tamil Nadu"}, Code: {order.billingAddress?.state?.toLowerCase() === 'tamil nadu' ? '33' : 'Other'}</p>
                     </div>
                 </div>
                 <div className="grid-cell left-align border-left">
@@ -94,7 +95,7 @@ const InvoiceDocument = ({ order, id }) => {
                         <p><strong>{order.shippingAddress?.fullName}</strong></p>
                         <p>{order.shippingAddress?.address}</p>
                         <p>{order.shippingAddress?.city}, {order.shippingAddress?.zip}</p>
-                        <p>{order.shippingAddress?.state || "Karnataka"}, Code: {order.shippingAddress?.stateCode || "29"}</p>
+                        <p>{order.shippingAddress?.state || "Tamil Nadu"}, Code: {order.shippingAddress?.state?.toLowerCase() === 'tamil nadu' ? '33' : 'Other'}</p>
                     </div>
                 </div>
             </div>
@@ -109,7 +110,6 @@ const InvoiceDocument = ({ order, id }) => {
                             <th className="text-center">HSN</th>
                             <th className="text-center">Qty</th>
                             <th className="text-right">Rate</th>
-                            <th className="text-right">Taxable Val.</th>
                             <th className="text-right">GST Rate</th>
                             <th className="text-right">Tax Amt.</th>
                             <th className="text-right">Total</th>
@@ -125,23 +125,26 @@ const InvoiceDocument = ({ order, id }) => {
                                 <tr key={idx}>
                                     <td>{idx + 1}</td>
                                     <td>
-                                        <p className="item-name-bold">{item.productName}</p>
-                                        <p className="item-sub-desc">{item.productBrand} | {item.lensType}</p>
+                                        <p className="item-name-bold">{item.productName || 'Optical Product'}</p>
+                                        <p className="item-sub-desc">
+                                            {item.productBrand || 'VisionKart'} 
+                                            {item.lensType ? ` | ${item.lensType}` : ''}
+                                            {item.productSize ? ` | ${item.productSize} Size` : ''}
+                                        </p>
                                     </td>
                                     <td className="text-center">9003</td>
                                     <td className="text-center">1.00</td>
                                     <td className="text-right">{taxable.toFixed(2)}</td>
-                                    <td className="text-right">{taxable.toFixed(2)}</td>
                                     <td className="text-right">{(rate * 100).toFixed(0)}%</td>
                                     <td className="text-right">{tax.toFixed(2)}</td>
-                                    <td className="text-right">{total.toLocaleString()}</td>
+                                    <td className="text-right">₹{total.toLocaleString()}</td>
                                 </tr>
                             );
                         })}
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colSpan="8" className="text-right bold-label">TOTAL</td>
+                            <td colSpan="7" className="text-right bold-label">TOTAL</td>
                             <td className="text-right bold-label">₹{order.amounts?.total?.toLocaleString()}</td>
                         </tr>
                     </tfoot>
@@ -185,7 +188,7 @@ const InvoiceDocument = ({ order, id }) => {
                     <tbody>
                         <tr>
                             <td className="text-center">9003</td>
-                            <td className="text-right">{order.amounts?.subtotal?.toLocaleString()}</td>
+                            <td className="text-right">{order.amounts?.subtotal?.toFixed(2).toLocaleString()}</td>
                             {order.amounts?.taxDetails?.isIntraState ? (
                                 <>
                                     <td className="text-center">Mixed</td>
@@ -197,7 +200,7 @@ const InvoiceDocument = ({ order, id }) => {
                             ) : (
                                 <>
                                     <td className="text-center" colSpan="2">Mixed Rate</td>
-                                    <td className="text-right">{order.amounts?.tax?.toLocaleString()}</td>
+                                    <td className="text-right">{order.amounts?.tax?.toFixed(2).toLocaleString()}</td>
                                 </>
                             )}
                         </tr>
@@ -205,7 +208,7 @@ const InvoiceDocument = ({ order, id }) => {
                     <tfoot>
                         <tr>
                             <td className="bold-label text-center">Total</td>
-                            <td className="bold-label text-right">{order.amounts?.subtotal?.toLocaleString()}</td>
+                            <td className="bold-label text-right">{order.amounts?.subtotal?.toFixed(2).toLocaleString()}</td>
                             {order.amounts?.taxDetails?.isIntraState ? (
                                 <>
                                     <td></td>
@@ -216,7 +219,7 @@ const InvoiceDocument = ({ order, id }) => {
                             ) : (
                                 <td colSpan="2"></td>
                             )}
-                            <td className="bold-label text-right">{order.amounts?.tax?.toLocaleString()}</td>
+                            <td className="bold-label text-right">{order.amounts?.tax?.toFixed(2).toLocaleString()}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -229,7 +232,7 @@ const InvoiceDocument = ({ order, id }) => {
                     <ol className="terms-list">
                         <li>Goods once sold will not be taken back or exchanged.</li>
                         <li>Lenses are custom-made; no cancellation after processing.</li>
-                        <li>All disputes are subject to Bangalore jurisdiction only.</li>
+                        <li>All disputes are subject to Sivakasi jurisdiction only.</li>
                     </ol>
                     <p className="payment-note">Payment Status: <span>{order.paymentMethod}</span></p>
                 </div>

@@ -278,6 +278,14 @@
     letter-spacing: -0.5px;
 }
 
+.original-price-strike {
+    font-size: 18px;
+    color: #94a3b8;
+    text-decoration: line-through;
+    font-weight: 600;
+    margin-right: 5px;
+}
+
 .offer-tag {
     font-size: 13px;
     font-weight: 800;

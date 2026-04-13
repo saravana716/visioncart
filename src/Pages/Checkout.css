@@ -781,3 +781,247 @@
 .payment-method-card.active .method-icon {
     color: var(--secondary-color);
 }
+
+/* QR Payment Workaround Styles */
+.qr-payment-container {
+    background: #fff;
+    border: 1.5px solid #edf1f7;
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    box-shadow: 0 10px 30px rgba(0, 35, 102, 0.05);
+}
+
+.qr-instructions {
+    text-align: center;
+}
+
+.qr-instructions h3 {
+    font-size: 18px;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.qr-instructions p {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.qr-image-wrapper {
+    position: relative;
+    padding: 15px;
+    background: #fff;
+    border: 2px solid #673ab7;
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(103, 58, 183, 0.15);
+}
+
+.payment-qr-image {
+    width: 250px;
+    height: 250px;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.qr-scan-badge {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #673ab7;
+    color: white;
+    padding: 8px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(103, 58, 183, 0.3);
+    white-space: nowrap;
+}
+
+.utr-input-section {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 10px;
+}
+
+.utr-input-section label {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 12px;
+}
+
+.utr-input-section label span {
+    color: #ef4444;
+}
+
+.utr-input-section input {
+    width: 100%;
+    padding: 16px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+    transition: all 0.3s;
+}
+
+.utr-input-section input:focus {
+    background: #fff;
+    border-color: #673ab7;
+    box-shadow: 0 0 0 4px rgba(103, 58, 183, 0.1);
+}
+
+.utr-hint {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #94a3b8;
+    text-align: center;
+}
+
+/* Ship to Different Address Toggle */
+.ship-different-toggle {
+    margin: 25px 0 15px;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1e293b;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-container input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.shipping-address-fields {
+    margin-top: 25px;
+    padding: 25px;
+    background: #fff;
+    border: 2px solid #edf1f7;
+    border-radius: 20px;
+    animation: slideDownFade 0.4s ease-out;
+}
+
+.section-subtitle {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+@keyframes slideDownFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+    .payment-qr-image {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+/* Fulfillment Overlay - Integrated Sync */
+.fulfillment-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+}
+
+.fulfillment-loader-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #002366 0%, #000 100%);
+}
+
+.fulfillment-sync-icon {
+    font-size: 80px;
+    color: #ffd700;
+    margin-bottom: 30px;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.4));
+}
+
+.fulfillment-loader-card h2 {
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+}
+
+.fulfillment-loader-card p {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 500px;
+    margin-bottom: 40px;
+}
+
+.fulfillment-progress-bar {
+    width: 300px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #ffd700, #fff);
+    border-radius: 10px;
+    animation: luxury-progress 1.5s ease-out forwards;
+}
+
+@keyframes luxury-progress {
+    0% { width: 0; }
+    30% { width: 40%; }
+    100% { width: 100%; }
+}
+
+.spin {
+    animation: fa-spin 2s infinite linear;
+}
+
+@keyframes fa-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
+}
+
+.hidden-capture-wrapper {
+    background: white;
+    pointer-events: none;
+}

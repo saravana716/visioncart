@@ -152,15 +152,17 @@ const ProductDetails = () => {
                     thumbnails: (data.photos && data.photos.length > 0) ? data.photos : (data.mainImage ? [data.mainImage] : ['https://via.placeholder.com/600?text=No+Image']),
                     brand: data.brand || 'Visionkart',
                     title: data.name || data.model || 'Product Details',
-                    price: data.price ? (data.price.startsWith('₹') ? data.price : `₹${data.price}`) : '₹0',
-                    originalPrice: data.originalPrice || `₹${parseInt(data.price || 0) * 1.5}`,
-                    discount: data.discount || '50% OFF',
+                    // PRICE SYNC: Prioritize offerPrice (discounted) as the main display price
+                    price: data.offerPrice ? (data.offerPrice.toString().startsWith('₹') ? data.offerPrice : `₹${data.offerPrice}`) : (data.price ? (data.price.toString().startsWith('₹') ? data.price : `₹${data.price}`) : '₹0'),
+                    // ORIGINAL PRICE: The base MRP price (strikethrough)
+                    originalPrice: data.price ? (data.price.toString().startsWith('₹') ? data.price : `₹${data.price}`) : (data.originalPrice || '₹0'),
+                    discount: data.discount || (data.offerPrice ? 'SPECIAL OFFER' : '50% OFF'),
                     rating: data.rating || '4.5',
                     ratingCount: data.ratingCount || '0',
                     size: data.size || 'Medium',
                     colors: data.colors || [{ name: 'Default', hex: '#000' }],
                     category: data.category || 'Spectacles',
-                    stock: data.stock !== undefined ? data.stock : 10, // Default to 10 if not set
+                    stock: data.stock !== undefined ? data.stock : 10,
                     technicalSpecs: data.technicalSpecs || [
                         { label: 'Brand', value: data.brand || 'Visionkart' },
                         { label: 'Model No.', value: data.sku || 'N/A' },
@@ -361,6 +363,9 @@ const ProductDetails = () => {
                         </div>
                         <div className="product-pricing">
                             <span className="current-price">{product.price}</span>
+                            {product.originalPrice && product.originalPrice !== product.price && (
+                                <span className="original-price-strike">{product.originalPrice}</span>
+                            )}
                             <span className="offer-tag">{product.discount}</span>
                         </div>
 
