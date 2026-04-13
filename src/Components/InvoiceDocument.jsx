@@ -71,7 +71,7 @@ const InvoiceDocument = ({ order, id }) => {
                 <div className="grid-cell right-align border-left">
                     <h4 className="cell-label">INVOICE PARTICULARS:</h4>
                     <div className="cell-content">
-                        <p><span>Invoice No:</span> VC/{new Date().getFullYear().toString().slice(-2)}/{order.id?.slice(-6).toUpperCase()}</p>
+                        <p><span>Invoice No:</span> Vision-{order.id?.slice(-6).toUpperCase()}</p>
                         <p><span>Order No:</span> {order.id?.slice(0, 10).toUpperCase()}</p>
                         <p><span>Date:</span> {formatDate(order.createdAt)}</p>
                         <p><span>Place of Supply:</span> Tamil Nadu (33)</p>
@@ -87,6 +87,7 @@ const InvoiceDocument = ({ order, id }) => {
                         <p>{order.billingAddress?.address || order.shippingAddress?.address}</p>
                         <p>{order.billingAddress?.city || order.shippingAddress?.city}, {order.billingAddress?.zip || order.shippingAddress?.zip}</p>
                         <p>{order.billingAddress?.state || "Tamil Nadu"}, Code: {order.billingAddress?.state?.toLowerCase() === 'tamil nadu' ? '33' : 'Other'}</p>
+                        <p>Mobile: {order.billingAddress?.phone || order.shippingAddress?.phone}</p>
                     </div>
                 </div>
                 <div className="grid-cell left-align border-left">
@@ -96,6 +97,7 @@ const InvoiceDocument = ({ order, id }) => {
                         <p>{order.shippingAddress?.address}</p>
                         <p>{order.shippingAddress?.city}, {order.shippingAddress?.zip}</p>
                         <p>{order.shippingAddress?.state || "Tamil Nadu"}, Code: {order.shippingAddress?.state?.toLowerCase() === 'tamil nadu' ? '33' : 'Other'}</p>
+                        <p>Mobile: {order.shippingAddress?.phone}</p>
                     </div>
                 </div>
             </div>
@@ -117,10 +119,10 @@ const InvoiceDocument = ({ order, id }) => {
                     </thead>
                     <tbody>
                         {order.items?.map((item, idx) => {
-                            const total = priceToNum(item.totalPrice);
+                            const taxable = priceToNum(item.totalPrice);
                             const rate = (item.category === 'Sunglasses') ? 0.18 : 0.12;
-                            const taxable = total / (1 + rate);
-                            const tax = total - taxable;
+                            const tax = taxable * rate;
+                            const itemTotal = taxable + tax;
                             return (
                                 <tr key={idx}>
                                     <td>{idx + 1}</td>
@@ -137,7 +139,7 @@ const InvoiceDocument = ({ order, id }) => {
                                     <td className="text-right">{taxable.toFixed(2)}</td>
                                     <td className="text-right">{(rate * 100).toFixed(0)}%</td>
                                     <td className="text-right">{tax.toFixed(2)}</td>
-                                    <td className="text-right">₹{total.toLocaleString()}</td>
+                                    <td className="text-right">₹{itemTotal.toLocaleString()}</td>
                                 </tr>
                             );
                         })}
@@ -156,74 +158,6 @@ const InvoiceDocument = ({ order, id }) => {
                 <p><span>Amount Chargeable (in words):</span> <br/> <strong>INR {numberToWords(order.amounts?.total || 0)}</strong></p>
             </div>
 
-            {/* Tax Split Summary */}
-            <div className="doc-section tax-breakdown-section border-top">
-                <table className="corporate-table tax-summary-table">
-                    <thead>
-                        {order.amounts?.taxDetails?.isIntraState ? (
-                            <>
-                                <tr>
-                                    <th rowSpan="2">HSN/SAC</th>
-                                    <th rowSpan="2">Taxable Value</th>
-                                    <th colSpan="2" className="text-center">Central Tax</th>
-                                    <th colSpan="2" className="text-center">State Tax</th>
-                                    <th rowSpan="2" className="text-right">Total Tax</th>
-                                </tr>
-                                <tr>
-                                    <th className="text-center">Rate</th>
-                                    <th className="text-center">Amount</th>
-                                    <th className="text-center">Rate</th>
-                                    <th className="text-center">Amount</th>
-                                </tr>
-                            </>
-                        ) : (
-                            <tr>
-                                <th>HSN/SAC</th>
-                                <th>Taxable Value</th>
-                                <th colSpan="2" className="text-center">Integrated Tax (IGST)</th>
-                                <th className="text-right">Total Tax</th>
-                            </tr>
-                        )}
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td className="text-center">9003</td>
-                            <td className="text-right">{order.amounts?.subtotal?.toFixed(2).toLocaleString()}</td>
-                            {order.amounts?.taxDetails?.isIntraState ? (
-                                <>
-                                    <td className="text-center">Mixed</td>
-                                    <td className="text-right">{order.amounts?.taxDetails?.cgst?.toLocaleString()}</td>
-                                    <td className="text-center">Mixed</td>
-                                    <td className="text-right">{order.amounts?.taxDetails?.sgst?.toLocaleString()}</td>
-                                    <td className="text-right">{order.amounts?.tax?.toLocaleString()}</td>
-                                </>
-                            ) : (
-                                <>
-                                    <td className="text-center" colSpan="2">Mixed Rate</td>
-                                    <td className="text-right">{order.amounts?.tax?.toFixed(2).toLocaleString()}</td>
-                                </>
-                            )}
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td className="bold-label text-center">Total</td>
-                            <td className="bold-label text-right">{order.amounts?.subtotal?.toFixed(2).toLocaleString()}</td>
-                            {order.amounts?.taxDetails?.isIntraState ? (
-                                <>
-                                    <td></td>
-                                    <td className="bold-label text-right">{order.amounts?.taxDetails?.cgst?.toLocaleString()}</td>
-                                    <td></td>
-                                    <td className="bold-label text-right">{order.amounts?.taxDetails?.sgst?.toLocaleString()}</td>
-                                </>
-                            ) : (
-                                <td colSpan="2"></td>
-                            )}
-                            <td className="bold-label text-right">{order.amounts?.tax?.toFixed(2).toLocaleString()}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
 
             {/* Footer and Terms */}
             <div className="doc-section footer-grid border-top">

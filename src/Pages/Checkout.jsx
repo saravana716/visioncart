@@ -127,12 +127,12 @@ const Checkout = () => {
     const calculateTotal = () => {
         let rawSubtotal = 0;
         
-        // First calculate the raw subtotal from items
+        // Calculate raw subtotal (Base Price)
         cartItems.forEach(item => {
             rawSubtotal += parseInt(item.totalPrice?.toString().replace(/[^0-9]/g, '') || '0');
         });
 
-        // 1. Calculate Discount
+        // 1. Calculate Discount on Base Price
         let discount = 0;
         if (appliedCoupon) {
             if (appliedCoupon.discountType === 'percentage') {
@@ -142,9 +142,8 @@ const Checkout = () => {
             }
         }
 
-        // 2. Distribute discount and calculate GST on discounted values
         const discountedSubtotal = rawSubtotal - discount;
-        const discountFactor = discountedSubtotal / rawSubtotal;
+        const discountFactor = rawSubtotal > 0 ? discountedSubtotal / rawSubtotal : 1;
 
         let totalTax = 0;
         const currentShippingAddress = shipToDifferent ? shippingForm : billingForm;
@@ -154,9 +153,12 @@ const Checkout = () => {
             const originalPrice = parseInt(item.totalPrice?.toString().replace(/[^0-9]/g, '') || '0');
             const discountedPrice = originalPrice * discountFactor;
             
+            // PROFESSIONAL GST RATES: Sunglasses 18%, Others (Spectacles/Lenses) 12%
             const rate = (item.category === 'Sunglasses') ? 0.18 : 0.12;
-            const taxableValue = discountedPrice / (1 + rate);
-            const gstAmount = discountedPrice - taxableValue;
+            
+            // EXCLUSIVE GST CALCULATION (Price + Tax)
+            const taxableValue = discountedPrice;
+            const gstAmount = taxableValue * rate;
 
             totalTax += gstAmount;
 
@@ -168,21 +170,24 @@ const Checkout = () => {
             };
         });
 
-        const cgst = isIntraState ? totalTax / 2 : 0;
-        const sgst = isIntraState ? totalTax / 2 : 0;
-        const totalTaxableValue = itemBreakdown.reduce((sum, item) => sum + item.taxableValue, 0);
-        const igst = isIntraState ? 0 : totalTax;
+        const totalTaxRounded = Math.round(totalTax);
+        const cgst = isIntraState ? Math.floor(totalTaxRounded / 2) : 0;
+        const sgst = isIntraState ? (totalTaxRounded - cgst) : 0;
+        const igst = isIntraState ? 0 : totalTaxRounded;
+
+        // Grand Total = Taxable Subtotal + Taxes (Exclusive Model)
+        const finalGrandTotal = discountedSubtotal + totalTaxRounded;
 
         return { 
-            subtotal: Math.round(totalTaxableValue), 
+            subtotal: Math.round(discountedSubtotal), 
             rawSubtotal: Math.round(rawSubtotal),
             discount: Math.round(discount),
-            tax: Math.round(totalTax), 
-            total: Math.round(discountedSubtotal),
+            tax: totalTaxRounded, 
+            total: Math.round(finalGrandTotal),
             taxDetails: {
-                cgst: Math.round(cgst),
-                sgst: Math.round(sgst),
-                igst: Math.round(igst),
+                cgst: cgst,
+                sgst: sgst,
+                igst: igst,
                 isIntraState
             },
             itemBreakdown
@@ -795,7 +800,7 @@ const Checkout = () => {
                             <div className="pricing-master-breakdown">
                                 <div className="pricing-segment">
                                     <div className="pricing-row-lux">
-                                        <span className="label">Retail Price (Total)</span> 
+                                        <span className="label">Retail Price (Base)</span> 
                                         <span className="value">₹{rawSubtotal.toLocaleString()}</span>
                                     </div>
                                     
@@ -809,27 +814,14 @@ const Checkout = () => {
 
                                 <div className="pricing-segment tax-segment">
                                     <div className="pricing-row-lux subtotal-line">
-                                        <span className="label">Taxable Subtotal</span> 
+                                        <span className="label">Net Subtotal</span> 
                                         <span className="value">₹{subtotal.toLocaleString()}</span>
                                     </div>
                                     
-                                    {taxDetails.isIntraState ? (
-                                        <>
-                                            <div className="pricing-row-lux tax-detail">
-                                                <span className="label">Central GST (CGST)</span> 
-                                                <span className="value">₹{taxDetails.cgst.toLocaleString()}</span>
-                                            </div>
-                                            <div className="pricing-row-lux tax-detail">
-                                                <span className="label">State GST (SGST)</span> 
-                                                <span className="value">₹{taxDetails.sgst.toLocaleString()}</span>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="pricing-row-lux tax-detail">
-                                            <span className="label">Integrated GST (IGST)</span> 
-                                            <span className="value">₹{taxDetails.igst.toLocaleString()}</span>
-                                        </div>
-                                    )}
+                                    <div className="pricing-row-lux tax-detail">
+                                        <span className="label">Applicable GST</span> 
+                                        <span className="value">₹{tax.toLocaleString()}</span>
+                                    </div>
                                     
                                     <div className="pricing-row-lux">
                                         <span className="label">Secure Shipping</span> 
@@ -841,7 +833,7 @@ const Checkout = () => {
                                     <div className="total-main-row">
                                         <div className="total-label-wrapper">
                                             <span className="grand-total-label">Grand Total</span>
-                                            <span className="tax-inclusive-tag">Inclusive of all taxes</span>
+                                            <span className="tax-inclusive-tag">Taxes added on price</span>
                                         </div>
                                         <div className="total-value-wrapper">
                                             <span className="currency">₹</span>

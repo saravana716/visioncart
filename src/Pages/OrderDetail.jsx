@@ -158,7 +158,7 @@ const OrderDetail = () => {
                                     <span>₹{order.amounts?.subtotal?.toLocaleString()}</span>
                                 </div>
                                 <div className="summary-row">
-                                    <span>Taxes (Included)</span>
+                                    <span>Applicable GST</span>
                                     <span>₹{order.amounts?.tax?.toLocaleString()}</span>
                                 </div>
                                 <div className="summary-row highlight">

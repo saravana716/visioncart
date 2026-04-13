@@ -163,7 +163,12 @@ const Orders = () => {
                                 </div>
 
                                 <div className="card-footer-actions">
-                                    <button className="invoice-btn"><FaReceipt /> Invoice</button>
+                                    <button 
+                                        className="invoice-btn"
+                                        onClick={() => navigate(`/invoice/${order.id}`)}
+                                    >
+                                        <FaReceipt /> Invoice
+                                    </button>
                                     <button 
                                         className="details-btn"
                                         onClick={() => navigate(`/orders/${order.id}`)}
