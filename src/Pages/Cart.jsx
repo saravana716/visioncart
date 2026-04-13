@@ -136,10 +136,6 @@ const Cart = () => {
                                             </>
                                         )}
                                         
-                                        <div className="attribute-chip">
-                                            <span className="attr-label">SKU:</span> 
-                                            <span className="attr-val sku-text">{item.sku || item.productId}</span>
-                                        </div>
 
                                         {item.enhancements?.length > 0 && (
                                             <div className="attribute-chip full-width">
