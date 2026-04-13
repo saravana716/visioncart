@@ -788,7 +788,11 @@ const Checkout = () => {
                                         </div>
                                         <div className="item-details-premium">
                                             <p className="item-name">{item.productName}</p>
-                                            <p className="item-config">{item.lensType || 'Frame Only'} | {item.productSize || 'Medium'}</p>
+                                            <p className="item-config">
+                                                {item.lensType || 'Frame Only'} 
+                                                {item.material && ` | ${item.material}`}
+                                                {item.productSize && ` | ${item.productSize}`}
+                                            </p>
                                         </div>
                                         <div className="item-price-premium">
                                             {item.totalPrice}

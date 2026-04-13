@@ -1798,71 +1798,58 @@
 }
 
 .cl-power-type-container {
-    margin: 25px 0;
+    margin: 30px 0 25px 0 !important;
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.cl-power-desc {
+.cl-power-options {
+    margin-top: 25px;
     display: flex;
     flex-direction: column;
-}
-
-.cl-power-desc .p-label {
-    font-size: 12px;
-    font-weight: 800;
-    color: #64748b;
-    text-transform: uppercase;
-    line-height: 1.2;
-}
-
-.cl-power-btn {
-    background: #001f54;
-    color: white;
-    padding: 10px 25px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: 800;
-    border: none;
-    cursor: default;
-    box-shadow: 0 4px 12px rgba(0, 31, 84, 0.2);
-}
-
-.cl-power-entry-box {
-    background: #fff;
-    border: 1px solid #edf1f7;
-    border-radius: 16px;
-    overflow: hidden;
-}
-
-.cl-radio-label-main {
-    display: flex;
-    align-items: center;
     gap: 12px;
-    padding: 20px;
+}
+
+.cl-select-premium {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    color: #001f54;
+    font-weight: 700;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23001f54' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
 }
 
-.cl-radio-label-main:hover {
+.cl-select-premium:focus {
+    outline: none;
+    border-color: #001f54;
+    box-shadow: 0 0 0 3px rgba(0, 31, 84, 0.05);
+}
+
+.cl-select-premium:disabled {
+    background-color: #f1f5f9;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.cl-manual-power-grid {
     background: #f8fafc;
+    border-radius: 20px;
+    padding: 25px;
+    margin-top: 15px;
+    border: 1px solid #edf2f7;
 }
 
-.cl-radio-label-main input[type="radio"] {
-    width: 22px;
-    height: 22px;
-    accent-color: #001f54;
-    cursor: pointer;
-}
-
-.cl-radio-text-main {
-    font-size: 15px;
-    font-weight: 800;
-    color: #001f54;
-}
-
-.border-top-cl {
-    border-top: 1px solid #f1f5f9;
+.cl-eye-headers {
+    justify-content: flex-end !important;
 }
 

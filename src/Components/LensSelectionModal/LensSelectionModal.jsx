@@ -110,10 +110,8 @@ const LensSelectionModal = ({
         
         const extras = selectedEnhancements.reduce((sum, enh) => sum + (parseInt(enh.price || 0)), 0);
         
-        // Premium Package Price only for Spectacles
         if (product.category === 'Spectacles') {
-            const packagePrice = lensPackages.find(p => p.id === selectedPackage)?.price || 0;
-            return `₹${basePriceInt + packagePrice + extras}`;
+            return `₹${basePriceInt + extras}`;
         }
         
         return `₹${basePriceInt + extras}`;
@@ -122,7 +120,6 @@ const LensSelectionModal = ({
     const handlePrescriptionTypeChange = (type) => {
         setPrescriptionType(type);
         if (type === 'Same power for both eyes') {
-            // Sync left to right values when switching back to same power
             setPrescription(prev => ({
                 ...prev,
                 left: { ...prev.right }
@@ -149,11 +146,46 @@ const LensSelectionModal = ({
         const isContactLens = product.category === 'Contact Lenses';
         const isSpectacles = product.category === 'Spectacles';
         
-        // Validate for reading glasses
         if (isReadingGlasses && (!readingPower.rightPower || (!readingPower.sameForBoth && !readingPower.leftPower))) {
             const { default: toast } = await import('react-hot-toast');
             toast.error('Please select power for your eyes');
             return false;
+        }
+
+        if (isSpectacles && spectaclesPowerOption === 'manual') {
+            if (specRightSelected && !specRightSph) {
+                const { default: toast } = await import('react-hot-toast');
+                toast.error('Please select Spherical power for Right eye');
+                return false;
+            }
+            if (specLeftSelected && !specLeftSph) {
+                const { default: toast } = await import('react-hot-toast');
+                toast.error('Please select Spherical power for Left eye');
+                return false;
+            }
+            if (!specRightSelected && !specLeftSelected) {
+                const { default: toast } = await import('react-hot-toast');
+                toast.error('Please select at least one eye');
+                return false;
+            }
+        }
+
+        if (isContactLens && contactLensPowerOption === 'manual') {
+            if (clRightEyeSelected && !clRightSph) {
+                const { default: toast } = await import('react-hot-toast');
+                toast.error('Please select Spherical power for Right eye');
+                return false;
+            }
+            if (clLeftEyeSelected && !clLeftSph) {
+                const { default: toast } = await import('react-hot-toast');
+                toast.error('Please select Spherical power for Left eye');
+                return false;
+            }
+            if (!clRightEyeSelected && !clLeftEyeSelected) {
+                const { default: toast } = await import('react-hot-toast');
+                toast.error('Please select at least one eye');
+                return false;
+            }
         }
 
         const specifications = [
@@ -162,7 +194,13 @@ const LensSelectionModal = ({
         ];
 
         if (isContactLens) {
-            specifications.push({ label: 'Lens Type', value: 'Contact Lens' });
+            const pack = contactLensPacks.find(p => p.id === selectedClPack);
+            specifications.push(
+                { label: 'Lens Type', value: 'Contact Lens' },
+                { label: 'Box Qty (R)', value: clRightEyeSelected ? clRightBoxes.toString() : '0' },
+                { label: 'Box Qty (L)', value: clLeftEyeSelected ? clLeftBoxes.toString() : '0' },
+                { label: 'Pack Type', value: pack?.name || 'Standard' }
+            );
         } else if (isReadingGlasses) {
             specifications.push(
                 { label: 'Lens', value: 'Reading Glass' },
@@ -172,11 +210,9 @@ const LensSelectionModal = ({
         } else if (isSpectacles) {
             specifications.push(
                 { label: 'Lens Type', value: selectedLensType },
-                { label: 'Lens Package', value: selectedPackage },
                 { label: 'Usage', value: selectedUsage }
             );
         } else {
-            // Sunglasses, Computer Glasses, etc.
             specifications.push(
                 { label: 'Lens Type', value: selectedLensType },
                 { label: 'Material', value: selectedMaterial },
@@ -191,11 +227,16 @@ const LensSelectionModal = ({
             productName: product.title,
             productImage: product.mainImage,
             productPrice: product.price,
-            productSize: product.size,
+            productSize: product.size || 'Medium',
             category: product.category,
             specifications: specifications,
+            totalPrice: calculateTotalPrice(),
             sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || product.id,
             enhancements: isReadingGlasses || isContactLens ? [] : selectedEnhancements,
+            lensType: isContactLens ? 'Contact Lens' : (isReadingGlasses ? 'Reading Glass' : selectedLensType),
+            usage: selectedUsage,
+            material: selectedMaterial,
+            frameStyle: selectedFrameStyle,
             prescriptionType: isReadingGlasses ? 'Reading Glass Power' : (isContactLens ? (contactLensPowerOption === 'manual' ? 'Manual Contact Lens Power' : 'Submit Later') : (isSpectacles ? (spectaclesPowerOption === 'manual' ? 'Manual Prescription' : 'Submit Later') : prescriptionType)),
             prescription: isContactLens ? {
                 rightSelected: clRightEyeSelected,
@@ -211,8 +252,7 @@ const LensSelectionModal = ({
                 rightPower: specRightSelected ? specRightSph : null,
                 leftPower: specLeftSelected ? specLeftSph : null,
                 type: spectaclesPowerOption
-            } : prescription)),
-            totalPrice: calculateTotalPrice()
+            } : prescription))
         };
         
         return await addItemToCart(cartData);
@@ -228,10 +268,7 @@ const LensSelectionModal = ({
                     fontWeight: '700',
                     fontSize: '14px'
                 },
-                iconTheme: {
-                    primary: '#00d285',
-                    secondary: '#fff',
-                },
+                iconTheme: { primary: '#00d285', secondary: '#fff' }
             });
         });
     };
@@ -282,29 +319,28 @@ const LensSelectionModal = ({
                                 <button className="cl-power-btn active">With Power</button>
                             </div>
 
-                            <div className="cl-power-entry-box">
-                                <label className="cl-radio-label-main">
-                                    <input 
-                                        type="radio" 
-                                        name="cl-power-entry" 
-                                        checked={contactLensPowerOption === 'manual'} 
-                                        onChange={() => setContactLensPowerOption('manual')} 
-                                    />
-                                    <span className="cl-radio-text-main">Enter power Manually</span>
-                                </label>
-                                
-                                <label className="cl-radio-label-main mt-10 border-top-cl">
-                                    <input 
-                                        type="radio" 
-                                        name="cl-power-entry" 
-                                        checked={contactLensPowerOption === 'later'} 
-                                        onChange={() => setContactLensPowerOption('later')} 
-                                    />
-                                    <span className="cl-radio-text-main">I will submit power later</span>
-                                </label>
+                            <div className="compact-power-flow main-selector cl-power-options">
+                                <div 
+                                    className={`power-option-card ${contactLensPowerOption === 'manual' ? 'active' : ''}`}
+                                    onClick={() => setContactLensPowerOption('manual')}
+                                >
+                                    <div className="power-radio"></div>
+                                    <div className="power-info">
+                                        <strong>Enter power Manually</strong>
+                                    </div>
+                                </div>
+                                <div 
+                                    className={`power-option-card ${contactLensPowerOption === 'later' ? 'active' : ''}`}
+                                    onClick={() => setContactLensPowerOption('later')}
+                                >
+                                    <div className="power-radio"></div>
+                                    <div className="power-info">
+                                        <strong>I will submit power later</strong>
+                                    </div>
+                                </div>
 
                                 {contactLensPowerOption === 'later' && (
-                                    <div className="cl-submit-later-banner">
+                                    <a href="tel:+919344116571" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
                                         <div className="banner-left">
                                             <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
                                             <p>We will call you to get your power!</p>
@@ -321,30 +357,33 @@ const LensSelectionModal = ({
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 )}
 
-                                <div className="cl-manual-power-grid">
-                                    <div className="cl-eye-headers">
-                                        <div></div>
-                                        <label className="cl-checkbox-label">
-                                            <input 
-                                                type="checkbox" 
-                                                checked={clRightEyeSelected} 
-                                                onChange={(e) => setClRightEyeSelected(e.target.checked)} 
-                                            /> RIGHT (OD)
-                                        </label>
-                                        <label className="cl-checkbox-label">
-                                            <input 
-                                                type="checkbox" 
-                                                checked={clLeftEyeSelected} 
-                                                onChange={(e) => setClLeftEyeSelected(e.target.checked)} 
-                                            /> LEFT (OS)
-                                        </label>
-                                    </div>
-                                    
-                                    {contactLensPowerOption === 'manual' && (
-                                        <div className="cl-power-row">
+                                {contactLensPowerOption === 'manual' && (
+                                    <div className="cl-manual-power-grid animate-in">
+                                        <div className="eye-selection-row">
+                                            <label className="cl-checkbox-label">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={clRightEyeSelected} 
+                                                    onChange={(e) => setClRightEyeSelected(e.target.checked)} 
+                                                /> 
+                                                <span className="custom-checkmark">✓</span>
+                                                RIGHT (OD)
+                                            </label>
+                                            <label className="cl-checkbox-label">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={clLeftEyeSelected} 
+                                                    onChange={(e) => setClLeftEyeSelected(e.target.checked)} 
+                                                /> 
+                                                <span className="custom-checkmark">✓</span>
+                                                LEFT (OS)
+                                            </label>
+                                        </div>
+                                        
+                                        <div className="cl-power-row no-border">
                                             <div className="cl-row-label">
                                                 <span className="main-label">Spherical</span>
                                                 <span className="sub-label">SPH</span>
@@ -360,25 +399,25 @@ const LensSelectionModal = ({
                                                 </button>
                                             </div>
                                         </div>
-                                    )}
 
-                                    <div className="cl-power-row">
-                                        <div className="cl-row-label">
-                                            <span className="main-label">No. of Boxes</span>
-                                            <span className="sub-label">3 lens/box</span>
-                                        </div>
-                                        <div className="cl-dropdown-col">
-                                            <select className="cl-select" disabled={!clRightEyeSelected} value={clRightBoxes} onChange={e => setClRightBoxes(parseInt(e.target.value))}>
-                                                {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="cl-dropdown-col">
-                                            <select className="cl-select" disabled={!clLeftEyeSelected} value={clLeftBoxes} onChange={e => setClLeftBoxes(parseInt(e.target.value))}>
-                                                {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                                            </select>
+                                        <div className="cl-power-row">
+                                            <div className="cl-row-label">
+                                                <span className="main-label">No. of Boxes</span>
+                                                <span className="sub-label">3 lens / box</span>
+                                            </div>
+                                            <div className="cl-dropdown-col">
+                                                <select className="cl-select-premium" disabled={!clRightEyeSelected} value={clRightBoxes} onChange={e => setClRightBoxes(parseInt(e.target.value))}>
+                                                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                                                </select>
+                                            </div>
+                                            <div className="cl-dropdown-col">
+                                                <select className="cl-select-premium" disabled={!clLeftEyeSelected} value={clLeftBoxes} onChange={e => setClLeftBoxes(parseInt(e.target.value))}>
+                                                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     ) : (
@@ -400,37 +439,21 @@ const LensSelectionModal = ({
                                     <p>Bifocal</p>
                                     <span>Dual Vision</span>
                                 </div>
-                                <div className={`lens-type-item ${selectedLensType === 'Anti-Power' ? 'active' : ''}`} onClick={() => setSelectedLensType('Anti-Power')}>
+                                 {/* <div className={`lens-type-item ${selectedLensType === 'Anti-Power' ? 'active' : ''}`} onClick={() => setSelectedLensType('Anti-Power')}>
                                     <div className="icon">⚙️</div>
                                     <p>Anti-Power</p>
                                     <span>Fashion Lenses</span>
-                                </div>
+                                </div> */}
                             </div>
 
                             {product.category === 'Spectacles' ? (
                                 <>
-                                    <h2 className="modal-title-small">Select Lens Package</h2>
-                                    <div className="packages-grid">
-                                        {lensPackages.map(pkg => (
-                                            <div 
-                                                key={pkg.id} 
-                                                className={`package-card ${selectedPackage === pkg.id ? 'active' : ''}`}
-                                                onClick={() => setSelectedPackage(pkg.id)}
-                                            >
-                                                {pkg.recommended && <div className="recommended-badge">Best Value</div>}
-                                                <div className="package-header">
-                                                    <div className="package-title-row">
-                                                        <div className="package-dot" style={{ background: pkg.color }}></div>
-                                                        <h3>{pkg.name}</h3>
-                                                    </div>
-                                                    <div className="package-price">₹{pkg.price}</div>
-                                                </div>
-                                                <p className="package-desc">{pkg.description}</p>
-                                                <div className="package-features">
-                                                    <span>✨ {pkg.features}</span>
-                                                </div>
-                                            </div>
-                                        ))}
+                                    <div className="cl-power-type-container">
+                                        <div className="cl-power-desc">
+                                            <span className="p-label">Power</span>
+                                            <span className="p-label">Type</span>
+                                        </div>
+                                        <button className="cl-power-btn active">With Power</button>
                                     </div>
 
                                     <div className="compact-power-flow main-selector">
@@ -482,38 +505,14 @@ const LensSelectionModal = ({
                                                         <span className="sub-label">SPH</span>
                                                     </div>
                                                     <div className="cl-dropdown-col">
-                                                        <button 
-                                                            className="cl-dropdown-btn" 
-                                                            onClick={() => setShowPowerSelectorModal('spec-right')} 
-                                                            disabled={!specRightSelected}
-                                                        >
+                                                        <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('spec-right')} disabled={!specRightSelected}>
                                                             {specRightSph || 'Select'} <span className="arrow">▼</span>
                                                         </button>
                                                     </div>
                                                     <div className="cl-dropdown-col">
-                                                        <button 
-                                                            className="cl-dropdown-btn" 
-                                                            onClick={() => setShowPowerSelectorModal('spec-left')} 
-                                                            disabled={!specLeftSelected}
-                                                        >
+                                                        <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('spec-left')} disabled={!specLeftSelected}>
                                                             {specLeftSph || 'Select'} <span className="arrow">▼</span>
                                                         </button>
-                                                    </div>
-                                                </div>
-                                                <div className="cl-power-row no-border">
-                                                    <div className="cl-row-label">
-                                                        <span className="main-label">No. of Boxes</span>
-                                                        <span className="sub-label">1 pair/box</span>
-                                                    </div>
-                                                    <div className="cl-dropdown-col">
-                                                        <select className="cl-select" disabled={!specRightSelected} value={1}>
-                                                            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                                                        </select>
-                                                    </div>
-                                                    <div className="cl-dropdown-col">
-                                                        <select className="cl-select" disabled={!specLeftSelected} value={1}>
-                                                            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -521,7 +520,7 @@ const LensSelectionModal = ({
                                     </div>
                                     
                                     {spectaclesPowerOption === 'later' && (
-                                        <div className="cl-submit-later-banner spectacles-banner animate-in">
+                                        <a href="tel:+919344116571" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
                                             <div className="banner-left">
                                                 <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
                                                 <p>We will call you to get your power!</p>
@@ -538,7 +537,7 @@ const LensSelectionModal = ({
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </a>
                                     )}
                                 </>
                             ) : (
@@ -576,13 +575,11 @@ const LensSelectionModal = ({
 
                             {product.category === 'Reading Glasses' ? (
                                 <div className="reading-modal-section">
-                                    <ReadingGlassesPowerSelector 
-                                        onPowerSelected={(power) => setReadingPower(power)}
-                                    />
+                                    <ReadingGlassesPowerSelector onPowerSelected={(power) => setReadingPower(power)} />
                                 </div>
                             ) : (
                                 <div className="prescription-section">
-                                    {product.category === 'Spectacles' && spectaclesPowerOption === 'manual' || product.category !== 'Spectacles' ? (
+                                    {((product.category === 'Spectacles' && spectaclesPowerOption === 'manual') || product.category !== 'Spectacles') ? (
                                         <>
                                             <h2 className="modal-title-small">Power Options - Eye Selection</h2>
                                             <div className="prescription-toggle-container">
@@ -601,10 +598,7 @@ const LensSelectionModal = ({
                                                 <div className="prescription-table-wrapper">
                                                     <table className="prescription-table">
                                                         <thead>
-                                                            <tr>
-                                                                <th>Right Eye</th>
-                                                                <th>Left Eye</th>
-                                                            </tr>
+                                                            <tr><th>Right Eye</th><th>Left Eye</th></tr>
                                                         </thead>
                                                         <tbody>
                                                             <tr>
@@ -623,12 +617,7 @@ const LensSelectionModal = ({
                                                             </tr>
                                                         </tbody>
                                                     </table>
-                                                    <button 
-                                                        className="save-btn-green" 
-                                                        onClick={handleSavePrescription}
-                                                    >
-                                                        Save
-                                                    </button>
+                                                    <button className="save-btn-green" onClick={handleSavePrescription}>Save</button>
                                                 </div>
                                             </div>
                                         </>
@@ -642,37 +631,26 @@ const LensSelectionModal = ({
 
                             <h2 className="modal-title-small">How will you use these glasses?</h2>
                             <div className="usage-grid">
-                                <div className={`usage-item ${selectedUsage === 'Everyday' ? 'active' : ''}`} onClick={() => setSelectedUsage('Everyday')}>
-                                    <div className="usage-box">
-                                        <span className="usage-emoji">🏠</span>
+                                {['Everyday', 'Computer | Screen', 'Reading', 'Driving'].map((u, i) => (
+                                    <div key={u} className={`usage-item ${selectedUsage === u ? 'active' : ''}`} onClick={() => setSelectedUsage(u)}>
+                                        <div className="usage-box">
+                                            <span className="usage-emoji">{['🏠', '💻', '📚', '🚗'][i]}</span>
+                                        </div>
+                                        <p>{u === 'Computer | Screen' ? 'Digital Use' : u}</p>
                                     </div>
-                                    <p>Everyday</p>
-                                </div>
-                                <div className={`usage-item ${selectedUsage === 'Computer | Screen' ? 'active' : ''}`} onClick={() => setSelectedUsage('Computer | Screen')}>
-                                    <div className="usage-box">
-                                        <span className="usage-emoji">💻</span>
-                                    </div>
-                                    <p>Digital Use</p>
-                                </div>
-                                <div className={`usage-item ${selectedUsage === 'Reading' ? 'active' : ''}`} onClick={() => setSelectedUsage('Reading')}>
-                                    <div className="usage-box">
-                                        <span className="usage-emoji">📚</span>
-                                    </div>
-                                    <p>Reading</p>
-                                </div>
-                                <div className={`usage-item ${selectedUsage === 'Driving' ? 'active' : ''}`} onClick={() => setSelectedUsage('Driving')}>
-                                    <div className="usage-box">
-                                        <span className="usage-emoji">🚗</span>
-                                    </div>
-                                    <p>Driving</p>
-                                </div>
+                                ))}
                             </div>
                         </>
                     )}
 
                     <div className="price-summary-box">
                         <div className="p-line"><span>Frame Price:</span> <span>{product.price}</span></div>
-                        <div className="p-line"><span>Lens Price:</span> <span>{product.category === 'Spectacles' ? `₹${lensPackages.find(p => p.id === selectedPackage)?.price || 0}` : '₹0'}</span></div>
+                        {product.category === 'Spectacles' && (
+                            <div className="p-line"><span>{selectedLensType} Lens:</span> <span>₹0</span></div>
+                        )}
+                        {product.category === 'Contact Lenses' && (
+                            <div className="p-line"><span>{contactLensPacks.find(p => p.id === selectedClPack)?.name} ({(clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes):</span> <span>₹{contactLensPacks.find(p => p.id === selectedClPack)?.price} / box</span></div>
+                        )}
                         <div className="p-line"><span>Add-ons:</span> <span>₹{selectedEnhancements.reduce((sum, e) => sum + (parseInt(e.price || 0)), 0)}</span></div>
                         <div className="p-total-line"><span>Total Price:</span> <span>{calculateTotalPrice()}</span></div>
                     </div>
@@ -683,41 +661,28 @@ const LensSelectionModal = ({
                             disabled={product.stock !== undefined && product.stock <= 0}
                             onClick={async () => {
                                 const success = await handleInternalAddToCart();
-                                if (success) {
-                                    onClose();
-                                    setDrawerTab('cart');
-                                    setCartOpen(true);
-                                }
+                                if (success) { onClose(); setDrawerTab('cart'); setCartOpen(true); }
                             }}
-                        >
-                            Add to Cart
-                        </button>
+                        >Add to Cart</button>
                         <button 
                             className={`modal-buy-now ${product.stock !== undefined && product.stock <= 0 ? 'disabled' : ''}`} 
                             disabled={product.stock !== undefined && product.stock <= 0}
                             onClick={async () => {
                                 const success = await handleInternalAddToCart();
-                                if (success) {
-                                    onClose();
-                                    navigate('/checkout');
-                                }
+                                if (success) { onClose(); navigate('/checkout'); }
                             }}
-                        >
-                            Buy Now
-                        </button>
+                        >Buy Now</button>
                     </div>
                 </div>
             </div>
 
-            {/* Submodal for Power Selection */}
             {showPowerSelectorModal && (
                 <div className="cl-power-submodal-overlay" onClick={() => setShowPowerSelectorModal(null)}>
                     <div className="cl-power-submodal reveal-bottom" onClick={e => e.stopPropagation()}>
                         <div className="submodal-header">
-                            <h3>Spherical • {showPowerSelectorModal === 'right' ? 'Right' : 'Left'} Eye</h3>
+                            <h3>Spherical • {showPowerSelectorModal.includes('right') ? 'Right' : 'Left'} Eye</h3>
                             <button className="submodal-close" onClick={() => setShowPowerSelectorModal(null)}>✕</button>
                         </div>
-                        
                         <div className="submodal-powers-container">
                             <div className="powers-col negative-col">
                                 <div className="col-header">(-) Negative</div>
@@ -725,7 +690,7 @@ const LensSelectionModal = ({
                                     {['-0.25', '-0.50', '-0.75', '-1.00', '-1.25', '-1.50', '-1.75', '-2.00', '-2.25', '-2.50', '-2.75', '-3.00'].map(p => (
                                         <label className="power-option" key={p}>
                                             <input type="radio" name={`${showPowerSelectorModal}-power`} 
-                                                checked={(showPowerSelectorModal === 'right' ? clRightSph : clLeftSph) === p}
+                                                checked={(showPowerSelectorModal === 'right' ? clRightSph : (showPowerSelectorModal === 'left' ? clLeftSph : (showPowerSelectorModal === 'spec-right' ? specRightSph : specLeftSph))) === p}
                                                 onChange={() => {
                                                     if (showPowerSelectorModal === 'right') setClRightSph(p);
                                                     else if (showPowerSelectorModal === 'left') setClLeftSph(p);
@@ -734,8 +699,7 @@ const LensSelectionModal = ({
                                                     setShowPowerSelectorModal(null);
                                                 }}
                                             /> 
-                                            <span className="power-radio"></span>
-                                            {p}
+                                            <span className="power-radio"></span> {p}
                                         </label>
                                     ))}
                                 </div>
@@ -746,7 +710,7 @@ const LensSelectionModal = ({
                                     {['0.00', '+0.25', '+0.50', '+0.75', '+1.00', '+1.25', '+1.50', '+1.75', '+2.00', '+2.25', '+2.50', '+2.75'].map(p => (
                                         <label className="power-option" key={p}>
                                             <input type="radio" name={`${showPowerSelectorModal}-power`} 
-                                                checked={((showPowerSelectorModal === 'right' ? clRightSph : (showPowerSelectorModal === 'left' ? clLeftSph : (showPowerSelectorModal === 'spec-right' ? specRightSph : specLeftSph)))) === p}
+                                                checked={(showPowerSelectorModal === 'right' ? clRightSph : (showPowerSelectorModal === 'left' ? clLeftSph : (showPowerSelectorModal === 'spec-right' ? specRightSph : specLeftSph))) === p}
                                                 onChange={() => {
                                                     if (showPowerSelectorModal === 'right') setClRightSph(p);
                                                     else if (showPowerSelectorModal === 'left') setClLeftSph(p);
@@ -755,8 +719,7 @@ const LensSelectionModal = ({
                                                     setShowPowerSelectorModal(null);
                                                 }}
                                             /> 
-                                            <span className="power-radio"></span>
-                                            {p}
+                                            <span className="power-radio"></span> {p}
                                         </label>
                                     ))}
                                 </div>
@@ -765,8 +728,9 @@ const LensSelectionModal = ({
                     </div>
                 </div>
             )}
-        </div>
-    , document.body);
+        </div>,
+        document.body
+    );
 };
 
 export default LensSelectionModal;
