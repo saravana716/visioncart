@@ -20,10 +20,17 @@ const LensSelectionModal = ({
     const [selectedLensType, setSelectedLensType] = useState('Single Vision');
     const [selectedMaterial, setSelectedMaterial] = useState('TR90');
     const [selectedFrameStyle, setSelectedFrameStyle] = useState('Rimmed');
+    const [selectedPackage, setSelectedPackage] = useState('Silver Pack');
     const [selectedUsage, setSelectedUsage] = useState('Everyday');
 
+    const lensPackages = [
+        { id: 'Silver Pack', name: 'Silver Pack', price: 490, features: 'Anti-Glare + Scratch Resistant', description: 'Clear vision for everyday use', color: '#B0B0B0' },
+        { id: 'Gold Pack', name: 'Gold Pack', price: 990, features: 'UV Protection + Thinner Lenses', description: 'Best for outdoor & long wear', recommended: true, color: '#FFD700' },
+        { id: 'Platinum Pack', name: 'Platinum Pack', price: 1490, features: 'Blue Block + Super Hydrophobic', description: 'Superior digital protection', color: '#E5E4E2' }
+    ];
+
     // Contact Lenses States
-    const [contactLensPowerOption, setContactLensPowerOption] = useState('manual');
+    const [contactLensPowerOption, setContactLensPowerOption] = useState('later');
     const [clRightEyeSelected, setClRightEyeSelected] = useState(true);
     const [clLeftEyeSelected, setClLeftEyeSelected] = useState(true);
     const [clRightSph, setClRightSph] = useState('');
@@ -31,6 +38,19 @@ const LensSelectionModal = ({
     const [clRightBoxes, setClRightBoxes] = useState(1);
     const [clLeftBoxes, setClLeftBoxes] = useState(1);
     const [showPowerSelectorModal, setShowPowerSelectorModal] = useState(null);
+
+    const contactLensPacks = [
+        { id: '3-lens-box', name: 'Standard Pack', price: 299, oldPrice: 364, description: '3 lens/box', features: 'Daily Wear Comfort', color: '#001f54' },
+        { id: '6-lens-box', name: 'Value Pack', price: 549, oldPrice: 728, description: '6 lens/box', features: 'Maximum hydration', color: '#00d285' }
+    ];
+    const [selectedClPack, setSelectedClPack] = useState('3-lens-box');
+
+    // Spectacles Specialized Power States
+    const [spectaclesPowerOption, setSpectaclesPowerOption] = useState('later');
+    const [specRightSelected, setSpecRightSelected] = useState(true);
+    const [specLeftSelected, setSpecLeftSelected] = useState(true);
+    const [specRightSph, setSpecRightSph] = useState('');
+    const [specLeftSph, setSpecLeftSph] = useState('');
 
     useEffect(() => {
         const handleCloseAll = () => {
@@ -80,9 +100,23 @@ const LensSelectionModal = ({
 
     const calculateTotalPrice = () => {
         if (!product) return '₹0';
-        const base = parseInt(product.price.toString().replace(/[^0-9]/g, '') || '0');
+        const basePriceInt = parseInt(product.price.toString().replace(/[^0-9]/g, '') || '0');
+        
+        if (product.category === 'Contact Lenses') {
+            const packPrice = contactLensPacks.find(p => p.id === selectedClPack)?.price || basePriceInt;
+            const totalBoxes = (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0);
+            return `₹${packPrice * totalBoxes}`;
+        }
+        
         const extras = selectedEnhancements.reduce((sum, enh) => sum + (parseInt(enh.price || 0)), 0);
-        return `₹${base + extras}`;
+        
+        // Premium Package Price only for Spectacles
+        if (product.category === 'Spectacles') {
+            const packagePrice = lensPackages.find(p => p.id === selectedPackage)?.price || 0;
+            return `₹${basePriceInt + packagePrice + extras}`;
+        }
+        
+        return `₹${basePriceInt + extras}`;
     };
 
     const handlePrescriptionTypeChange = (type) => {
@@ -112,12 +146,43 @@ const LensSelectionModal = ({
     const handleInternalAddToCart = async () => {
         if (product.stock !== undefined && product.stock <= 0) return false;
         const isReadingGlasses = product.category === 'Reading Glasses';
+        const isContactLens = product.category === 'Contact Lenses';
+        const isSpectacles = product.category === 'Spectacles';
         
         // Validate for reading glasses
         if (isReadingGlasses && (!readingPower.rightPower || (!readingPower.sameForBoth && !readingPower.leftPower))) {
             const { default: toast } = await import('react-hot-toast');
             toast.error('Please select power for your eyes');
             return false;
+        }
+
+        const specifications = [
+            ...(product.technicalSpecs || []),
+            { label: 'Size', value: product.size || 'Standard' }
+        ];
+
+        if (isContactLens) {
+            specifications.push({ label: 'Lens Type', value: 'Contact Lens' });
+        } else if (isReadingGlasses) {
+            specifications.push(
+                { label: 'Lens', value: 'Reading Glass' },
+                { label: 'Right Eye Power', value: readingPower.rightPower },
+                { label: 'Left Eye Power', value: readingPower.sameForBoth ? readingPower.rightPower : readingPower.leftPower }
+            );
+        } else if (isSpectacles) {
+            specifications.push(
+                { label: 'Lens Type', value: selectedLensType },
+                { label: 'Lens Package', value: selectedPackage },
+                { label: 'Usage', value: selectedUsage }
+            );
+        } else {
+            // Sunglasses, Computer Glasses, etc.
+            specifications.push(
+                { label: 'Lens Type', value: selectedLensType },
+                { label: 'Material', value: selectedMaterial },
+                { label: 'Style', value: selectedFrameStyle },
+                { label: 'Usage', value: selectedUsage }
+            );
         }
 
         const cartData = {
@@ -128,32 +193,25 @@ const LensSelectionModal = ({
             productPrice: product.price,
             productSize: product.size,
             category: product.category,
-            specifications: [
-                ...(product.technicalSpecs || []),
-                { label: 'Size', value: product.size || 'Standard' },
-                ...(isReadingGlasses ? [
-                    { label: 'Lens', value: 'Reading Glass' },
-                    { label: 'Right Eye Power', value: readingPower.rightPower },
-                    { label: 'Left Eye Power', value: readingPower.sameForBoth ? readingPower.rightPower : readingPower.leftPower }
-                ] : [
-                    { label: 'Lens', value: selectedLensType },
-                    { label: 'Material', value: selectedMaterial },
-                    { label: 'Style', value: selectedFrameStyle },
-                    { label: 'Usage', value: selectedUsage },
-                    { label: 'Prescription', value: prescriptionType }
-                ])
-            ],
+            specifications: specifications,
             sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || product.id,
-            enhancements: isReadingGlasses || product.category === 'Contact Lenses' ? [] : selectedEnhancements,
-            prescriptionType: isReadingGlasses ? 'Reading Glass Power' : (product.category === 'Contact Lenses' ? (contactLensPowerOption === 'manual' ? 'Manual Contact Lens Power' : 'Submit Later') : prescriptionType),
-            prescription: product.category === 'Contact Lenses' ? {
+            enhancements: isReadingGlasses || isContactLens ? [] : selectedEnhancements,
+            prescriptionType: isReadingGlasses ? 'Reading Glass Power' : (isContactLens ? (contactLensPowerOption === 'manual' ? 'Manual Contact Lens Power' : 'Submit Later') : (isSpectacles ? (spectaclesPowerOption === 'manual' ? 'Manual Prescription' : 'Submit Later') : prescriptionType)),
+            prescription: isContactLens ? {
                 rightSelected: clRightEyeSelected,
                 leftSelected: clLeftEyeSelected,
-                rightPower: clRightEyeSelected ? clRightSph : null,
-                leftPower: clLeftEyeSelected ? clLeftSph : null,
-                rightBoxes: clRightEyeSelected ? clRightBoxes : 0,
-                leftBoxes: clLeftEyeSelected ? clLeftBoxes : 0,
-            } : (isReadingGlasses ? { readingPower } : prescription),
+                rightPower: clRightSph || null,
+                leftPower: clLeftSph || null,
+                rightBoxes: clRightBoxes,
+                leftBoxes: clLeftBoxes,
+                pack: contactLensPacks.find(p => p.id === selectedClPack)
+            } : (isReadingGlasses ? { readingPower } : (isSpectacles ? {
+                rightSelected: specRightSelected,
+                leftSelected: specLeftSelected,
+                rightPower: specRightSelected ? specRightSph : null,
+                leftPower: specLeftSelected ? specLeftSph : null,
+                type: spectaclesPowerOption
+            } : prescription)),
             totalPrice: calculateTotalPrice()
         };
         
@@ -191,14 +249,29 @@ const LensSelectionModal = ({
                     {product.category === 'Contact Lenses' ? (
                         <div className="contact-lenses-section">
                             <h2 className="modal-title-small">Lenses per Pack</h2>
-                            <div className="cl-pack-options">
-                                <div className="cl-pack-item active">
-                                    <div className="pack-title">3 lens/box</div>
-                                    <div className="pack-price">
-                                        <span className="old-price">₹364</span>
-                                        <span className="new-price">₹299</span>
+                            <div className="packages-grid cl-packages">
+                                {contactLensPacks.map(pkg => (
+                                    <div 
+                                        key={pkg.id} 
+                                        className={`package-card ${selectedClPack === pkg.id ? 'active' : ''}`}
+                                        onClick={() => setSelectedClPack(pkg.id)}
+                                    >
+                                        <div className="package-header">
+                                            <div className="package-title-row">
+                                                <div className="package-dot" style={{ background: pkg.color }}></div>
+                                                <h3>{pkg.name}</h3>
+                                            </div>
+                                            <div className="package-price-col">
+                                                {pkg.oldPrice && <span className="package-old-price">₹{pkg.oldPrice}</span>}
+                                                <div className="package-price">₹{pkg.price}</div>
+                                            </div>
+                                        </div>
+                                        <p className="package-desc">{pkg.description}</p>
+                                        <div className="package-features">
+                                            <span>✨ {pkg.features}</span>
+                                        </div>
                                     </div>
-                                </div>
+                                ))}
                             </div>
 
                             <div className="cl-power-type-container">
@@ -334,21 +407,159 @@ const LensSelectionModal = ({
                                 </div>
                             </div>
 
-                            <h2 className="modal-title-small">Select Lens Material</h2>
-                            <div className="material-grid">
-                                <label className={selectedMaterial === 'Metal' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Metal'} onChange={() => setSelectedMaterial('Metal')} /> <span>Metal</span></label>
-                                <label className={selectedMaterial === 'Stainless Steel' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Stainless Steel'} onChange={() => setSelectedMaterial('Stainless Steel')} /> <span>Stainless Steel</span></label>
-                                <label className={selectedMaterial === 'TR90' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'TR90'} onChange={() => setSelectedMaterial('TR90')} /> <span>TR90 <span className="recommended">Recommended</span></span></label>
-                                <label className={selectedMaterial === 'Mixed Material' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Mixed Material'} onChange={() => setSelectedMaterial('Mixed Material')} /> <span>Mixed Material</span></label>
-                                <label className={selectedMaterial === 'Titanium' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Titanium'} onChange={() => setSelectedMaterial('Titanium')} /> <span>Titanium</span></label>
-                            </div>
+                            {product.category === 'Spectacles' ? (
+                                <>
+                                    <h2 className="modal-title-small">Select Lens Package</h2>
+                                    <div className="packages-grid">
+                                        {lensPackages.map(pkg => (
+                                            <div 
+                                                key={pkg.id} 
+                                                className={`package-card ${selectedPackage === pkg.id ? 'active' : ''}`}
+                                                onClick={() => setSelectedPackage(pkg.id)}
+                                            >
+                                                {pkg.recommended && <div className="recommended-badge">Best Value</div>}
+                                                <div className="package-header">
+                                                    <div className="package-title-row">
+                                                        <div className="package-dot" style={{ background: pkg.color }}></div>
+                                                        <h3>{pkg.name}</h3>
+                                                    </div>
+                                                    <div className="package-price">₹{pkg.price}</div>
+                                                </div>
+                                                <p className="package-desc">{pkg.description}</p>
+                                                <div className="package-features">
+                                                    <span>✨ {pkg.features}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
 
-                            <h2 className="modal-title-small">Select Frame Style</h2>
-                            <div className="material-grid">
-                                <label className={selectedFrameStyle === 'Rimmed' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimmed'} onChange={() => setSelectedFrameStyle('Rimmed')} /> <span>Rimmed</span></label>
-                                <label className={selectedFrameStyle === 'Semi - Rimmed' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Semi - Rimmed'} onChange={() => setSelectedFrameStyle('Semi - Rimmed')} /> <span>Semi - Rimmed</span></label>
-                                <label className={selectedFrameStyle === 'Rimless' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimless'} onChange={() => setSelectedFrameStyle('Rimless')} /> <span>Rimless</span></label>
-                            </div>
+                                    <div className="compact-power-flow main-selector">
+                                        <div 
+                                            className={`power-option-card ${spectaclesPowerOption === 'manual' ? 'active' : ''}`}
+                                            onClick={() => setSpectaclesPowerOption('manual')}
+                                        >
+                                            <div className="power-radio"></div>
+                                            <div className="power-info">
+                                                <strong>Enter power Manually</strong>
+                                            </div>
+                                        </div>
+                                        <div 
+                                            className={`power-option-card ${spectaclesPowerOption === 'later' ? 'active' : ''}`}
+                                            onClick={() => setSpectaclesPowerOption('later')}
+                                        >
+                                            <div className="power-radio"></div>
+                                            <div className="power-info">
+                                                <strong>I will submit power later</strong>
+                                            </div>
+                                        </div>
+
+                                        {spectaclesPowerOption === 'manual' && (
+                                            <div className="spec-manual-power-entry animate-in">
+                                                <div className="eye-selection-row">
+                                                    <label className="cl-checkbox-label">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={specRightSelected} 
+                                                            onChange={(e) => setSpecRightSelected(e.target.checked)} 
+                                                        /> 
+                                                        <span className="custom-checkmark">✓</span>
+                                                        RIGHT (OD)
+                                                    </label>
+                                                    <label className="cl-checkbox-label">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={specLeftSelected} 
+                                                            onChange={(e) => setSpecLeftSelected(e.target.checked)} 
+                                                        /> 
+                                                        <span className="custom-checkmark">✓</span>
+                                                        LEFT (OS)
+                                                    </label>
+                                                </div>
+
+                                                <div className="cl-power-row no-border">
+                                                    <div className="cl-row-label">
+                                                        <span className="main-label">Spherical</span>
+                                                        <span className="sub-label">SPH</span>
+                                                    </div>
+                                                    <div className="cl-dropdown-col">
+                                                        <button 
+                                                            className="cl-dropdown-btn" 
+                                                            onClick={() => setShowPowerSelectorModal('spec-right')} 
+                                                            disabled={!specRightSelected}
+                                                        >
+                                                            {specRightSph || 'Select'} <span className="arrow">▼</span>
+                                                        </button>
+                                                    </div>
+                                                    <div className="cl-dropdown-col">
+                                                        <button 
+                                                            className="cl-dropdown-btn" 
+                                                            onClick={() => setShowPowerSelectorModal('spec-left')} 
+                                                            disabled={!specLeftSelected}
+                                                        >
+                                                            {specLeftSph || 'Select'} <span className="arrow">▼</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="cl-power-row no-border">
+                                                    <div className="cl-row-label">
+                                                        <span className="main-label">No. of Boxes</span>
+                                                        <span className="sub-label">1 pair/box</span>
+                                                    </div>
+                                                    <div className="cl-dropdown-col">
+                                                        <select className="cl-select" disabled={!specRightSelected} value={1}>
+                                                            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                                                        </select>
+                                                    </div>
+                                                    <div className="cl-dropdown-col">
+                                                        <select className="cl-select" disabled={!specLeftSelected} value={1}>
+                                                            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    {spectaclesPowerOption === 'later' && (
+                                        <div className="cl-submit-later-banner spectacles-banner animate-in">
+                                            <div className="banner-left">
+                                                <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
+                                                <p>We will call you to get your power!</p>
+                                            </div>
+                                            <div className="banner-right">
+                                                <div className="lens-graphic-pair">
+                                                    <div className="lens-graphic positive">
+                                                        <span>+</span>
+                                                        <div className="lens-shape"></div>
+                                                    </div>
+                                                    <div className="lens-graphic negative">
+                                                        <span>-</span>
+                                                        <div className="lens-shape"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    <h2 className="modal-title-small">Select Lens Material</h2>
+                                    <div className="material-grid">
+                                        <label className={selectedMaterial === 'Metal' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Metal'} onChange={() => setSelectedMaterial('Metal')} /> <span>Metal</span></label>
+                                        <label className={selectedMaterial === 'Stainless Steel' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Stainless Steel'} onChange={() => setSelectedMaterial('Stainless Steel')} /> <span>Stainless Steel</span></label>
+                                        <label className={selectedMaterial === 'TR90' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'TR90'} onChange={() => setSelectedMaterial('TR90')} /> <span>TR90 <span className="recommended">Recommended</span></span></label>
+                                        <label className={selectedMaterial === 'Mixed Material' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Mixed Material'} onChange={() => setSelectedMaterial('Mixed Material')} /> <span>Mixed Material</span></label>
+                                        <label className={selectedMaterial === 'Titanium' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Titanium'} onChange={() => setSelectedMaterial('Titanium')} /> <span>Titanium</span></label>
+                                    </div>
+
+                                    <h2 className="modal-title-small">Select Frame Style</h2>
+                                    <div className="material-grid">
+                                        <label className={selectedFrameStyle === 'Rimmed' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimmed'} onChange={() => setSelectedFrameStyle('Rimmed')} /> <span>Rimmed</span></label>
+                                        <label className={selectedFrameStyle === 'Semi - Rimmed' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Semi - Rimmed'} onChange={() => setSelectedFrameStyle('Semi - Rimmed')} /> <span>Semi - Rimmed</span></label>
+                                        <label className={selectedFrameStyle === 'Rimless' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimless'} onChange={() => setSelectedFrameStyle('Rimless')} /> <span>Rimless</span></label>
+                                    </div>
+                                </>
+                            )}
 
                             <h2 className="modal-title-small">Add Lens Enhancements</h2>
                             <div className="enhancements-grid">
@@ -371,53 +582,61 @@ const LensSelectionModal = ({
                                 </div>
                             ) : (
                                 <div className="prescription-section">
-                                    <h2 className="modal-title-small">Power Options - Eye Selection</h2>
-                                    <div className="prescription-toggle-container">
-                                        <div className={`p-toggle-item ${prescriptionType === 'Same power for both eyes' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Same power for both eyes')}>
-                                            <div className="p-radio-circle"></div>
-                                            <span>Same power for both eyes</span>
-                                        </div>
-                                        <div className={`p-toggle-item ${prescriptionType === 'Different power for each eye' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Different power for each eye')}>
-                                            <div className="p-radio-circle"></div>
-                                            <span>Different power for each eye</span>
-                                        </div>
-                                    </div>
+                                    {product.category === 'Spectacles' && spectaclesPowerOption === 'manual' || product.category !== 'Spectacles' ? (
+                                        <>
+                                            <h2 className="modal-title-small">Power Options - Eye Selection</h2>
+                                            <div className="prescription-toggle-container">
+                                                <div className={`p-toggle-item ${prescriptionType === 'Same power for both eyes' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Same power for both eyes')}>
+                                                    <div className="p-radio-circle"></div>
+                                                    <span>Same power for both eyes</span>
+                                                </div>
+                                                <div className={`p-toggle-item ${prescriptionType === 'Different power for each eye' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Different power for each eye')}>
+                                                    <div className="p-radio-circle"></div>
+                                                    <span>Different power for each eye</span>
+                                                </div>
+                                            </div>
 
-                                    <div className="prescription-input-area">
-                                        <h3>Prescription Input Table</h3>
-                                        <div className="prescription-table-wrapper">
-                                            <table className="prescription-table">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Right Eye</th>
-                                                        <th>Left Eye</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>
-                                                            <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => handlePrescriptionChange('right', 'sph', e.target.value)}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
-                                                            <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => handlePrescriptionChange('right', 'cyl', e.target.value)}><option>----</option><option>-0.25</option></select></div>
-                                                            <div className="p-row"><span>AXIS</span><select value={prescription.right.axis} onChange={(e) => handlePrescriptionChange('right', 'axis', e.target.value)}><option>----</option><option>90</option><option>180</option></select></div>
-                                                            <div className="p-row"><span>ADD</span><select value={prescription.right.add} onChange={(e) => handlePrescriptionChange('right', 'add', e.target.value)}><option>----</option><option>+1.00</option></select></div>
-                                                        </td>
-                                                        <td>
-                                                            <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => handlePrescriptionChange('left', 'sph', e.target.value)}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
-                                                            <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => handlePrescriptionChange('left', 'cyl', e.target.value)}><option>----</option><option>-0.25</option></select></div>
-                                                            <div className="p-row"><span>AXIS</span><select value={prescription.left.axis} onChange={(e) => handlePrescriptionChange('left', 'axis', e.target.value)}><option>----</option><option>90</option><option>180</option></select></div>
-                                                            <div className="p-row"><span>ADD</span><select value={prescription.left.add} onChange={(e) => handlePrescriptionChange('left', 'add', e.target.value)}><option>----</option><option>+1.00</option></select></div>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <button 
-                                                className="save-btn-green" 
-                                                onClick={handleSavePrescription}
-                                            >
-                                                Save
-                                            </button>
+                                            <div className="prescription-input-area">
+                                                <h3>Prescription Input Table</h3>
+                                                <div className="prescription-table-wrapper">
+                                                    <table className="prescription-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Right Eye</th>
+                                                                <th>Left Eye</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => handlePrescriptionChange('right', 'sph', e.target.value)}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
+                                                                    <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => handlePrescriptionChange('right', 'cyl', e.target.value)}><option>----</option><option>-0.25</option></select></div>
+                                                                    <div className="p-row"><span>AXIS</span><select value={prescription.right.axis} onChange={(e) => handlePrescriptionChange('right', 'axis', e.target.value)}><option>----</option><option>90</option><option>180</option></select></div>
+                                                                    <div className="p-row"><span>ADD</span><select value={prescription.right.add} onChange={(e) => handlePrescriptionChange('right', 'add', e.target.value)}><option>----</option><option>+1.00</option></select></div>
+                                                                </td>
+                                                                <td>
+                                                                    <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => handlePrescriptionChange('left', 'sph', e.target.value)}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
+                                                                    <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => handlePrescriptionChange('left', 'cyl', e.target.value)}><option>----</option><option>-0.25</option></select></div>
+                                                                    <div className="p-row"><span>AXIS</span><select value={prescription.left.axis} onChange={(e) => handlePrescriptionChange('left', 'axis', e.target.value)}><option>----</option><option>90</option><option>180</option></select></div>
+                                                                    <div className="p-row"><span>ADD</span><select value={prescription.left.add} onChange={(e) => handlePrescriptionChange('left', 'add', e.target.value)}><option>----</option><option>+1.00</option></select></div>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                    <button 
+                                                        className="save-btn-green" 
+                                                        onClick={handleSavePrescription}
+                                                    >
+                                                        Save
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="power-later-placeholder">
+                                            <p>Prescription details will be collected after order placement.</p>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             )}
 
@@ -453,7 +672,7 @@ const LensSelectionModal = ({
 
                     <div className="price-summary-box">
                         <div className="p-line"><span>Frame Price:</span> <span>{product.price}</span></div>
-                        <div className="p-line"><span>Lens Price:</span> <span>₹0</span></div>
+                        <div className="p-line"><span>Lens Price:</span> <span>{product.category === 'Spectacles' ? `₹${lensPackages.find(p => p.id === selectedPackage)?.price || 0}` : '₹0'}</span></div>
                         <div className="p-line"><span>Add-ons:</span> <span>₹{selectedEnhancements.reduce((sum, e) => sum + (parseInt(e.price || 0)), 0)}</span></div>
                         <div className="p-total-line"><span>Total Price:</span> <span>{calculateTotalPrice()}</span></div>
                     </div>
@@ -509,7 +728,9 @@ const LensSelectionModal = ({
                                                 checked={(showPowerSelectorModal === 'right' ? clRightSph : clLeftSph) === p}
                                                 onChange={() => {
                                                     if (showPowerSelectorModal === 'right') setClRightSph(p);
-                                                    else setClLeftSph(p);
+                                                    else if (showPowerSelectorModal === 'left') setClLeftSph(p);
+                                                    else if (showPowerSelectorModal === 'spec-right') setSpecRightSph(p);
+                                                    else if (showPowerSelectorModal === 'spec-left') setSpecLeftSph(p);
                                                     setShowPowerSelectorModal(null);
                                                 }}
                                             /> 
@@ -525,10 +746,12 @@ const LensSelectionModal = ({
                                     {['0.00', '+0.25', '+0.50', '+0.75', '+1.00', '+1.25', '+1.50', '+1.75', '+2.00', '+2.25', '+2.50', '+2.75'].map(p => (
                                         <label className="power-option" key={p}>
                                             <input type="radio" name={`${showPowerSelectorModal}-power`} 
-                                                checked={(showPowerSelectorModal === 'right' ? clRightSph : clLeftSph) === p}
+                                                checked={((showPowerSelectorModal === 'right' ? clRightSph : (showPowerSelectorModal === 'left' ? clLeftSph : (showPowerSelectorModal === 'spec-right' ? specRightSph : specLeftSph)))) === p}
                                                 onChange={() => {
                                                     if (showPowerSelectorModal === 'right') setClRightSph(p);
-                                                    else setClLeftSph(p);
+                                                    else if (showPowerSelectorModal === 'left') setClLeftSph(p);
+                                                    else if (showPowerSelectorModal === 'spec-right') setSpecRightSph(p);
+                                                    else if (showPowerSelectorModal === 'spec-left') setSpecLeftSph(p);
                                                     setShowPowerSelectorModal(null);
                                                 }}
                                             /> 

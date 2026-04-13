@@ -840,9 +840,9 @@ const Checkout = () => {
                                             <span className="amount">{total.toLocaleString()}</span>
                                         </div>
                                     </div>
-                                    <div className="secure-checkout-badge">
+                                    {/* <div className="secure-checkout-badge">
                                         <FaShieldAlt /> 256-bit SSL Secured Transaction
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
