@@ -104,19 +104,21 @@
 
 /* Frames Showcase Grid */
 .promo-column {
-    flex: 2;
+    flex: 1.5; /* Reduced from 2 to shrink width */
 }
 
 .frames-dropdown-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
     gap: 15px;
     width: 100%;
+    max-width: 480px; /* Limit expansion to keep boxes narrow */
 }
 
 .frame-dropdown-item {
-    width: 175px; /* Slightly wider to comfortably fit off-center images */
-    height: 110px; /* Fixed height */
+    position: relative; /* For labels */
+    width: 100%; /* Fill grid column */
+    height: 130px; /* Increased height */
     background: #fcfcfc;
     border-radius: 12px;
     padding: 0;
@@ -139,12 +141,12 @@
 
 .frame-dropdown-item img {
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: contain; 
-    transform: scale(1.6); /* Reduced scale so items with strange transparent borders don't get chopped off */
+    transform: scale(1.7); 
     transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .frame-dropdown-item:hover img {
-    transform: scale(1.75); 
+    transform: scale(1.8); 
 }

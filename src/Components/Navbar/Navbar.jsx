@@ -6,7 +6,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
 import SearchOverlay from '../Search/SearchOverlay';
 import { useCart } from '../../context/CartContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import "./Navbar.css"
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase.config';
@@ -24,6 +24,7 @@ const Navbar = () => {
   const [categories, setCategories] = useState([]);
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { cartCount, cartOpen, setCartOpen, drawerTab, setDrawerTab } = useCart();
   const { wishlistItems } = useWishlist();
 
@@ -120,11 +121,11 @@ const Navbar = () => {
         <div className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
             <img src={logo} alt="" onClick={() => navigate('/')} style={{cursor: 'pointer'}} />
             <div className='navtext'>
-                <li onClick={() => navigate('/')}>Home</li>
-                <li onClick={() => navigate('/about')}>About</li>
-                <li onClick={() => navigate('/products')}>Products</li>
-                <li onClick={() => navigate('/blogs')}>Blogs</li>
-                <li onClick={() => navigate('/contact')}>Contact</li>
+                <li onClick={() => navigate('/')} className={location.pathname === '/' ? 'active' : ''}>Home</li>
+                <li onClick={() => navigate('/about')} className={location.pathname === '/about' ? 'active' : ''}>About</li>
+                <li onClick={() => navigate('/products')} className={location.pathname === '/products' ? 'active' : ''}>Products</li>
+                <li onClick={() => navigate('/blogs')} className={location.pathname === '/blogs' ? 'active' : ''}>Blogs</li>
+                <li onClick={() => navigate('/contact')} className={location.pathname === '/contact' ? 'active' : ''}>Contact</li>
             </div>
             <div className='icons'>
                 <div className='searchinput'>

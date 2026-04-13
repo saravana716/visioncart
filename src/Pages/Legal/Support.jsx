@@ -19,9 +19,9 @@ const Support = () => {
             heading: "3. Contact Channels",
             text: "Reach out to us through any of these convenient methods:",
             list: [
-                "WhatsApp: +91 9342508799",
-                "Phone: +91 9342508799",
-                "Email: support@visionkart.com"
+                "WhatsApp: +91 93441 16571",
+                "Phone: +91 93441 16571",
+                "Email: visionkart.onlinestore@gmail.com"
             ]
         },
         {

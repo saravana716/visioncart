@@ -20,7 +20,7 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
             gender: ['Men', 'Women', 'Unisex', 'Kids'],
             style: ['Full Rim', 'Half Rim', 'Rimless'],
             lensType: ['ARC', 'Blue Cut', 'UV Protect', 'Auto Cooling'],
-            shape: ['Rectangle', 'Round', 'Cat eye', 'Aviatar', 'Oval', 'Square'],
+            shape: ['Rectangle', 'Round', 'Cat eye', 'Aviator', 'Oval', 'Square'],
             brands: [] // Removed brands for other categories
         },
         'Sunglasses': {
@@ -182,6 +182,9 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
                             </div>
                             <div className="frame-dropdown-item" onClick={() => { navigate(`/products?category=${categoryName}`); onClose(); }}>
                                 <img src={frame5} alt="Frame Style 5" />
+                            </div>
+                            <div className="frame-dropdown-item" onClick={() => { navigate(`/products?category=${categoryName}`); onClose(); }}>
+                                <img src={frame1} alt="Frame Style 6" />
                             </div>
                         </div>
                     </div>

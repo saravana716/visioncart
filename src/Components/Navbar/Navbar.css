@@ -67,6 +67,23 @@
     font-weight: 500;
     cursor: pointer;
     color: var(--primary-color);
+    position: relative;
+    padding: 5px 0;
+}
+
+.navtext li:hover, .navtext li.active {
+    color: var(--secondary-color);
+}
+
+.navtext li.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--secondary-color);
+    border-radius: 20px;
 }
 .icons{
     width: auto;
@@ -190,6 +207,7 @@
     background-color: var(--primary-color);
     color: white;
     position: relative;
+    z-index: 2400; /* Just below main navbar */
 }
 .navleft {
     flex: 1;
@@ -232,7 +250,7 @@
 }
 
 .btn-virtual-tryon {
-    background: #ff0066;
+    background: var(--secondary-color);
     color: white;
     border: none;
     padding: 7px 15px;
@@ -241,6 +259,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(255, 0, 117, 0.2);
 }
 
 .btn-home-tryon:hover {
@@ -248,7 +267,7 @@
 }
 
 .btn-virtual-tryon:hover {
-    background: #e6005c;
+    background: #E00068; /* Slightly darker pink */
 }
 
 .navbuttons {
