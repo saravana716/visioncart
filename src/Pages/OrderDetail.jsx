@@ -64,33 +64,40 @@ const OrderDetail = () => {
         <div className="order-detail-page">
             <Navbar />
             
-            <main className="detail-container">
-                <div className="detail-header-section">
-                    <button className="back-btn-luxury" onClick={() => navigate('/orders')}>
-                        <FaArrowLeft />
-                    </button>
-                    <div className="header-text-luxury">
-                        <span className="tiny-label">ORDER ARTIFACT</span>
-                        <h1>Ref: #{order.id.slice(0, 8).toUpperCase()}</h1>
-                        <p className="subtitle-luxury">Placed on {formatDate(order.createdAt)}</p>
+            <div className="order-detail-hero">
+                <div className="hero-content reveal-in">
+                    <nav className="mm-breadcrumb">
+                        <span onClick={() => navigate('/')}>Home</span>
+                        <FaChevronRight className="sep" />
+                        <span onClick={() => navigate('/profile')}>Account</span>
+                        <FaChevronRight className="sep" />
+                        <span onClick={() => navigate('/orders')}>Order History</span>
+                        <FaChevronRight className="sep" />
+                        <span className="active">Order Ref</span>
+                    </nav>
+                    <div className="title-with-badge">
+                        <h1>Order #{order.id.slice(0, 8).toUpperCase()}</h1>
+                        <span className="order-count-badge">Active</span>
+                        <button className="invoice-action-btn-hero" onClick={() => navigate(`/invoice/${order.id}`)}>
+                            <FaFileInvoice /> Invoice
+                        </button>
                     </div>
-                    <button className="invoice-action-btn" onClick={() => navigate(`/invoice/${order.id}`)}>
-                        <FaFileInvoice /> View Invoice
-                    </button>
+                    <p>Detailed tracking and financial breakdown for your premium eyewear purchase.</p>
                 </div>
+            </div>
 
-                <div className="tracking-card-luxury">
+            <main className="detail-container">
+
+                <div className="tracking-card-luxury fade-in">
                     <div className="tracking-progress-neat">
                         <div className={`step-luxury ${['Ordered', 'Processing', 'Shipped', 'Delivered'].includes(order.status) ? 'completed' : ''}`}>
                             <div className="icon-wrap"><FaCheckCircle /></div>
                             <span>Confirmed</span>
                         </div>
-                        <div className="connector-luxury"></div>
                         <div className={`step-luxury ${['Shipped', 'Delivered'].includes(order.status) ? 'completed' : ''}`}>
                             <div className="icon-wrap"><FaTruck /></div>
                             <span>In Transit</span>
                         </div>
-                        <div className="connector-luxury"></div>
                         <div className={`step-luxury ${order.status === 'Delivered' ? 'completed' : ''}`}>
                             <div className="icon-wrap"><FaBox /></div>
                             <span>Delivered</span>
@@ -98,7 +105,7 @@ const OrderDetail = () => {
                     </div>
                 </div>
 
-                <div className="detail-split-layout reveal-up stagger-1">
+                <div className="detail-split-layout reveal-up">
                     <div className="left-column">
                         <section className="item-details-card">
                             <div className="card-header">
@@ -114,9 +121,10 @@ const OrderDetail = () => {
                                         <div className="item-info-luxury">
                                             <h4>{item.productName}</h4>
                                             <div className="item-tags-luxury">
-                                                <span>{item.lensType}</span>
-                                                <span>{item.material}</span>
-                                                {item.prescription && <span className="rx-badge">RX</span>}
+                                                <span>{item.category || 'Eyewear'}</span>
+                                                <span>{item.lensType || 'Frame Only'}</span>
+                                                <span>{item.material || 'Standard'}</span>
+                                                <span className="gst-tag">GST {item.gstRate || 0}%</span>
                                             </div>
                                         </div>
                                         <div className="item-price-luxury">
@@ -130,40 +138,84 @@ const OrderDetail = () => {
                     </div>
 
                     <div className="right-column">
-                        <section className="info-card-premium scroll-reveal">
+                        <section className="info-card-premium">
                             <div className="card-header">
                                 <h3><FaMapMarkerAlt /> Shipping To</h3>
                             </div>
                             <div className="address-display">
                                 <h4>{order.shippingAddress?.fullName}</h4>
                                 <p>{order.shippingAddress?.address}</p>
-                                <p>{order.shippingAddress?.city}, {order.shippingAddress?.zip}</p>
-                                <div className="contact-row">
+                                <p>{order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.zip}</p>
+                                <div className="contact-details-row">
+                                    <p><span>Phone:</span> {order.shippingAddress?.phone || order.billingAddress?.phone}</p>
+                                    <p><span>Email:</span> {order.billingAddress?.email}</p>
+                                </div>
+                                <div className="expected-delivery-row">
                                     <FaClock /> <span>Expected in 3-5 Business Days</span>
                                 </div>
                             </div>
                         </section>
 
-                        <section className="payment-card-premium scroll-reveal">
+                        <section className="info-card-premium billing-card-extra">
+                            <div className="card-header">
+                                <h3><FaFileInvoice /> Billing Details</h3>
+                            </div>
+                            <div className="address-display">
+                                <h4>{order.billingAddress?.fullName}</h4>
+                                <p>{order.billingAddress?.address}</p>
+                                <p>{order.billingAddress?.city}, {order.billingAddress?.state} - {order.billingAddress?.zip}</p>
+                                <div className="contact-details-row">
+                                    <p><span>Phone:</span> {order.billingAddress?.phone}</p>
+                                    <p><span>Email:</span> {order.billingAddress?.email}</p>
+                                </div>
+                                <div className="payment-label-badge">{order.paymentMethod}</div>
+                            </div>
+                        </section>
+
+                        <section className="payment-card-premium">
                             <div className="card-header">
                                 <h3><FaCreditCard /> Financial Summary</h3>
                             </div>
                             <div className="summary-list">
                                 <div className="summary-row">
-                                    <span>Payment Mode</span>
-                                    <span>{order.paymentMethod}</span>
+                                    <span>Base Subtotal</span>
+                                    <span>₹{order.amounts?.rawSubtotal?.toLocaleString() || order.amounts?.subtotal?.toLocaleString()}</span>
                                 </div>
-                                <div className="summary-row">
-                                    <span>Line Total</span>
-                                    <span>₹{order.amounts?.subtotal?.toLocaleString()}</span>
-                                </div>
-                                <div className="summary-row">
-                                    <span>Applicable GST</span>
+                                {order.amounts?.discount > 0 && (
+                                    <div className="summary-row discount-row">
+                                        <span>Coupon Discount</span>
+                                        <span>-₹{order.amounts?.discount?.toLocaleString()}</span>
+                                    </div>
+                                )}
+                                <div className="summary-divider"></div>
+                                
+                                {/* Professional Tax Breakdown */}
+                                {order.amounts?.taxDetails?.isIntraState ? (
+                                    <>
+                                        <div className="summary-row tax-minor">
+                                            <span>CGST (Central Tax)</span>
+                                            <span>₹{order.amounts?.taxDetails?.cgst?.toLocaleString()}</span>
+                                        </div>
+                                        <div className="summary-row tax-minor">
+                                            <span>SGST (State Tax)</span>
+                                            <span>₹{order.amounts?.taxDetails?.sgst?.toLocaleString()}</span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="summary-row tax-minor">
+                                        <span>IGST (Interstate Tax)</span>
+                                        <span>₹{order.amounts?.taxDetails?.igst?.toLocaleString()}</span>
+                                    </div>
+                                )}
+                                
+                                <div className="summary-row total-tax-row">
+                                    <span>Total Applicable GST</span>
                                     <span>₹{order.amounts?.tax?.toLocaleString()}</span>
                                 </div>
+
                                 <div className="summary-row highlight">
-                                    <span>Delivery</span>
-                                    <span className="free-tag">COMPLIMENTARY</span>
+                                    <span>Delivery Charges</span>
+                                    <span>FREE</span>
                                 </div>
                                 <div className="grand-total-row">
                                     <div className="total-label">Grand Total</div>
