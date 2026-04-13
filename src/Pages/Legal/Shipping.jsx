@@ -4,31 +4,30 @@ import LegalPage from './LegalPage';
 const Shipping = () => {
     const content = [
         {
-            heading: "1. Delivery Timeline",
-            text: "We strive to deliver your products as quickly as possible.",
+            heading: "Shipping & Delivery Policy",
+            text: "VisionKart is committed to delivering your orders accurately, in good condition, and always on time at the address you provide."
+        },
+        {
+            heading: "1. Shipping Coverage",
+            text: "We ship to almost all locations across India. We use reliable courier partners to ensure safe delivery."
+        },
+        {
+            heading: "2. Shipping Timelines",
             list: [
-                "Standard Delivery: 3–7 working days across India.",
-                "Customized Prescription Lenses: May take an additional 2-3 working days for processing."
+                "Orders for frames without lenses are typically shipped within 24-48 hours.",
+                "Orders with prescription lenses may take 3-5 business days for processing and lens fitting.",
+                "Estimated delivery time is 5-7 business days across India, depending on the location."
             ]
         },
         {
-            heading: "2. Shipping Charges",
-            text: "VisionKart offers competitive shipping rates:",
+            heading: "3. Shipping Charges",
             list: [
-                "Free shipping on orders above ₹999.",
-                "A flat shipping fee of ₹50 applies to orders below ₹999."
+                "Shipping charges are calculated at checkout based on your location and the product weight.",
+                "We may offer free shipping on orders above a certain value as part of promotional offers."
             ]
-        },
-        {
-            heading: "3. Service Areas",
-            text: "We currently ship to all major cities and towns across India. If your location is in a remote area, delivery might take slightly longer."
         },
         {
             heading: "4. Tracking Your Order",
-            text: "Once your order is dispatched, you will receive a tracking link via email and SMS to monitor your delivery progress in real-time."
-        },
-        {
-            heading: "5. Delay Disclaimer",
             text: "While we aim for timely delivery, delays may occur due to logistics issues, extreme weather conditions, or public holidays. We appreciate your patience in such cases."
         },
         {
