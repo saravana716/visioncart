@@ -58,6 +58,7 @@ const Checkout = () => {
         address: '',
         city: '',
         zip: '',
+        phone: '',
         state: 'Tamil Nadu'
     });
 
@@ -117,6 +118,11 @@ const Checkout = () => {
             if (!shippingForm.address.trim()) newShippingErrors.address = "Required";
             if (!shippingForm.city.trim()) newShippingErrors.city = "Required";
             if (!shippingForm.zip.trim()) newShippingErrors.zip = "Required";
+            if (!shippingForm.phone.trim()) {
+                newShippingErrors.phone = "Phone required";
+            } else if (!/^\d{10}$/.test(shippingForm.phone)) {
+                newShippingErrors.phone = "10 digits";
+            }
         }
 
         setErrors(newErrors);
@@ -256,6 +262,7 @@ const Checkout = () => {
             address: addr.address || '',
             city: addr.city || '',
             zip: addr.pincode || '',
+            phone: addr.phone || '',
             state: addr.state || 'Tamil Nadu'
         });
         setShowSavedAddresses(false);
@@ -632,6 +639,10 @@ const Checkout = () => {
                                                 <div className={`form-group ${shippingErrors.fullName ? 'has-error' : ''}`}>
                                                     <label>Recipient Name</label>
                                                     <input type="text" name="fullName" value={shippingForm.fullName} onChange={(e) => handleInputChange(e, 'shipping')} placeholder="Who is receiving?" />
+                                                </div>
+                                                <div className={`form-group ${shippingErrors.phone ? 'has-error' : ''}`}>
+                                                    <label>Phone Number</label>
+                                                    <input type="text" name="phone" value={shippingForm.phone} onChange={(e) => handleInputChange(e, 'shipping')} placeholder="10-digit mobile" />
                                                 </div>
                                             </div>
                                             <div className={`form-group ${shippingErrors.address ? 'has-error' : ''}`}>
