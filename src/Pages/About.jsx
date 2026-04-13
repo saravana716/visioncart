@@ -47,10 +47,6 @@ const About = () => {
         <div className="about-v2-wrapper">
             <Navbar />
 
-            {/* Background Decorations */}
-            <div className="v2-bg-blob blob-1"></div>
-            <div className="v2-bg-blob blob-2"></div>
-            <div className="v2-bg-blob blob-3"></div>
 
             {/* Section 1: Lifestyle Hero */}
             <header className="hero-v2">
