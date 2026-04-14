@@ -141,13 +141,13 @@ const About = () => {
                     <div className="grid-2 reverse">
                         <div className="lens-text scroll-reveal">
                             <h2 className="v2-section-title">Our <span>Vision</span></h2>
-                            <p className="v2-section-desc">
-                                To become a leading online shopping platform known for trust, performance, and customer satisfaction.
-                            </p>
-                            <p className="v2-section-desc" style={{fontSize: '1rem', marginTop: '-20px'}}>
-                                We aim to continuously improve our platform by adopting the latest technologies and 
-                                expanding our product offerings to meet evolving customer needs.
-                            </p>
+                        <p className="v2-section-desc vision-desc">
+                            To become a leading online shopping platform known for trust, performance, and customer satisfaction.
+                        </p>
+                        <p className="v2-section-desc vision-sub-desc">
+                            We aim to continuously improve our platform by adopting the latest technologies and 
+                            expanding our product offerings to meet evolving customer needs.
+                        </p>
                         </div>
                         <div className="lens-image scroll-reveal delay-1">
                             <img src={craftsmanshipImg} alt="VisionKart Future Vision" />
@@ -160,7 +160,7 @@ const About = () => {
             <section className="what-we-do-section-v2">
                 <div className="container-v2">
                     <h2 className="v2-section-title center scroll-reveal">What <span>We Do</span></h2>
-                    <div className="mission-v2-grid scroll-reveal delay-1" style={{gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))'}}>
+                    <div className="mission-v2-grid scroll-reveal delay-1 what-we-do-grid">
                         <div className="mission-v2-item center">
                             <div className="v2-icon-circle"><FiGrid /></div>
                             <h3>Curated Products</h3>
@@ -182,7 +182,7 @@ const About = () => {
                             <p>Smooth order processing and fast delivery.</p>
                         </div>
                     </div>
-                    <p className="center v2-section-desc" style={{marginTop: '40px'}}>
+                    <p className="center v2-section-desc what-we-do-subtext">
                         We focus on delivering both quality and convenience in every purchase.
                     </p>
                 </div>
@@ -243,8 +243,8 @@ const About = () => {
                     <p>"We don’t just meet expectations — we aim to exceed them."</p>
                     
                     <div className="final-cta-block scroll-reveal">
-                        <h2 style={{fontSize: '1.8rem', opacity: 0.9}}>VisionKart – Where Quality Meets Convenience</h2>
-                        <p style={{fontStyle: 'italic', marginBottom: '2.5rem', fontSize: '1.1rem'}}>Crafted for a Superior Way to Shop</p>
+                        <h2 className="cta-final-title">VisionKart – Where Quality Meets Convenience</h2>
+                        <p className="cta-final-desc">Crafted for a Superior Way to Shop</p>
                         <button className="v2-primary-btn">Start Shopping</button>
                     </div>
                 </div>
