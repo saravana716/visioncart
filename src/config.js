@@ -3,7 +3,7 @@
  */
 export const config = {
     // Set to true to show the Coming Soon page
-    isMaintenanceMode:true,
+    isMaintenanceMode:false,
     
     // Target launch date for the countdown timer (YYYY-MM-DD format)
     launchDate: '2026-05-01',
