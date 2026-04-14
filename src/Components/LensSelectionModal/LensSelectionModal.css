@@ -973,6 +973,10 @@
     margin: 0;
 }
 
+.cl-power-tabs-mobile {
+    display: none;
+}
+
 .submodal-powers-container {
     display: flex; /* Ensure two columns */
     overflow-y: auto;
@@ -980,12 +984,46 @@
 }
 
 @media (max-width: 450px) {
+    .cl-power-tabs-mobile {
+        display: flex;
+        background: #f8faff;
+        padding: 8px 15px;
+        gap: 8px;
+        border-bottom: 2px solid #f1f4f8;
+    }
+    .cl-tab {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #edf1f7;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        background: #fff;
+        color: #001f54;
+        transition: all 0.3s ease;
+    }
+    .cl-tab.active {
+        background: #001f54;
+        color: #fff;
+        border-color: #001f54;
+        box-shadow: 0 4px 12px rgba(0, 31, 84, 0.15);
+    }
+    .powers-col.hide-mobile {
+        display: none !important;
+    }
+    .powers-col.show-mobile {
+        display: flex !important;
+        flex: 1;
+    }
     .submodal-powers-container {
-        flex-direction: column; /* Stack columns on small mobile */
+        flex-direction: row !important; /* Keep side-by-side but hide one */
     }
     .negative-col {
         border-right: none;
-        border-bottom: 2px solid #f4f7fa;
+    }
+    .col-header {
+        display: none; /* Tabs already show headers */
     }
 }
 

@@ -38,6 +38,7 @@ const LensSelectionModal = ({
     const [clRightBoxes, setClRightBoxes] = useState(1);
     const [clLeftBoxes, setClLeftBoxes] = useState(1);
     const [showPowerSelectorModal, setShowPowerSelectorModal] = useState(null);
+    const [clPowerTab, setClPowerTab] = useState('negative');
 
     const contactLensPacks = [
         { id: '3-lens-box', name: 'Standard Pack', price: 299, oldPrice: 364, description: '3 lens/box', features: 'Daily Wear Comfort', color: '#001f54' },
@@ -683,8 +684,12 @@ const LensSelectionModal = ({
                             <h3>Spherical • {showPowerSelectorModal.includes('right') ? 'Right' : 'Left'} Eye</h3>
                             <button className="submodal-close" onClick={() => setShowPowerSelectorModal(null)}>✕</button>
                         </div>
+                        <div className="cl-power-tabs-mobile">
+                            <button className={`cl-tab ${clPowerTab === 'negative' ? 'active' : ''}`} onClick={() => setClPowerTab('negative')}>(-) Negative</button>
+                            <button className={`cl-tab ${clPowerTab === 'positive' ? 'active' : ''}`} onClick={() => setClPowerTab('positive')}>(+) Positive</button>
+                        </div>
                         <div className="submodal-powers-container">
-                            <div className="powers-col negative-col">
+                            <div className={`powers-col negative-col ${clPowerTab === 'negative' ? 'show-mobile' : 'hide-mobile'}`}>
                                 <div className="col-header">(-) Negative</div>
                                 <div className="powers-list">
                                     {['-0.25', '-0.50', '-0.75', '-1.00', '-1.25', '-1.50', '-1.75', '-2.00', '-2.25', '-2.50', '-2.75', '-3.00'].map(p => (
@@ -704,7 +709,7 @@ const LensSelectionModal = ({
                                     ))}
                                 </div>
                             </div>
-                            <div className="powers-col positive-col">
+                            <div className={`powers-col positive-col ${clPowerTab === 'positive' ? 'show-mobile' : 'hide-mobile'}`}>
                                 <div className="col-header">(+) Positive</div>
                                 <div className="powers-list">
                                     {['0.00', '+0.25', '+0.50', '+0.75', '+1.00', '+1.25', '+1.50', '+1.75', '+2.00', '+2.25', '+2.50', '+2.75'].map(p => (
