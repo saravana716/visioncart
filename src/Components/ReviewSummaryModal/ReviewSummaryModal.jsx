@@ -136,6 +136,31 @@ const ReviewSummaryModal = ({ isOpen, onClose, onConfirm, data, actionType }) =>
                                 </div>
                             </div>
                         )}
+
+                        {/* Price Breakdown / Order Value Section */}
+                        {data.priceBreakdown && (
+                            <div className="summary-card price-summary-card animate-slide-up" style={{ animationDelay: '0.4s' }}>
+                                <div className="card-header">
+                                    <FaShoppingCart className="h-icon" />
+                                    <h4>Order Value Breakdown</h4>
+                                </div>
+                                <div className="price-breakdown-list">
+                                    <div className="price-row">
+                                        <span>Subtotal (Excl. Tax)</span>
+                                        <p>₹{data.priceBreakdown.subtotal.toLocaleString()}</p>
+                                    </div>
+                                    <div className="price-row">
+                                        <span>Applicable GST ({data.priceBreakdown.gstRate}%)</span>
+                                        <p>+ ₹{data.priceBreakdown.tax.toLocaleString()}</p>
+                                    </div>
+                                    <div className="price-row total-row">
+                                        <span>Estimated Total Amount</span>
+                                        <p>₹{data.priceBreakdown.total.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                                <p className="price-disclaimer">Final shipping & coupons applied at checkout</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 

@@ -272,10 +272,27 @@ const ProductDetails = () => {
                 { label: 'Lens', value: 'Frame Only' },
             ],
             sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || id,
-            // Keep technical specs separate for backend/cart storage if needed, 
-            // but for the Summary UI we stick to the above.
             allTechnicalSpecs: product.technicalSpecs || []
         };
+
+        const calculatePriceBreakdown = (total) => {
+            const rawTotal = typeof total === 'number' ? total : parseInt(total?.toString().replace(/[^0-9]/g, '') || '0');
+            const gstRate = (product.category === 'Sunglasses') ? 0.18 : 0.12;
+            
+            // Exclusive GST: Price is Subtotal, GST is added on top
+            const subtotal = rawTotal;
+            const tax = Math.round(subtotal * gstRate);
+            const finalTotal = subtotal + tax;
+
+            return {
+                subtotal,
+                tax,
+                total: finalTotal,
+                gstRate: Math.round(gstRate * 100)
+            };
+        };
+
+        baseData.priceBreakdown = calculatePriceBreakdown(product.price);
 
         // If user already selected a lens in the modal, merge that data
         if (selectedLensData) {
@@ -288,7 +305,8 @@ const ProductDetails = () => {
                     ...baseData.specifications.filter(s => s.label !== 'Lens'),
                     ...lensSpecs
                 ],
-                totalPrice: selectedLensData.totalPrice || baseData.totalPrice
+                totalPrice: selectedLensData.totalPrice || baseData.totalPrice,
+                priceBreakdown: calculatePriceBreakdown(selectedLensData.totalPrice || baseData.totalPrice)
             };
         }
 
@@ -343,7 +361,8 @@ const ProductDetails = () => {
                     ...baseData.specifications.filter(s => s.label !== 'Lens' && s.label !== 'Material'),
                     ...(data.specifications || []).filter(s => s.label !== 'Size' && s.label !== 'Color')
                 ],
-                totalPrice: data.totalPrice || baseData.totalPrice
+                totalPrice: data.totalPrice || baseData.totalPrice,
+                priceBreakdown: calculatePriceBreakdown(data.totalPrice || baseData.totalPrice)
             };
 
             handleLaunchReview(action, mergedData);

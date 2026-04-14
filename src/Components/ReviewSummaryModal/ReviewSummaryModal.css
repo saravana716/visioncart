@@ -162,12 +162,60 @@
     gap: 25px;
 }
 
-.summary-card {
-    background: #fff;
-    border-radius: 20px;
-    border: 1px solid #f1f5f9;
-    padding: 20px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+.summary-card.price-summary-card {
+    background: linear-gradient(to bottom right, #f8fafc, #ffffff);
+    border-color: #e2e8f0;
+}
+
+.price-breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.price-row span {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.price-row p {
+    font-size: 15px;
+    font-weight: 700;
+    color: #001f54;
+}
+
+.total-row {
+    padding-top: 15px;
+    margin-top: 5px;
+    border-top: 1px dashed #cbd5e0;
+}
+
+.total-row span {
+    color: #001f54;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.total-row p {
+    font-size: 20px;
+    font-weight: 800;
+    color: #3b82f6;
+}
+
+.price-disclaimer {
+    margin-top: 15px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8;
+    text-align: center;
+    font-style: italic;
 }
 
 /* Space-Between Header - Fixed 100% Visibility */
@@ -182,11 +230,11 @@
 
 .card-header h4 {
     margin: 0 !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
     font-weight: 800 !important;
-    color: #001f54 !important;
+    color: #475569 !important;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     text-align: left !important;
     flex: none !important;
 }
