@@ -275,19 +275,21 @@ const ProductDetails = () => {
     
     const renderTechnicalInfo = (viewType) => (
         <div className={`info-left-col ${viewType === 'desktop' ? 'hide-on-mobile' : 'hide-on-desktop'}`}>
-            <div className="technical-info-section">
-                <h2>Technical Information</h2>
-                <table className="tech-table">
-                    <tbody>
-                        {product.technicalSpecs.map((spec, idx) => (
-                            <tr key={idx}>
-                                <td>{spec.label}</td>
-                                <td>{spec.value}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+            {product.category !== 'Sunglasses' && (
+                <div className="technical-info-section">
+                    <h2>Technical Information</h2>
+                    <table className="tech-table">
+                        <tbody>
+                            {product.technicalSpecs.map((spec, idx) => (
+                                <tr key={idx}>
+                                    <td>{spec.label}</td>
+                                    <td>{spec.value}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
 
             {product.category && categoryDescriptions[product.category] && (
                 <div className="category-dynamic-desc">
@@ -327,7 +329,6 @@ const ProductDetails = () => {
                 </div>
 
                 <div className="main-info-grid scroll-reveal">
-                    {/* Left: Gallery & Technical info */}
                     <div className="product-main-left">
                         <div className="product-gallery">
                             <div className="thumbnails">
@@ -335,21 +336,27 @@ const ProductDetails = () => {
                                     <img 
                                         key={idx} 
                                         src={img} 
-                                        alt="thumb" 
+                                        alt={`Thumbnail ${idx}`} 
                                         className={selectedImg === img ? 'active' : ''}
-                                        onClick={() => setSelectedImg(img)}
+                                        onMouseEnter={() => setSelectedImg(img)}
                                     />
                                 ))}
                             </div>
-                            <div className="gallery-main-col">
-                                <div className="main-image">
-                                    <ImageZoom src={selectedImg} alt={product.title} />
-                                    <button className="wishlist-btn-abs">♡</button>
-                                </div>
+                            <div className="main-image">
+                                <button className="wishlist-btn-float" onClick={() => toggleWishlist(product)}>
+                                    {isInWishlist(id) ? <FaHeart color="#ff4d4d" /> : <FaRegHeart />}
+                                </button>
+                                <ImageZoom 
+                                    src={selectedImg} 
+                                    className="zoom-container"
+                                />
                             </div>
                         </div>
 
-                        {renderTechnicalInfo('desktop')}
+                        <div className="product-left-details-stack">
+                            {renderTechnicalInfo('desktop')}
+                            <ReviewsSection productId={id} />
+                        </div>
                     </div>
 
                     {/* Right: Info */}
@@ -391,20 +398,24 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        <div className="action-buttons-group">
-                            <button className="btn-action-primary pink">Prescription Upload</button>
-                            <button className="btn-action-outline blue" onClick={() => setShowLensModal(true)}>Select lens</button>
-                        </div>
+                        {product.category !== 'Sunglasses' && (
+                            <>
+                                <div className="action-buttons-group">
+                                    <button className="btn-action-primary pink">Prescription Upload</button>
+                                    <button className="btn-action-outline blue" onClick={() => setShowLensModal(true)}>Select lens</button>
+                                </div>
 
-                        <div className="prescription-upload-box">
-                            <div className="upload-icon">
-                                <img src="https://cdn-icons-png.flaticon.com/512/3097/3097412.png" alt="Upload" />
-                            </div>
-                            <p className="drag-text">Drag & Drop files</p>
-                            <span className="or-text">or</span>
-                            <button className="select-file-btn">Select file from your device</button>
-                            <p className="formats-text">Maximum file size: 10MB | Accepted file types: JPEG, PNG, PDF</p>
-                        </div>
+                                <div className="prescription-upload-box">
+                                    <div className="upload-icon">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/3097/3097412.png" alt="Upload" />
+                                    </div>
+                                    <p className="drag-text">Drag & Drop files</p>
+                                    <span className="or-text">or</span>
+                                    <button className="select-file-btn">Select file from your device</button>
+                                    <p className="formats-text">Maximum file size: 10MB | Accepted file types: JPEG, PNG, PDF</p>
+                                </div>
+                            </>
+                        )}
 
                         <div className="action-buttons-lower">
                             <button 
@@ -435,64 +446,64 @@ const ProductDetails = () => {
                         <div className="product-for-section">
                             <p>This Product For</p>
                             <div className="for-buttons">
-                                <div className="for-item">
+                                <div 
+                                    className={`for-item ${product.category === 'Kids Collection' ? 'active' : ''}`}
+                                    onClick={() => navigate('/products?category=Kids Collection')}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <div className="for-img-box">
-                                        <img src="https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=300" alt="Kids" />
+                                        <img src="https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=400" alt="Kids" />
                                         <span className="for-label">Kids</span>
                                     </div>
                                 </div>
-                                <div className="for-item active">
+                                <div 
+                                    className={`for-item ${product.category !== 'Kids Collection' ? 'active' : ''}`}
+                                    onClick={() => navigate('/products?category=Spectacles')}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <div className="for-img-box">
-                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300" alt="Adults" />
+                                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400" alt="Adults" />
                                         <span className="for-label">Adults</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div className="middle-info-grid scroll-reveal">
-                    <div className="info-left-col">
-                        {renderTechnicalInfo('mobile')}
-                        <ReviewsSection productId={id} />
-                    </div>
-
-                    <div className="info-right-col">
                         <div className="vn-assure-section">
                             <p className="section-title">VN Assure You</p>
                             <div className="trust-badges-refined">
-                            <div className="badge-item">
-                                <div className="badge-icon">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/679/679821.png" alt="Returns" />
+                                <div className="badge-item">
+                                    <div className="badge-icon">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/679/679821.png" alt="Returns" />
+                                    </div>
+                                    <div className="badge-text">
+                                        <span>No Question Asked Returns</span>
+                                        <p>(Excluding Power lens)</p>
+                                    </div>
                                 </div>
-                                <div className="badge-text">
-                                    <span>No Question Asked Returns</span>
-                                    <p>(Excluding Power lens)</p>
+                                <div className="badge-item">
+                                    <div className="badge-icon">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/5810/5810695.png" alt="Exchange" />
+                                    </div>
+                                    <div className="badge-text">
+                                        <span>Easy 7 day exchange</span>
+                                        <p>(On every valid purchase)</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="badge-item">
-                                <div className="badge-icon">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/5810/5810695.png" alt="Exchange" />
+                                <div className="badge-item">
+                                    <div className="badge-icon">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/1063/1063376.png" alt="Warranty" />
+                                    </div>
+                                    <div className="badge-text">
+                                        <span>6 Month Warranty</span>
+                                        <p>With Every Product</p>
+                                    </div>
                                 </div>
-                                <div className="badge-text">
-                                    <span>Easy 7 day exchange</span>
-                                    <p>(On every valid purchase)</p>
-                                </div>
-                            </div>
-                            <div className="badge-item">
-                                <div className="badge-icon">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/1063/1063376.png" alt="Warranty" />
-                                </div>
-                                <div className="badge-text">
-                                    <span>6 Month Warranty</span>
-                                    <p>With Every Product</p>
-                                </div>
-                            </div>
                             </div>
                         </div>
+
                         <div className="availability-check">
-                            <p>Check Availability</p>
+                            <p className="check-title">Check Availability</p>
                             <div className="zip-input">
                                 <input type="text" placeholder="Enter PIN code" />
                                 <button>Check</button>
@@ -501,6 +512,8 @@ const ProductDetails = () => {
                         </div>
                     </div>
                 </div>
+
+
 
                 <div className="similar-products-section scroll-reveal">
                     <div className="section-header">

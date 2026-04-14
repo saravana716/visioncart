@@ -40,6 +40,7 @@
     grid-template-columns: 1.2fr 1fr;
     gap: 50px;
     margin-bottom: 30px;
+    align-items: start; /* CRITICAL: Prevent columns from stretching each other */
 }
 
 .product-main-left {
@@ -133,9 +134,36 @@
     flex-direction: column;
     align-items: stretch;
     position: relative;
-    min-height: 400px; /* Reduced from 480px */
+    min-height: 300px;
+    height: fit-content;
     overflow: hidden;
     align-self: flex-start; /* Prevent stretching to full grid height */
+    z-index: 1;
+}
+
+.wishlist-btn-float {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 20px;
+}
+
+.wishlist-btn-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+    background-color: #f8faff;
 }
 
 .product-gallery {
@@ -146,8 +174,16 @@
     align-self: flex-start; /* Prevent stretching */
 }
 
+.product-left-details-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    margin-top: 20px;
+    width: 100%;
+}
+
 .main-image .zoom-container {
-    height: 480px !important; /* Desktop height */
+    height: 400px !important; /* Reduced from 480px */
     background: transparent !important;
     align-items: flex-start !important; /* Force top alignment */
     padding-top: 20px;
@@ -576,9 +612,11 @@
 }
 
 .vn-assure-section .section-title {
-    font-size: 14px;
-    font-weight: 800;
-    margin-bottom: 15px;
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 35px;
+    color: #0f172a;
+    letter-spacing: -1px;
 }
 
 .product-for-section {
@@ -586,7 +624,7 @@
 }
 
 .product-for-section p {
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 700;
     margin-bottom: 12px;
 }
@@ -598,11 +636,12 @@
 
 .for-img-box {
     position: relative;
-    width: 120px;
-    height: 80px;
-    border-radius: 10px;
+    width: 180px;
+    height: 110px;
+    border-radius: 12px;
     overflow: hidden;
-    border: 2px solid transparent;
+    border: 3px solid transparent;
+    transition: all 0.3s ease;
 }
 
 .for-item.active .for-img-box {
@@ -622,10 +661,11 @@
     width: 100%;
     background: var(--category-theme);
     color: white;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 13px;
+    font-weight: 800;
     text-align: center;
-    padding: 4px 0;
+    padding: 6px 0;
+    letter-spacing: 0.5px;
 }
 
 .trust-badges-refined {
@@ -638,13 +678,13 @@
 .badge-item {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
-    padding: 15px;
+    align-items: flex-start;
+    text-align: left;
+    padding: 25px;
     background: #f8faff;
-    border-radius: 16px;
+    border-radius: 20px;
     transition: var(--transition-smooth);
+    width: 100%;
 }
 
 .badge-item:hover {
@@ -654,11 +694,12 @@
 }
 
 .badge-icon {
-    width: 44px;
-    height: 44px;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 5px;
 }
 
 .badge-icon img {
@@ -668,17 +709,17 @@
 }
 
 .badge-text span {
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--primary-color);
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
     line-height: 1.2;
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .badge-text p {
-    font-size: 10px;
-    color: #2e7d32;
+    font-size: 16px;
+    color: #475569;
     font-weight: 600;
 }
 
@@ -1268,19 +1309,7 @@
 }
 
 
-.middle-info-grid {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr; /* Matching top grid for perfect alignment */
-    gap: 50px;
-    margin: 40px 0;
-    align-items: start;
-}
 
-@media (max-width: 1024px) {
-    .middle-info-grid {
-        grid-template-columns: 1fr;
-    }
-}
 
 .info-left-col, .info-right-col {
     display: flex;

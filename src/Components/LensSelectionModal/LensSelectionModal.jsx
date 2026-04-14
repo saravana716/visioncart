@@ -18,8 +18,6 @@ const LensSelectionModal = ({
 
     // Selection States
     const [selectedLensType, setSelectedLensType] = useState('Single Vision');
-    const [selectedMaterial, setSelectedMaterial] = useState('TR90');
-    const [selectedFrameStyle, setSelectedFrameStyle] = useState('Rimmed');
     const [selectedPackage, setSelectedPackage] = useState('Silver Pack');
     const [selectedUsage, setSelectedUsage] = useState('Everyday');
 
@@ -45,13 +43,9 @@ const LensSelectionModal = ({
         { id: '6-lens-box', name: 'Value Pack', price: 549, oldPrice: 728, description: '6 lens/box', features: 'Maximum hydration', color: '#00d285' }
     ];
     const [selectedClPack, setSelectedClPack] = useState('3-lens-box');
-
-    // Spectacles Specialized Power States
     const [spectaclesPowerOption, setSpectaclesPowerOption] = useState('later');
     const [specRightSelected, setSpecRightSelected] = useState(true);
     const [specLeftSelected, setSpecLeftSelected] = useState(true);
-    const [specRightSph, setSpecRightSph] = useState('');
-    const [specLeftSph, setSpecLeftSph] = useState('');
 
     useEffect(() => {
         const handleCloseAll = () => {
@@ -61,13 +55,33 @@ const LensSelectionModal = ({
         return () => window.removeEventListener('close-all-modals', handleCloseAll);
     }, [isOpen, onClose]);
 
+    // Prescription Value Arrays
+    const sphValues = [
+        'Select',
+        ...Array.from({ length: 52 }, (_, i) => (-13.00 + i * 0.25).toFixed(2)),
+        '0.00',
+        ...Array.from({ length: 32 }, (_, i) => `+${(0.25 + i * 0.25).toFixed(2)}`)
+    ];
+    const cylValues = [
+        'Select',
+        ...Array.from({ length: 24 }, (_, i) => (-6.00 + i * 0.25).toFixed(2)),
+        '0.00',
+        ...Array.from({ length: 24 }, (_, i) => `+${(0.25 + i * 0.25).toFixed(2)}`)
+    ];
+    const axisValues = ['Select', ...Array.from({ length: 181 }, (_, i) => i.toString())];
+    const addValues = ['Select', ...Array.from({ length: 12 }, (_, i) => `+${(0.75 + i * 0.25).toFixed(2)}`)];
+
     const [prescriptionType, setPrescriptionType] = useState('Same power for both eyes');
     const [selectedEnhancements, setSelectedEnhancements] = useState([]);
     const [prescription, setPrescription] = useState({
-        right: { sph: '-0.50', cyl: '----', axis: '----', add: '----' },
-        left: { sph: '-0.50', cyl: '----', axis: '----', add: '----' }
+        right: { sph: 'Select', cyl: 'Select', axis: 'Select', add: 'Select' },
+        left: { sph: 'Select', cyl: 'Select', axis: 'Select', add: 'Select' }
     });
     const [readingPower, setReadingPower] = useState({ rightPower: '', leftPower: '', sameForBoth: true });
+    
+    // New Multi-Step Manual Prescription State
+    const [manualStep, setManualStep] = useState('table'); // 'table' or 'info'
+    const [userInfo, setUserInfo] = useState({ name: '', phone: '', file: null, fileName: '' });
 
     // Handle Scroll Lock
     useEffect(() => {
@@ -216,8 +230,6 @@ const LensSelectionModal = ({
         } else {
             specifications.push(
                 { label: 'Lens Type', value: selectedLensType },
-                { label: 'Material', value: selectedMaterial },
-                { label: 'Style', value: selectedFrameStyle },
                 { label: 'Usage', value: selectedUsage }
             );
         }
@@ -236,9 +248,12 @@ const LensSelectionModal = ({
             enhancements: isReadingGlasses || isContactLens ? [] : selectedEnhancements,
             lensType: isContactLens ? 'Contact Lens' : (isReadingGlasses ? 'Reading Glass' : selectedLensType),
             usage: selectedUsage,
-            material: selectedMaterial,
-            frameStyle: selectedFrameStyle,
             prescriptionType: isReadingGlasses ? 'Reading Glass Power' : (isContactLens ? (contactLensPowerOption === 'manual' ? 'Manual Contact Lens Power' : 'Submit Later') : (isSpectacles ? (spectaclesPowerOption === 'manual' ? 'Manual Prescription' : 'Submit Later') : prescriptionType)),
+            patientDetails: (isSpectacles && spectaclesPowerOption === 'manual') ? {
+                name: userInfo.name,
+                phone: userInfo.phone,
+                prescriptionFile: userInfo.fileName
+            } : null,
             prescription: isContactLens ? {
                 rightSelected: clRightEyeSelected,
                 leftSelected: clLeftEyeSelected,
@@ -248,11 +263,8 @@ const LensSelectionModal = ({
                 leftBoxes: clLeftBoxes,
                 pack: contactLensPacks.find(p => p.id === selectedClPack)
             } : (isReadingGlasses ? { readingPower } : (isSpectacles ? {
-                rightSelected: specRightSelected,
-                leftSelected: specLeftSelected,
-                rightPower: specRightSelected ? specRightSph : null,
-                leftPower: specLeftSelected ? specLeftSph : null,
-                type: spectaclesPowerOption
+                ...prescription,
+                userInfo: (spectaclesPowerOption === 'manual') ? userInfo : null
             } : prescription))
         };
         
@@ -260,18 +272,26 @@ const LensSelectionModal = ({
     };
 
     const handleSavePrescription = () => {
+        setManualStep('info');
         import('react-hot-toast').then(({ default: toast }) => {
-            toast.success('Power selection completed', {
-                style: {
-                    borderRadius: '10px',
-                    background: '#001f54',
-                    color: '#fff',
-                    fontWeight: '700',
-                    fontSize: '14px'
-                },
+            toast.success('Power saved. Please provide user details.', {
+                style: { borderRadius: '10px', background: '#001f54', color: '#fff', fontWeight: '700', fontSize: '14px' },
                 iconTheme: { primary: '#00d285', secondary: '#fff' }
             });
         });
+    };
+
+    const handleUserInfoSubmit = async (onCartSuccess) => {
+        if (!userInfo.name || !userInfo.phone) {
+            const { default: toast } = await import('react-hot-toast');
+            toast.error('Please provide name and phone number');
+            return;
+        }
+        
+        const success = await handleInternalAddToCart();
+        if (success) {
+            onCartSuccess();
+        }
     };
 
     if (!isOpen || !product) return null;
@@ -447,7 +467,7 @@ const LensSelectionModal = ({
                                 </div> */}
                             </div>
 
-                            {product.category === 'Spectacles' ? (
+                            {(product.category === 'Spectacles' || product.category === 'Computer Glasses' || product.category === 'Kids Collection') ? (
                                 <>
                                     <div className="cl-power-type-container">
                                         <div className="cl-power-desc">
@@ -478,88 +498,129 @@ const LensSelectionModal = ({
                                         </div>
 
                                         {spectaclesPowerOption === 'manual' && (
-                                            <div className="spec-manual-power-entry animate-in">
-                                                <div className="eye-selection-row">
-                                                    <label className="cl-checkbox-label">
-                                                        <input 
-                                                            type="checkbox" 
-                                                            checked={specRightSelected} 
-                                                            onChange={(e) => setSpecRightSelected(e.target.checked)} 
-                                                        /> 
-                                                        <span className="custom-checkmark">✓</span>
-                                                        RIGHT (OD)
-                                                    </label>
-                                                    <label className="cl-checkbox-label">
-                                                        <input 
-                                                            type="checkbox" 
-                                                            checked={specLeftSelected} 
-                                                            onChange={(e) => setSpecLeftSelected(e.target.checked)} 
-                                                        /> 
-                                                        <span className="custom-checkmark">✓</span>
-                                                        LEFT (OS)
-                                                    </label>
-                                                </div>
+                                                manualStep === 'table' ? (
+                                                    <div className="prescription-input-area">
+                                                        <div className="prescription-toggle-container">
+                                                            <div className={`p-toggle-item ${prescriptionType === 'Same power for both eyes' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Same power for both eyes')}>
+                                                                <div className="p-radio-circle"></div>
+                                                                <span>Same power for both eyes</span>
+                                                            </div>
+                                                            <div className={`p-toggle-item ${prescriptionType === 'Different power for each eye' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Different power for each eye')}>
+                                                                <div className="p-radio-circle"></div>
+                                                                <span>Different power for each eye</span>
+                                                            </div>
+                                                        </div>
 
-                                                <div className="cl-power-row no-border">
-                                                    <div className="cl-row-label">
-                                                        <span className="main-label">Spherical</span>
-                                                        <span className="sub-label">SPH</span>
+                                                        <h3>Prescription Input Table</h3>
+                                                        <div className="prescription-table-wrapper">
+                                                            <table className="prescription-table">
+                                                                <thead>
+                                                                    <tr><th>Right Eye</th><th>Left Eye</th></tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => handlePrescriptionChange('right', 'sph', e.target.value)}>{sphValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                            <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => handlePrescriptionChange('right', 'cyl', e.target.value)}>{cylValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                            <div className="p-row"><span>AXIS</span><input type="text" placeholder="0-180" maxLength="3" value={prescription.right.axis === 'Select' ? '' : prescription.right.axis} onChange={(e) => handlePrescriptionChange('right', 'axis', e.target.value)} /></div>
+                                                                            {(selectedLensType === 'Progressive' || selectedLensType === 'Bifocal') && (
+                                                                                <div className="p-row"><span>ADD</span><input type="text" placeholder="+0.00" maxLength="5" value={prescription.right.add === 'Select' ? '' : prescription.right.add} onChange={(e) => handlePrescriptionChange('right', 'add', e.target.value)} /></div>
+                                                                            )}
+                                                                        </td>
+                                                                        <td>
+                                                                            <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => handlePrescriptionChange('left', 'sph', e.target.value)}>{sphValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                            <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => handlePrescriptionChange('left', 'cyl', e.target.value)}>{cylValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                            <div className="p-row"><span>AXIS</span><input type="text" placeholder="0-180" maxLength="3" value={prescription.left.axis === 'Select' ? '' : prescription.left.axis} onChange={(e) => handlePrescriptionChange('left', 'axis', e.target.value)} /></div>
+                                                                            {(selectedLensType === 'Progressive' || selectedLensType === 'Bifocal') && (
+                                                                                <div className="p-row"><span>ADD</span><input type="text" placeholder="+0.00" maxLength="5" value={prescription.left.add === 'Select' ? '' : prescription.left.add} onChange={(e) => handlePrescriptionChange('left', 'add', e.target.value)} /></div>
+                                                                            )}
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <button className="save-btn-green" onClick={handleSavePrescription}>Save</button>
+                                                        </div>
                                                     </div>
-                                                    <div className="cl-dropdown-col">
-                                                        <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('spec-right')} disabled={!specRightSelected}>
-                                                            {specRightSph || 'Select'} <span className="arrow">▼</span>
-                                                        </button>
+                                                ) : (
+                                                    <div className="manual-user-details animate-in">
+                                                        <div className="details-header">Whose prescription is this</div>
+                                                        <div className="details-form">
+                                                            <div className="detail-input-group">
+                                                                <input 
+                                                                    type="text" 
+                                                                    placeholder="Name *" 
+                                                                    value={userInfo.name} 
+                                                                    onChange={(e) => setUserInfo({...userInfo, name: e.target.value})} 
+                                                                />
+                                                            </div>
+                                                            <div className="detail-input-group">
+                                                                <input 
+                                                                    type="text" 
+                                                                    placeholder="Phone Number *" 
+                                                                    value={userInfo.phone} 
+                                                                    onChange={(e) => setUserInfo({...userInfo, phone: e.target.value})} 
+                                                                />
+                                                            </div>
+                                                            <div className="cant-find-power">
+                                                                <p>Can't find your power, Call <a href="tel:+918470007367">+91 8470007367</a></p>
+                                                            </div>
+                                                            <div className="prescription-upload-area">
+                                                                <label className="upload-box">
+                                                                    <input 
+                                                                        type="file" 
+                                                                        accept="image/*" 
+                                                                        onChange={(e) => {
+                                                                            const file = e.target.files[0];
+                                                                            if (file) setUserInfo({...userInfo, file, fileName: file.name});
+                                                                        }} 
+                                                                    />
+                                                                    <div className="upload-content">
+                                                                        <div className="upload-icon">📷</div>
+                                                                        <p>{userInfo.fileName || 'Upload Prescription (Optional)'}</p>
+                                                                    </div>
+                                                                </label>
+                                                            </div>
+                                                            <button 
+                                                                className="save-proceed-btn" 
+                                                                onClick={() => handleUserInfoSubmit(() => {
+                                                                    onClose(); 
+                                                                    setDrawerTab('cart'); 
+                                                                    setCartOpen(true);
+                                                                })}
+                                                            >
+                                                                Save & Proceed
+                                                            </button>
+                                                            <button className="back-to-table" onClick={() => setManualStep('table')}>Back to Power Table</button>
+                                                        </div>
                                                     </div>
-                                                    <div className="cl-dropdown-col">
-                                                        <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('spec-left')} disabled={!specLeftSelected}>
-                                                            {specLeftSph || 'Select'} <span className="arrow">▼</span>
-                                                        </button>
+                                                    )
+                                        )}
+
+                                        {spectaclesPowerOption === 'later' && (
+                                            <div className="spec-manual-power-entry animate-in">
+                                                <a href="tel:+919344116571" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
+                                                    <div className="banner-left">
+                                                        <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
+                                                        <p>We will call you to get your power!</p>
                                                     </div>
-                                                </div>
+                                                    <div className="banner-right">
+                                                        <div className="lens-graphic-pair">
+                                                            <div className="lens-graphic positive">
+                                                                <span>+</span>
+                                                                <div className="lens-shape"></div>
+                                                            </div>
+                                                            <div className="lens-graphic negative">
+                                                                <span>-</span>
+                                                                <div className="lens-shape"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
                                             </div>
                                         )}
                                     </div>
-                                    
-                                    {spectaclesPowerOption === 'later' && (
-                                        <a href="tel:+919344116571" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
-                                            <div className="banner-left">
-                                                <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
-                                                <p>We will call you to get your power!</p>
-                                            </div>
-                                            <div className="banner-right">
-                                                <div className="lens-graphic-pair">
-                                                    <div className="lens-graphic positive">
-                                                        <span>+</span>
-                                                        <div className="lens-shape"></div>
-                                                    </div>
-                                                    <div className="lens-graphic negative">
-                                                        <span>-</span>
-                                                        <div className="lens-shape"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    )}
                                 </>
-                            ) : (
-                                <>
-                                    <h2 className="modal-title-small">Select Lens Material</h2>
-                                    <div className="material-grid">
-                                        <label className={selectedMaterial === 'Metal' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Metal'} onChange={() => setSelectedMaterial('Metal')} /> <span>Metal</span></label>
-                                        <label className={selectedMaterial === 'Stainless Steel' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Stainless Steel'} onChange={() => setSelectedMaterial('Stainless Steel')} /> <span>Stainless Steel</span></label>
-                                        <label className={selectedMaterial === 'TR90' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'TR90'} onChange={() => setSelectedMaterial('TR90')} /> <span>TR90 <span className="recommended">Recommended</span></span></label>
-                                        <label className={selectedMaterial === 'Mixed Material' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Mixed Material'} onChange={() => setSelectedMaterial('Mixed Material')} /> <span>Mixed Material</span></label>
-                                        <label className={selectedMaterial === 'Titanium' ? 'active' : ''}><input type="radio" name="material" checked={selectedMaterial === 'Titanium'} onChange={() => setSelectedMaterial('Titanium')} /> <span>Titanium</span></label>
-                                    </div>
-
-                                    <h2 className="modal-title-small">Select Frame Style</h2>
-                                    <div className="material-grid">
-                                        <label className={selectedFrameStyle === 'Rimmed' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimmed'} onChange={() => setSelectedFrameStyle('Rimmed')} /> <span>Rimmed</span></label>
-                                        <label className={selectedFrameStyle === 'Semi - Rimmed' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Semi - Rimmed'} onChange={() => setSelectedFrameStyle('Semi - Rimmed')} /> <span>Semi - Rimmed</span></label>
-                                        <label className={selectedFrameStyle === 'Rimless' ? 'active' : ''}><input type="radio" name="f-style" checked={selectedFrameStyle === 'Rimless'} onChange={() => setSelectedFrameStyle('Rimless')} /> <span>Rimless</span></label>
-                                    </div>
-                                </>
-                            )}
+                            ) : null}
 
                             <h2 className="modal-title-small">Add Lens Enhancements</h2>
                             <div className="enhancements-grid">
@@ -579,56 +640,110 @@ const LensSelectionModal = ({
                                     <ReadingGlassesPowerSelector onPowerSelected={(power) => setReadingPower(power)} />
                                 </div>
                             ) : (
-                                <div className="prescription-section">
-                                    {((product.category === 'Spectacles' && spectaclesPowerOption === 'manual') || product.category !== 'Spectacles') ? (
-                                        <>
-                                            <h2 className="modal-title-small">Power Options - Eye Selection</h2>
-                                            <div className="prescription-toggle-container">
-                                                <div className={`p-toggle-item ${prescriptionType === 'Same power for both eyes' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Same power for both eyes')}>
-                                                    <div className="p-radio-circle"></div>
-                                                    <span>Same power for both eyes</span>
-                                                </div>
-                                                <div className={`p-toggle-item ${prescriptionType === 'Different power for each eye' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Different power for each eye')}>
-                                                    <div className="p-radio-circle"></div>
-                                                    <span>Different power for each eye</span>
-                                                </div>
-                                            </div>
-
+                                (product.category !== 'Spectacles' && product.category !== 'Computer Glasses' && product.category !== 'Kids Collection') && (
+                                        <div className="prescription-section">
                                             <div className="prescription-input-area">
+                                                <h2 className="modal-title-small">Power Options - Eye Selection</h2>
+                                                <div className="prescription-toggle-container">
+                                                    <div className={`p-toggle-item ${prescriptionType === 'Same power for both eyes' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Same power for both eyes')}>
+                                                        <div className="p-radio-circle"></div>
+                                                        <span>Same power for both eyes</span>
+                                                    </div>
+                                                    <div className={`p-toggle-item ${prescriptionType === 'Different power for each eye' ? 'active' : ''}`} onClick={() => handlePrescriptionTypeChange('Different power for each eye')}>
+                                                        <div className="p-radio-circle"></div>
+                                                        <span>Different power for each eye</span>
+                                                    </div>
+                                                </div>
+
                                                 <h3>Prescription Input Table</h3>
                                                 <div className="prescription-table-wrapper">
-                                                    <table className="prescription-table">
-                                                        <thead>
-                                                            <tr><th>Right Eye</th><th>Left Eye</th></tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td>
-                                                                    <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => handlePrescriptionChange('right', 'sph', e.target.value)}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
-                                                                    <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => handlePrescriptionChange('right', 'cyl', e.target.value)}><option>----</option><option>-0.25</option></select></div>
-                                                                    <div className="p-row"><span>AXIS</span><select value={prescription.right.axis} onChange={(e) => handlePrescriptionChange('right', 'axis', e.target.value)}><option>----</option><option>90</option><option>180</option></select></div>
-                                                                    <div className="p-row"><span>ADD</span><select value={prescription.right.add} onChange={(e) => handlePrescriptionChange('right', 'add', e.target.value)}><option>----</option><option>+1.00</option></select></div>
-                                                                </td>
-                                                                <td>
-                                                                    <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => handlePrescriptionChange('left', 'sph', e.target.value)}><option>-0.50</option><option>0.00</option><option>+0.50</option></select></div>
-                                                                    <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => handlePrescriptionChange('left', 'cyl', e.target.value)}><option>----</option><option>-0.25</option></select></div>
-                                                                    <div className="p-row"><span>AXIS</span><select value={prescription.left.axis} onChange={(e) => handlePrescriptionChange('left', 'axis', e.target.value)}><option>----</option><option>90</option><option>180</option></select></div>
-                                                                    <div className="p-row"><span>ADD</span><select value={prescription.left.add} onChange={(e) => handlePrescriptionChange('left', 'add', e.target.value)}><option>----</option><option>+1.00</option></select></div>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                    <button className="save-btn-green" onClick={handleSavePrescription}>Save</button>
+                                                    {manualStep === 'table' ? (
+                                                        <>
+                                                            <table className="prescription-table">
+                                                                <thead>
+                                                                    <tr><th>Right Eye</th><th>Left Eye</th></tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div className="p-row"><span>SPH</span><select value={prescription.right.sph} onChange={(e) => handlePrescriptionChange('right', 'sph', e.target.value)}>{sphValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                            <div className="p-row"><span>CYL</span><select value={prescription.right.cyl} onChange={(e) => handlePrescriptionChange('right', 'cyl', e.target.value)}>{cylValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                            <div className="p-row"><span>AXIS</span><input type="text" placeholder="0-180" maxLength="3" value={prescription.right.axis === 'Select' ? '' : prescription.right.axis} onChange={(e) => handlePrescriptionChange('right', 'axis', e.target.value)} /></div>
+                                                                            {(selectedLensType === 'Progressive' || selectedLensType === 'Bifocal') && (
+                                                                                <div className="p-row"><span>ADD</span><input type="text" placeholder="+0.00" maxLength="5" value={prescription.right.add === 'Select' ? '' : prescription.right.add} onChange={(e) => handlePrescriptionChange('right', 'add', e.target.value)} /></div>
+                                                                            )}
+                                                                        </td>
+                                                                        <td>
+                                                                            <div className="p-row"><span>SPH</span><select value={prescription.left.sph} onChange={(e) => handlePrescriptionChange('left', 'sph', e.target.value)}>{sphValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                            <div className="p-row"><span>CYL</span><select value={prescription.left.cyl} onChange={(e) => handlePrescriptionChange('left', 'cyl', e.target.value)}>{cylValues.map(v => <option key={v} value={v}>{v}</option>)}</select></div>
+                                                                            <div className="p-row"><span>AXIS</span><input type="text" placeholder="0-180" maxLength="3" value={prescription.left.axis === 'Select' ? '' : prescription.left.axis} onChange={(e) => handlePrescriptionChange('left', 'axis', e.target.value)} /></div>
+                                                                            {(selectedLensType === 'Progressive' || selectedLensType === 'Bifocal') && (
+                                                                                <div className="p-row"><span>ADD</span><input type="text" placeholder="+0.00" maxLength="5" value={prescription.left.add === 'Select' ? '' : prescription.left.add} onChange={(e) => handlePrescriptionChange('left', 'add', e.target.value)} /></div>
+                                                                            )}
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                            <button className="save-btn-green" onClick={handleSavePrescription}>Save</button>
+                                                        </>
+                                                    ) : (
+                                                        <div className="manual-user-details animate-in">
+                                                            <div className="details-header">Whose prescription is this</div>
+                                                            <div className="details-form">
+                                                                <div className="detail-input-group">
+                                                                    <input 
+                                                                        type="text" 
+                                                                        placeholder="Name *" 
+                                                                        value={userInfo.name} 
+                                                                        onChange={(e) => setUserInfo({...userInfo, name: e.target.value})} 
+                                                                    />
+                                                                </div>
+                                                                <div className="detail-input-group">
+                                                                    <input 
+                                                                        type="text" 
+                                                                        placeholder="Phone Number *" 
+                                                                        value={userInfo.phone} 
+                                                                        onChange={(e) => setUserInfo({...userInfo, phone: e.target.value})} 
+                                                                    />
+                                                                </div>
+                                                                <div className="cant-find-power">
+                                                                    <p>Can't find your power, Call <a href="tel:+918470007367">+91 8470007367</a></p>
+                                                                </div>
+                                                                <div className="prescription-upload-area">
+                                                                    <label className="upload-box">
+                                                                        <input 
+                                                                            type="file" 
+                                                                            accept="image/*" 
+                                                                            onChange={(e) => {
+                                                                                const file = e.target.files[0];
+                                                                                if (file) setUserInfo({...userInfo, file, fileName: file.name});
+                                                                            }} 
+                                                                        />
+                                                                        <div className="upload-content">
+                                                                            <div className="upload-icon">📷</div>
+                                                                            <p>{userInfo.fileName || 'Upload Prescription (Optional)'}</p>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                                <button 
+                                                                    className="save-proceed-btn" 
+                                                                    onClick={() => handleUserInfoSubmit(() => {
+                                                                        onClose(); 
+                                                                        setDrawerTab('cart'); 
+                                                                        setCartOpen(true);
+                                                                    })}
+                                                                >
+                                                                    Save & Proceed
+                                                                </button>
+                                                                <button className="back-to-table" onClick={() => setManualStep('table')}>Back to Power Table</button>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
-                                        </>
-                                    ) : (
-                                        <div className="power-later-placeholder">
-                                            <p>Prescription details will be collected after order placement.</p>
                                         </div>
-                                    )}
-                                </div>
-                            )}
+                                    )
+                                )}
 
                             <h2 className="modal-title-small">How will you use these glasses?</h2>
                             <div className="usage-grid">
@@ -695,12 +810,12 @@ const LensSelectionModal = ({
                                     {['-0.25', '-0.50', '-0.75', '-1.00', '-1.25', '-1.50', '-1.75', '-2.00', '-2.25', '-2.50', '-2.75', '-3.00'].map(p => (
                                         <label className="power-option" key={p}>
                                             <input type="radio" name={`${showPowerSelectorModal}-power`} 
-                                                checked={(showPowerSelectorModal === 'right' ? clRightSph : (showPowerSelectorModal === 'left' ? clLeftSph : (showPowerSelectorModal === 'spec-right' ? specRightSph : specLeftSph))) === p}
+                                                checked={(showPowerSelectorModal === 'right' ? clRightSph : (showPowerSelectorModal === 'left' ? clLeftSph : (showPowerSelectorModal === 'spec-right' ? prescription.right.sph : prescription.left.sph))) === p}
                                                 onChange={() => {
                                                     if (showPowerSelectorModal === 'right') setClRightSph(p);
                                                     else if (showPowerSelectorModal === 'left') setClLeftSph(p);
-                                                    else if (showPowerSelectorModal === 'spec-right') setSpecRightSph(p);
-                                                    else if (showPowerSelectorModal === 'spec-left') setSpecLeftSph(p);
+                                                    else if (showPowerSelectorModal === 'spec-right') handlePrescriptionChange('right', 'sph', p);
+                                                    else if (showPowerSelectorModal === 'spec-left') handlePrescriptionChange('left', 'sph', p);
                                                     setShowPowerSelectorModal(null);
                                                 }}
                                             /> 
@@ -715,12 +830,12 @@ const LensSelectionModal = ({
                                     {['0.00', '+0.25', '+0.50', '+0.75', '+1.00', '+1.25', '+1.50', '+1.75', '+2.00', '+2.25', '+2.50', '+2.75'].map(p => (
                                         <label className="power-option" key={p}>
                                             <input type="radio" name={`${showPowerSelectorModal}-power`} 
-                                                checked={(showPowerSelectorModal === 'right' ? clRightSph : (showPowerSelectorModal === 'left' ? clLeftSph : (showPowerSelectorModal === 'spec-right' ? specRightSph : specLeftSph))) === p}
+                                                checked={(showPowerSelectorModal === 'right' ? clRightSph : (showPowerSelectorModal === 'left' ? clLeftSph : (showPowerSelectorModal === 'spec-right' ? prescription.right.sph : prescription.left.sph))) === p}
                                                 onChange={() => {
                                                     if (showPowerSelectorModal === 'right') setClRightSph(p);
                                                     else if (showPowerSelectorModal === 'left') setClLeftSph(p);
-                                                    else if (showPowerSelectorModal === 'spec-right') setSpecRightSph(p);
-                                                    else if (showPowerSelectorModal === 'spec-left') setSpecLeftSph(p);
+                                                    else if (showPowerSelectorModal === 'spec-right') handlePrescriptionChange('right', 'sph', p);
+                                                    else if (showPowerSelectorModal === 'spec-left') handlePrescriptionChange('left', 'sph', p);
                                                     setShowPowerSelectorModal(null);
                                                 }}
                                             /> 
