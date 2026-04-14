@@ -461,6 +461,32 @@
     font-weight: 800;
     font-size: 14px;
     color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.summary-remove-btn {
+    background: #fef2f2;
+    color: #ef4444;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+}
+
+.summary-remove-btn:hover {
+    background: #fee2e2;
+    color: #dc2626;
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 /* Luxury Breakdown Table */

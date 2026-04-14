@@ -19,7 +19,8 @@ import {
     FaTicketAlt, 
     FaShoppingBag, 
     FaShieldAlt,
-    FaCloudUploadAlt
+    FaCloudUploadAlt,
+    FaTrash
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import Loader from '../Components/Loader/Loader';
@@ -29,7 +30,7 @@ import './Checkout.css';
 import qrScannerImg from '../assets/qrscanner.jpeg';
 
 const Checkout = () => {
-    const { cartItems, cartCount, clearCart } = useCart();
+    const { cartItems, cartCount, clearCart, removeItemFromCart } = useCart();
     const [user, setUser] = useState(null);
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -806,7 +807,14 @@ const Checkout = () => {
                                             </p>
                                         </div>
                                         <div className="item-price-premium">
-                                            {item.totalPrice}
+                                            <span>{item.totalPrice}</span>
+                                            <button 
+                                                className="summary-remove-btn" 
+                                                onClick={() => removeItemFromCart(item.id)}
+                                                title="Remove Item"
+                                            >
+                                                <FaTrash />
+                                            </button>
                                         </div>
                                     </div>
                                 ))}

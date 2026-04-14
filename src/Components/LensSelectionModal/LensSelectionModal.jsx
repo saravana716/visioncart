@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaPhoneAlt } from 'react-icons/fa';
 import './LensSelectionModal.css';
 import ReadingGlassesPowerSelector from '../ReadingGlassesPowerSelector/ReadingGlassesPowerSelector';
+import { uploadPrescription } from '../../services/firestoreService';
 
 const LensSelectionModal = ({ 
     isOpen, 
@@ -12,7 +13,9 @@ const LensSelectionModal = ({
     lensEnhancements, 
     addItemToCart, 
     setCartOpen, 
-    setDrawerTab 
+    setDrawerTab,
+    onSave,
+    productFor
 }) => {
     const navigate = useNavigate();
 
@@ -155,11 +158,11 @@ const LensSelectionModal = ({
         });
     };
 
-    const handleInternalAddToCart = async () => {
+    const handleInternalAddToCart = async (prescriptionUrl = null) => {
         if (product.stock !== undefined && product.stock <= 0) return false;
         const isReadingGlasses = product.category === 'Reading Glasses';
         const isContactLens = product.category === 'Contact Lenses';
-        const isSpectacles = product.category === 'Spectacles';
+        const isSpectacles = ['Spectacles', 'Computer Glasses', 'Kids Collection'].includes(product.category);
         
         if (isReadingGlasses && (!readingPower.rightPower || (!readingPower.sameForBoth && !readingPower.leftPower))) {
             const { default: toast } = await import('react-hot-toast');
@@ -168,12 +171,12 @@ const LensSelectionModal = ({
         }
 
         if (isSpectacles && spectaclesPowerOption === 'manual') {
-            if (specRightSelected && !specRightSph) {
+            if (specRightSelected && (prescription.right.sph === 'Select' || !prescription.right.sph)) {
                 const { default: toast } = await import('react-hot-toast');
                 toast.error('Please select Spherical power for Right eye');
                 return false;
             }
-            if (specLeftSelected && !specLeftSph) {
+            if (specLeftSelected && (prescription.left.sph === 'Select' || !prescription.left.sph)) {
                 const { default: toast } = await import('react-hot-toast');
                 toast.error('Please select Spherical power for Left eye');
                 return false;
@@ -203,10 +206,8 @@ const LensSelectionModal = ({
             }
         }
 
-        const specifications = [
-            ...(product.technicalSpecs || []),
-            { label: 'Size', value: product.size || 'Standard' }
-        ];
+        // Only include lens-specific specs here; parent will merge with product specs
+        const specifications = [];
 
         if (isContactLens) {
             const pack = contactLensPacks.find(p => p.id === selectedClPack);
@@ -227,11 +228,36 @@ const LensSelectionModal = ({
                 { label: 'Lens Type', value: selectedLensType },
                 { label: 'Usage', value: selectedUsage }
             );
+            
+            if (spectaclesPowerOption === 'manual') {
+                if (specRightSelected) {
+                    specifications.push({ 
+                        label: 'Right Eye (RE)', 
+                        value: `SPH: ${prescription.right.sph}${prescription.right.cyl !== 'Select' ? `, CYL: ${prescription.right.cyl}` : ''}${prescription.right.axis !== 'Select' ? `, AXIS: ${prescription.right.axis}` : ''}` 
+                    });
+                }
+                if (specLeftSelected) {
+                    specifications.push({ 
+                        label: 'Left Eye (LE)', 
+                        value: `SPH: ${prescription.left.sph}${prescription.left.cyl !== 'Select' ? `, CYL: ${prescription.left.cyl}` : ''}${prescription.left.axis !== 'Select' ? `, AXIS: ${prescription.left.axis}` : ''}` 
+                    });
+                }
+            } else {
+                specifications.push({ label: 'Prescription', value: 'Submit Later' });
+            }
         } else {
             specifications.push(
                 { label: 'Lens Type', value: selectedLensType },
                 { label: 'Usage', value: selectedUsage }
             );
+        }
+
+        // Add Enhancements to specs
+        if (selectedEnhancements.length > 0) {
+            specifications.push({ 
+                label: 'Enhancements', 
+                value: selectedEnhancements.map(e => e.name).join(', ') 
+            });
         }
 
         const cartData = {
@@ -252,7 +278,7 @@ const LensSelectionModal = ({
             patientDetails: (isSpectacles && spectaclesPowerOption === 'manual') ? {
                 name: userInfo.name,
                 phone: userInfo.phone,
-                prescriptionFile: userInfo.fileName
+                prescriptionFile: prescriptionUrl || userInfo.previewUrl || userInfo.fileName
             } : null,
             prescription: isContactLens ? {
                 rightSelected: clRightEyeSelected,
@@ -264,11 +290,17 @@ const LensSelectionModal = ({
                 pack: contactLensPacks.find(p => p.id === selectedClPack)
             } : (isReadingGlasses ? { readingPower } : (isSpectacles ? {
                 ...prescription,
-                userInfo: (spectaclesPowerOption === 'manual') ? userInfo : null
+                userInfo: (spectaclesPowerOption === 'manual') ? {
+                    name: userInfo.name,
+                    phone: userInfo.phone,
+                    prescriptionUrl: prescriptionUrl || null,
+                    fileName: userInfo.fileName
+                } : null
             } : prescription))
         };
         
-        return await addItemToCart(cartData);
+        console.log("Gathered lens product data:", cartData);
+        return cartData;
     };
 
     const handleSavePrescription = () => {
@@ -288,9 +320,46 @@ const LensSelectionModal = ({
             return;
         }
         
-        const success = await handleInternalAddToCart();
-        if (success) {
-            onCartSuccess();
+        const { default: toast } = await import('react-hot-toast');
+        let prescriptionUrl = null;
+
+        if (userInfo.file) {
+            const loadingToast = toast.loading('Uploading prescription image...');
+            const uploadResult = await uploadPrescription(userInfo.file);
+            toast.dismiss(loadingToast);
+            
+            if (uploadResult.success) {
+                prescriptionUrl = uploadResult.url;
+                toast.success('Prescription image uploaded successfully');
+            } else {
+                toast.error('Failed to upload image. Proceeding without file.');
+            }
+        }
+
+        const lensData = await handleInternalAddToCart(prescriptionUrl);
+        if (lensData) {
+            onSave(lensData, action);
+            onClose();
+        }
+    };
+
+    const handleFinalAction = async (action) => {
+        // If manual prescription and user info not filled, show toast but we can also just save what we have
+        // But user said "remove save and proceed button", so maybe they want it implicit or they want the final summary to catch missing info.
+        
+        let prescriptionUrl = null;
+        if (userInfo.file) {
+            const { default: toast } = await import('react-hot-toast');
+            const loadingToast = toast.loading('Uploading prescription image...');
+            const uploadResult = await uploadPrescription(userInfo.file);
+            toast.dismiss(loadingToast);
+            if (uploadResult.success) prescriptionUrl = uploadResult.url;
+        }
+
+        const lensData = await handleInternalAddToCart(prescriptionUrl);
+        if (lensData) {
+            onSave(lensData, action);
+            onClose();
         }
     };
 
@@ -562,7 +631,7 @@ const LensSelectionModal = ({
                                                                 />
                                                             </div>
                                                             <div className="cant-find-power">
-                                                                <p>Can't find your power, Call <a href="tel:+918470007367">+91 8470007367</a></p>
+                                                                <p>Can't find your power, Call <a href="tel:+919344116571">+91 93441 16571</a></p>
                                                             </div>
                                                             <div className="prescription-upload-area">
                                                                 <label className="upload-box">
@@ -571,7 +640,15 @@ const LensSelectionModal = ({
                                                                         accept="image/*" 
                                                                         onChange={(e) => {
                                                                             const file = e.target.files[0];
-                                                                            if (file) setUserInfo({...userInfo, file, fileName: file.name});
+                                                                            if (file) {
+                                                                                const preview = URL.createObjectURL(file);
+                                                                                setUserInfo({
+                                                                                    ...userInfo, 
+                                                                                    file, 
+                                                                                    fileName: file.name,
+                                                                                    previewUrl: preview
+                                                                                });
+                                                                            }
                                                                         }} 
                                                                     />
                                                                     <div className="upload-content">
@@ -580,7 +657,8 @@ const LensSelectionModal = ({
                                                                     </div>
                                                                 </label>
                                                             </div>
-                                                            <button 
+// Hidden Save & Proceed button as requested, now handled by final action buttons
+                                                            {/* <button 
                                                                 className="save-proceed-btn" 
                                                                 onClick={() => handleUserInfoSubmit(() => {
                                                                     onClose(); 
@@ -589,7 +667,7 @@ const LensSelectionModal = ({
                                                                 })}
                                                             >
                                                                 Save & Proceed
-                                                            </button>
+                                                            </button> */}
                                                             <button className="back-to-table" onClick={() => setManualStep('table')}>Back to Power Table</button>
                                                         </div>
                                                     </div>
@@ -707,7 +785,7 @@ const LensSelectionModal = ({
                                                                     />
                                                                 </div>
                                                                 <div className="cant-find-power">
-                                                                    <p>Can't find your power, Call <a href="tel:+918470007367">+91 8470007367</a></p>
+                                                                    <p>Can't find your power, Call <a href="tel:+919344116571">+91 93441 16571</a></p>
                                                                 </div>
                                                                 <div className="prescription-upload-area">
                                                                     <label className="upload-box">
@@ -775,19 +853,13 @@ const LensSelectionModal = ({
                         <button 
                             className={`modal-add-cart ${product.stock !== undefined && product.stock <= 0 ? 'disabled' : ''}`} 
                             disabled={product.stock !== undefined && product.stock <= 0}
-                            onClick={async () => {
-                                const success = await handleInternalAddToCart();
-                                if (success) { onClose(); setDrawerTab('cart'); setCartOpen(true); }
-                            }}
-                        >Add to Cart</button>
+                            onClick={() => handleFinalAction('cart')}
+                        >Add to Order</button>
                         <button 
                             className={`modal-buy-now ${product.stock !== undefined && product.stock <= 0 ? 'disabled' : ''}`} 
                             disabled={product.stock !== undefined && product.stock <= 0}
-                            onClick={async () => {
-                                const success = await handleInternalAddToCart();
-                                if (success) { onClose(); navigate('/checkout'); }
-                            }}
-                        >Buy Now</button>
+                            onClick={() => handleFinalAction('buy')}
+                        >Confirm & Review</button>
                     </div>
                 </div>
             </div>

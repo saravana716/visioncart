@@ -18,6 +18,7 @@ import './ProductDetails.css';
 import ImageZoom from '../Components/ImageZoom/ImageZoom';
 // import { MdOutline360 } from "react-icons/md";
 import LensSelectionModal from '../Components/LensSelectionModal/LensSelectionModal';
+import ReviewSummaryModal from '../Components/ReviewSummaryModal/ReviewSummaryModal';
 import ReadingGlassesPowerSelector from '../Components/ReadingGlassesPowerSelector/ReadingGlassesPowerSelector';
 
 const categoryDescriptions = {
@@ -136,7 +137,12 @@ const ProductDetails = () => {
     const [lensEnhancements, setLensEnhancements] = useState([]);
     const [readingPower, setReadingPower] = useState({ rightPower: '', leftPower: '', sameForBoth: true });
     const [selectedColor, setSelectedColor] = useState(null);
-    // const [is360Open, setIs360Open] = useState(false);
+    const [productFor, setProductFor] = useState('Adults');
+    // Review Modal States
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [reviewData, setReviewData] = useState(null);
+    const [reviewAction, setReviewAction] = useState('cart'); // 'cart' or 'buy'
+    const [selectedLensData, setSelectedLensData] = useState(null);
     
     const { addItemToCart, setCartOpen, setDrawerTab } = useCart();
 
@@ -162,6 +168,7 @@ const ProductDetails = () => {
                     size: data.size || 'Medium',
                     colors: data.colors || [{ name: 'Default', hex: '#000' }],
                     category: data.category || 'Spectacles',
+                    userSegment: data.category === 'Kids Collection' ? 'Kids' : 'Adults',
                     stock: data.stock !== undefined ? data.stock : 10,
                     technicalSpecs: data.technicalSpecs || [
                         { label: 'Brand', value: data.brand || 'Visionkart' },
@@ -173,6 +180,7 @@ const ProductDetails = () => {
                 };
                 setProduct(mappedProduct);
                 setSelectedImg(mappedProduct.mainImage);
+                setProductFor(mappedProduct.userSegment);
 
                 // Fetch similar products
                 const similar = await getProducts(data.category);
@@ -246,8 +254,8 @@ const ProductDetails = () => {
         return () => observer.disconnect();
     }, [loading]);
 
-    const handleAddToCart = async () => {
-        const cartData = {
+    const getPreparedCartData = () => {
+        const baseData = {
             productId: id,
             productBrand: product.brand,
             productName: product.title,
@@ -257,15 +265,108 @@ const ProductDetails = () => {
             totalPrice: product.price,
             category: product.category,
             specifications: [
-                ...(product.technicalSpecs || []),
+                { label: 'Brand', value: product.brand || 'Visionkart' },
                 { label: 'Color', value: selectedColor?.name || (product.colors?.[0]?.name) || 'Default' },
                 { label: 'Size', value: product.size || 'Standard' },
+                { label: 'For', value: productFor },
                 { label: 'Lens', value: 'Frame Only' },
-                { label: 'Material', value: 'Standard' }
             ],
             sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || id,
+            // Keep technical specs separate for backend/cart storage if needed, 
+            // but for the Summary UI we stick to the above.
+            allTechnicalSpecs: product.technicalSpecs || []
         };
-        return await addItemToCart(cartData);
+
+        // If user already selected a lens in the modal, merge that data
+        if (selectedLensData) {
+            const lensSpecs = selectedLensData.specifications || [];
+            return {
+                ...baseData,
+                ...selectedLensData,
+                // Replace Frame Only lens spec with selected lens type
+                specifications: [
+                    ...baseData.specifications.filter(s => s.label !== 'Lens'),
+                    ...lensSpecs
+                ],
+                totalPrice: selectedLensData.totalPrice || baseData.totalPrice
+            };
+        }
+
+        return baseData;
+    };
+
+    const handleAddToCart = async (preData = null) => {
+        const cartData = preData || getPreparedCartData();
+
+        console.log("Adding to cart with data:", cartData);
+        const result = await addItemToCart(cartData);
+        console.log("Add to cart result:", result);
+        return result;
+    };
+
+    const handleLaunchReview = (action, overrideData = null) => {
+        const data = overrideData || getPreparedCartData();
+        setReviewData(data);
+        setReviewAction(action);
+        setShowReviewModal(true);
+    };
+
+    const handleLensDataSave = (data, action = null) => {
+        console.log("Lens data saved to ProductDetails:", data);
+        setSelectedLensData(data);
+        setShowLensModal(false);
+        
+        if (action) {
+            const baseData = {
+                productId: id,
+                productBrand: product.brand,
+                productName: product.title,
+                productImage: product.mainImage,
+                productPrice: product.price,
+                productSize: product.size,
+                totalPrice: product.price,
+                category: product.category,
+                specifications: [
+                    { label: 'Brand', value: product.brand || 'Visionkart' },
+                    { label: 'Color', value: selectedColor?.name || (product.colors?.[0]?.name) || 'Default' },
+                    { label: 'Size', value: product.size || 'Standard' },
+                    { label: 'For', value: productFor },
+                    { label: 'Lens', value: 'Frame Only' },
+                ],
+                sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || id,
+            };
+
+            const mergedData = {
+                ...baseData,
+                ...data,
+                specifications: [
+                    ...baseData.specifications.filter(s => s.label !== 'Lens' && s.label !== 'Material'),
+                    ...(data.specifications || []).filter(s => s.label !== 'Size' && s.label !== 'Color')
+                ],
+                totalPrice: data.totalPrice || baseData.totalPrice
+            };
+
+            handleLaunchReview(action, mergedData);
+        } else {
+            import('react-hot-toast').then(({ default: toast }) => {
+                toast.success('Lens details configured. You can now Add to Cart or Buy Now.', {
+                    style: { borderRadius: '10px', background: '#001f54', color: '#fff' }
+                });
+            });
+        }
+    };
+
+    const handleConfirmReview = async () => {
+        setShowReviewModal(false);
+        const success = await handleAddToCart(reviewData);
+        if (success) {
+            if (reviewAction === 'buy') {
+                navigate('/checkout');
+            } else {
+                setDrawerTab('cart');
+                setCartOpen(true);
+            }
+        }
     };
 
 
@@ -280,11 +381,13 @@ const ProductDetails = () => {
                     <h2>Technical Information</h2>
                     <table className="tech-table">
                         <tbody>
-                            {product.technicalSpecs.map((spec, idx) => (
-                                <tr key={idx}>
-                                    <td>{spec.label}</td>
-                                    <td>{spec.value}</td>
-                                </tr>
+                            {product.technicalSpecs
+                                .filter(spec => spec.label !== 'Model No.')
+                                .map((spec, idx) => (
+                                    <tr key={idx}>
+                                        <td>{spec.label}</td>
+                                        <td>{spec.value}</td>
+                                    </tr>
                             ))}
                         </tbody>
                     </table>
@@ -399,45 +502,21 @@ const ProductDetails = () => {
                         </div>
 
                         {product.category !== 'Sunglasses' && (
-                            <>
-                                <div className="action-buttons-group">
-                                    <button className="btn-action-primary pink">Prescription Upload</button>
-                                    <button className="btn-action-outline blue" onClick={() => setShowLensModal(true)}>Select lens</button>
-                                </div>
-
-                                <div className="prescription-upload-box">
-                                    <div className="upload-icon">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/3097/3097412.png" alt="Upload" />
-                                    </div>
-                                    <p className="drag-text">Drag & Drop files</p>
-                                    <span className="or-text">or</span>
-                                    <button className="select-file-btn">Select file from your device</button>
-                                    <p className="formats-text">Maximum file size: 10MB | Accepted file types: JPEG, PNG, PDF</p>
-                                </div>
-                            </>
+                            <div className="action-buttons-group">
+                                <button className="btn-action-outline blue" onClick={() => setShowLensModal(true)}>Select lens</button>
+                            </div>
                         )}
 
                         <div className="action-buttons-lower">
                             <button 
                                 className="action-primary-btn"
-                                onClick={async () => {
-                                    const success = await handleAddToCart();
-                                    if (success) {
-                                        setDrawerTab('cart');
-                                        setCartOpen(true);
-                                    }
-                                }}
+                                onClick={() => handleLaunchReview('cart')}
                             >
                                 Add to Cart
                             </button>
                             <button 
                                 className="action-secondary-btn"
-                                onClick={async () => {
-                                    const success = await handleAddToCart();
-                                    if (success) {
-                                        navigate('/checkout');
-                                    }
-                                }}
+                                onClick={() => handleLaunchReview('buy')}
                             >
                                 Buy Now
                             </button>
@@ -447,8 +526,8 @@ const ProductDetails = () => {
                             <p>This Product For</p>
                             <div className="for-buttons">
                                 <div 
-                                    className={`for-item ${product.category === 'Kids Collection' ? 'active' : ''}`}
-                                    onClick={() => navigate('/products?category=Kids Collection')}
+                                    className={`for-item ${productFor === 'Kids' ? 'active' : ''}`}
+                                    onClick={() => setProductFor('Kids')}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <div className="for-img-box">
@@ -457,8 +536,8 @@ const ProductDetails = () => {
                                     </div>
                                 </div>
                                 <div 
-                                    className={`for-item ${product.category !== 'Kids Collection' ? 'active' : ''}`}
-                                    onClick={() => navigate('/products?category=Spectacles')}
+                                    className={`for-item ${productFor === 'Adults' ? 'active' : ''}`}
+                                    onClick={() => setProductFor('Adults')}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <div className="for-img-box">
@@ -540,6 +619,15 @@ const ProductDetails = () => {
                 addItemToCart={addItemToCart}
                 setCartOpen={setCartOpen}
                 setDrawerTab={setDrawerTab}
+                onSave={handleLensDataSave}
+                productFor={productFor}
+            />
+            <ReviewSummaryModal 
+                isOpen={showReviewModal}
+                onClose={() => setShowReviewModal(false)}
+                onConfirm={handleConfirmReview}
+                data={reviewData}
+                actionType={reviewAction}
             />
             {/* <Product360Viewer 
                 images={product.thumbnails} 

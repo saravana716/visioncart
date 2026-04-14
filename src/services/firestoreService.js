@@ -1,5 +1,6 @@
 import { collection, getDocs, getDoc, doc, query, where, addDoc, deleteDoc, setDoc, serverTimestamp, writeBatch, orderBy } from 'firebase/firestore';
-import { db } from '../firebase.config';
+import { db, storage } from '../firebase.config';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export const getCategories = async () => {
   try {
@@ -454,5 +455,17 @@ export const getCoupon = async (code) => {
   } catch (error) {
     console.error("Error fetching coupon: ", error);
     return null;
+  }
+};
+
+export const uploadPrescription = async (file) => {
+  try {
+    const fileRef = ref(storage, `prescriptions/${Date.now()}_${file.name}`);
+    const snapshot = await uploadBytes(fileRef, file);
+    const url = await getDownloadURL(snapshot.ref);
+    return { url, success: true };
+  } catch (error) {
+    console.error("Error uploading prescription: ", error);
+    return { success: false, error };
   }
 };
