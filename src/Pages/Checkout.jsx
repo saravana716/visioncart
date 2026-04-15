@@ -28,6 +28,7 @@ import { fulfillOrderInvoicing } from '../services/fulfillmentService';
 import InvoiceDocument from '../Components/InvoiceDocument';
 import './Checkout.css';
 import qrScannerImg from '../assets/qrscanner.jpeg';
+import { config } from '../config';
 
 const Checkout = () => {
     const { cartItems, cartCount, clearCart, removeItemFromCart } = useCart();
@@ -338,10 +339,39 @@ const Checkout = () => {
     };
 
     const handleCCAvenuePayment = async () => {
+        if (!validateCheckoutForms()) {
+            toast.error("Please fill all required fields correctly");
+            return;
+        }
+
         setLoading(true);
         try {
-            const apiBase = "http://localhost:3000"; // Backend URL
+            // 1. Create Order in Firestore for tracking before gateway redirect
+            const orderData = {
+                items: cartItems,
+                billingAddress: billingForm,
+                shippingAddress: shipToDifferent ? shippingForm : billingForm,
+                paymentMethod: 'CCAvenue',
+                amounts: { subtotal, rawSubtotal, discount, tax, total, taxDetails },
+                appliedCoupon: appliedCoupon ? {
+                    code: appliedCoupon.code,
+                    discountValue: appliedCoupon.discountValue,
+                    discountType: appliedCoupon.discountType
+                } : null,
+                userId: user.uid,
+                status: 'Awaiting Payment'
+            };
+
+            const result = await placeOrder(user.uid, orderData);
+            if (!result.success) {
+                throw new Error("Failed to initiate order in secure vault");
+            }
+
+            const firestoreOrderId = result.id;
+            const apiBase = config.paymentBackendUrl || "https://www.visionkart.online";
+
             const payload = {
+                order_id: firestoreOrderId,
                 amount: total.toString(),
                 currency: 'INR',
                 customer_name: billingForm.fullName,
@@ -362,7 +392,8 @@ const Checkout = () => {
             });
 
             if (!response.ok) {
-                throw new Error("Failed to initialize payment");
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to initialize secure gateway");
             }
 
             const data = await response.json();
@@ -395,8 +426,8 @@ const Checkout = () => {
             mapForm.submit();
 
         } catch (error) {
-            console.error("CCAvenue Error:", error);
-            toast.error("Payment initialization failed. Please try again.");
+            console.error("CCAvenue Integration Error:", error);
+            toast.error(error.message || "Payment initialization failed. Please try again.");
             setLoading(false);
         }
     };

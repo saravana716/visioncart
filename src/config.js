@@ -17,5 +17,8 @@ export const config = {
     },
     
     // Contact email for inquiries during maintenance
-    contactEmail: 'support@visioncart.com'
+    contactEmail: 'support@visioncart.com',
+
+    // Production Payment Backend URL for CCAvenue
+    paymentBackendUrl: 'https://visioncardbackend.onrender.com'
 };
