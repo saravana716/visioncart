@@ -962,7 +962,14 @@
 @media (max-width: 768px) {
     .vn-assure-section, .availability-check, .technical-info-section, .similar-products-section, .reviews-section-v2 {
         margin-bottom: 40px; /* Reliable mobile spacing */
-    }
+    
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+}
+
 }
 
 
@@ -988,10 +995,14 @@
 .zip-input {
     display: flex;
     margin: 10px 0;
+    width: 100%;
 }
-
+.mb{
+    display: none;
+}
 .zip-input input {
     flex: 1;
+    min-width: 0; /* Allow shrinking */
     padding: 12px 15px;
     border: 1px solid #ddd;
     border-radius: 8px 0 0 8px;
@@ -1007,6 +1018,19 @@
     font-weight: 700;
     font-size: 14px;
     cursor: pointer;
+    white-space: nowrap; /* Prevent text wrapping */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+@media (max-width: 768px) {
+    .zip-input input {
+        font-size: 15px;
+        padding: 10px 12px;
+    }
+    .zip-input button {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
 }
 
 
@@ -1360,4 +1384,79 @@
 .highlight-group li {
     font-size: 14px;
     color: #475569;
+}
+
+
+
+@media (max-width: 768px) {
+    .vn-assure-section{
+        width: 100% !important;
+        margin-right: 0px;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 0px !important;
+        margin: 0 auto !important;
+    }
+    .section-title{
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+    .main-info-grid{
+        padding: 0px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+    .product-main-left{
+        width: 100% !important ;
+    }
+    .product-gallery{
+        width: 100% !important;
+    }
+    .product-info-panel{
+        width: 100% !important;
+    }
+    .product-for-section{
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+
+    }
+    .for-buttons{
+        width: 100% !important;
+    }
+    .for-item{
+        width:100% !important;
+    }
+    .for-img-box{
+        width:100% !important;
+    }
+    .reviews-section-v2{
+        width:100% !important;
+        margin:0 auto !important;
+    }
+    .reviews-header-v2{
+        width:100% !important;
+    }
+    .mb{
+        width: 100% !important;
+        display: block;
+    }
+    .mb1{
+        display:none !important;
+    }
+.no-reviews-state{
+    margin-bottom:20px !important;
+}
+.recommendations-section{
+    padding: 0 !important;
+}
+.availability-check{
+    width:100% !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    flex-direction: column !important;
+}
 }

@@ -282,6 +282,11 @@
     background-color: white;
     padding: 10px 15px;
     gap: 10px;
+    box-sizing: border-box; /* Fix for overflow */
+}
+
+.mobile-navbar * {
+    box-sizing: border-box;
 }
 
 .mobile-nav-top {
@@ -398,8 +403,8 @@
     white-space: nowrap;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(255, 0, 117, 0.2);
-    flex: 1; /* More room for button text */
-    max-width: 100px;
+    flex: 0 1 auto; /* Allow it to take only needed space */
+    width: 90px;
 }
 
 /* Mobile Sidebar Styles - Hidden on Desktop */
@@ -442,6 +447,26 @@
     }
 
     /* Mobile Sidebar Styles */
+    .zoom-hint-mobile {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.5);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 10px;
+        pointer-events: none;
+        z-index: 5;
+    }
+
+    /* Prevent any overflow from hidden containers */
+    .product-details-page, .main-info-grid, .product-container {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+
     .mobile-sidebar-overlay {
         position: fixed;
         top: 0;

@@ -477,7 +477,10 @@ const ProductDetails = () => {
 
                         <div className="product-left-details-stack">
                             {renderTechnicalInfo('desktop')}
+<div className="mb1">
                             <ReviewsSection productId={id} />
+
+</div>
                         </div>
                     </div>
 
@@ -611,7 +614,10 @@ const ProductDetails = () => {
                     </div>
                 </div>
 
+<div className='mb'>
+                            <ReviewsSection productId={id} />
 
+</div>
 
                 <div className="similar-products-section scroll-reveal">
                     <div className="section-header">
