@@ -259,34 +259,47 @@ export const getCategoryDiscounts = async () => {
  * If a category has a discount defined, it overrides the product's manual offerPrice.
  */
 export const applyCategoryDiscounts = (products, categoryDiscounts) => {
-  if (!products || !categoryDiscounts) return products;
+  if (!products) return [];
+  const discounts = categoryDiscounts || {};
   
   return products.map(p => {
-    const discountPercent = categoryDiscounts[p.category] || 0;
+    const discountPercent = discounts[p.category] || 0;
     const basePrice = parseInt(p.price?.toString().replace(/[^0-9]/g, '') || '0');
     
+    // Case 1: Dynamic Category Discount (Higher Priority)
     if (discountPercent > 0) {
-      const calculatedPrice = basePrice - (basePrice * (discountPercent / 100));
+      const calculatedPrice = Math.round(basePrice - (basePrice * (discountPercent / 100)));
       return {
         ...p,
-        sellingPrice: Math.round(calculatedPrice),
-        displayPrice: `₹${Math.round(calculatedPrice)}`,
-        originalPrice: p.price ? (p.price.toString().startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
+        sellingPrice: calculatedPrice,
+        displayPrice: `₹${calculatedPrice}`,
+        originalPrice: basePrice > 0 ? `₹${basePrice}` : '₹0',
         discountLabel: `${discountPercent}% OFF`,
         hasCategoryDiscount: true
       };
     }
     
-    // Fallback to manual offerPrice if no category discount
+    // Case 2: Manual Offer Price (Fallback)
     const manualOffer = parseInt(p.offerPrice?.toString().replace(/[^0-9]/g, '') || '0');
-    const finalPrice = manualOffer > 0 ? manualOffer : basePrice;
+    if (manualOffer > 0 && manualOffer < basePrice) {
+      const manualDiscount = Math.round(((basePrice - manualOffer) / basePrice) * 100);
+      return {
+        ...p,
+        sellingPrice: manualOffer,
+        displayPrice: `₹${manualOffer}`,
+        originalPrice: basePrice > 0 ? `₹${basePrice}` : '₹0',
+        discountLabel: `${manualDiscount}% OFF`,
+        hasCategoryDiscount: false
+      };
+    }
 
+    // Case 3: No Discount (Regular Price)
     return {
       ...p,
-      sellingPrice: finalPrice,
-      displayPrice: `₹${finalPrice}`,
-      originalPrice: p.price ? (p.price.toString().startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
-      discountLabel: p.discount || (manualOffer > 0 ? 'SPECIAL OFFER' : ''),
+      sellingPrice: basePrice,
+      displayPrice: `₹${basePrice}`,
+      originalPrice: basePrice > 0 ? `₹${basePrice}` : '₹0',
+      discountLabel: null,
       hasCategoryDiscount: false
     };
   });

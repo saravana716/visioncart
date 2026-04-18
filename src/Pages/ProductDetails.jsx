@@ -5,7 +5,7 @@ import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import OurBrands from '../Components/Ourbrands/OurBrands';
 import PropCard from '../Components/PropCard/PropCard';
-import { getProductById, getProducts, getLensEnhancements, getCategoryDiscounts } from '../services/firestoreService';
+import { getProductById, getProducts, getLensEnhancements, getCategoryDiscounts, applyCategoryDiscounts } from '../services/firestoreService';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import ReviewsSection from '../Components/Reviews/ReviewsSection';
@@ -157,27 +157,18 @@ const ProductDetails = () => {
             ]);
 
             if (data) {
-                const categoryDiscount = categoryDiscounts[data.category] || 0;
+                // Use centralized discount service (pass single product in array)
+                const [discountedProduct] = applyCategoryDiscounts([data], categoryDiscounts);
                 
-                // Helper to calculate price based on category discount
-                const getDynamicPrice = (originalPrice, manualOffer) => {
-                    const base = parseInt(originalPrice?.toString().replace(/[^0-9]/g, '') || '0');
-                    if (categoryDiscount > 0) {
-                        const discounted = base - (base * (categoryDiscount / 100));
-                        return `₹${Math.round(discounted)}`;
-                    }
-                    return manualOffer ? (manualOffer.toString().startsWith('₹') ? manualOffer : `₹${manualOffer}`) : (originalPrice ? (originalPrice.toString().startsWith('₹') ? originalPrice : `₹${originalPrice}`) : '₹0');
-                };
-
                 const mappedProduct = {
-                    ...data,
+                    ...discountedProduct,
                     mainImage: (data.photos && data.photos.length > 0) ? data.photos[0] : (data.mainImage || 'https://via.placeholder.com/600?text=No+Image'),
                     thumbnails: (data.photos && data.photos.length > 0) ? data.photos : (data.mainImage ? [data.mainImage] : ['https://via.placeholder.com/600?text=No+Image']),
                     brand: data.brand || 'Visionkart',
                     title: data.name || data.model || 'Product Details',
-                    price: getDynamicPrice(data.price, data.offerPrice),
-                    originalPrice: data.price ? (data.price.toString().startsWith('₹') ? data.price : `₹${data.price}`) : (data.originalPrice || '₹0'),
-                    discount: categoryDiscount > 0 ? `${categoryDiscount}% OFF` : (data.discount || (data.offerPrice ? 'SPECIAL OFFER' : '50% OFF')),
+                    price: discountedProduct.displayPrice,
+                    originalPrice: discountedProduct.originalPrice,
+                    discount: discountedProduct.discountLabel || '0% OFF',
                     rating: data.rating || '4.5',
                     ratingCount: data.ratingCount || '0',
                     size: data.size || 'Medium',
@@ -201,13 +192,11 @@ const ProductDetails = () => {
                 setSelectedImg(mappedProduct.mainImage);
                 setProductFor(mappedProduct.userSegment);
 
-                // Fetch similar products
+                // Fetch similar products and apply same discount logic
                 const similar = await getProducts(data.category);
-                const similarMapped = similar.filter(p => p.id !== id).slice(0, 4).map(p => {
-                    const pDiscount = categoryDiscounts[p.category] || 0;
-                    const pBase = parseInt(p.price?.toString().replace(/[^0-9]/g, '') || '0');
-                    const pFinal = pDiscount > 0 ? (pBase - (pBase * (pDiscount / 100))) : (parseInt(p.offerPrice || p.price || 0));
-
+                const discountedSimilar = applyCategoryDiscounts(similar.filter(p => p.id !== id).slice(0, 4), categoryDiscounts);
+                
+                const similarMapped = discountedSimilar.map(p => {
                     return {
                         id: p.id,
                         img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
@@ -215,8 +204,8 @@ const ProductDetails = () => {
                         title: p.name || p.title || p.productName || p.brand || "Visionkart",
                         rating: rateimg,
                         ratingcount: p.ratingCount || "0",
-                        price: `₹${Math.round(pFinal)}`,
-                        mrpprice: p.price ? (p.price.toString().startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
+                        price: p.displayPrice,
+                        mrpprice: p.originalPrice,
                         color: "",
                         colorcount: p.colors ? p.colors.length : "1"
                     };

@@ -81,6 +81,7 @@ const ProductPage = () => {
             frameMaterial: getParams('frameMaterial'),
             frameColor: getParams('frameColor'),
             frameSize: getParams('frameSize'),
+            brand: getParams('brand'),
             priceRange: getParams('priceRange')
         });
 
@@ -179,13 +180,13 @@ const ProductPage = () => {
     };
 
     const cardlist = filteredProducts.map(p => {
-        const displayPrice = p.offerPrice || p.price;
         return {
             id: p.id,
             brand: p.brand,
             title: p.name || p.model || p.brand,
-            price: displayPrice ? (displayPrice.toString().startsWith('₹') ? displayPrice : `₹${displayPrice}`) : '₹0',
-            mrpprice: p.price || p.originalPrice || '0',
+            price: p.displayPrice || `₹${p.offerPrice || p.price || '0'}`,
+            mrpprice: p.originalPrice || `₹${p.price || '0'}`,
+            discount: p.discountLabel,
             img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
             hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
             rating: rateimg,
