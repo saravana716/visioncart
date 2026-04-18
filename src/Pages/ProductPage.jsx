@@ -4,7 +4,7 @@ import Navbar from '../Components/Navbar/Navbar';
 import OurBrands from '../Components/Ourbrands/OurBrands';
 import Footers from '../Components/Footer/Footers';
 import PropCard from '../Components/PropCard/PropCard';
-import { getProducts, getCategoryByName } from '../services/firestoreService';
+import { getProducts, getCategoryByName, getCategoryDiscounts, getCategoryFilters } from '../services/firestoreService';
 import { IoIosSearch } from "react-icons/io";
 import rateimg from '../assets/star.png';
 import colorimg from '../assets/color.png';
@@ -27,38 +27,6 @@ const categoryImages = {
     'Contact Lenses': bannerReading
 };
 
-const fallbackData = {
-    'Spectacles': {
-        gender: ['Men', 'Women', 'Unisex', 'Kids'],
-        style: ['Full Rim', 'Half Rim', 'Rimless'],
-        lensType: ['ARC', 'Blue Cut', 'UV Protect', 'Auto Cooling'],
-        shape: ['Rectangle', 'Round', 'Cat eye', 'Aviatar', 'Oval', 'Square'],
-    },
-    'Sunglasses': {
-        gender: ['Men', 'Women', 'Unisex'],
-        style: ['Aviator', 'Wayfarer', 'Clubmaster'],
-        lensType: ['Polarized', 'UV Protection', 'Gradient'],
-        shape: ['Aviator', 'Square', 'Round', 'Oversized'],
-    },
-    'Reading Glasses': {
-        gender: ['Men', 'Women', 'Unisex'],
-        style: ['Full Rim', 'Rimless', 'Half Rim'],
-        lensType: ['Anti-Glare', 'Blue Cut', 'Bifocal'],
-        shape: ['Rectangle', 'Round', 'Oval'],
-    },
-    'Computer Glasses': {
-        gender: ['Men', 'Women', 'Unisex'],
-        style: ['Full Rim', 'Half Rim'],
-        lensType: ['Blue Cut', 'Anti-Glare'],
-        shape: ['Rectangle', 'Square', 'Round'],
-    },
-    'Kids Collection': {
-        gender: ['Boys', 'Girls', 'Unisex'],
-        style: ['Full Rim'],
-        lensType: ['ARC', 'Blue Cut'],
-        shape: ['Round', 'Square', 'Rectangle'],
-    }
-};
 const ProductPage = () => {
     const [searchParams] = useSearchParams();
     const category = searchParams.get('category');
@@ -74,6 +42,7 @@ const ProductPage = () => {
         frameColor: true,
         frameSize: true,
         lensType: true,
+        brand: true,
         priceRange: true
     });
 
@@ -87,25 +56,15 @@ const ProductPage = () => {
         frameMaterial: [],
         frameColor: [],
         frameSize: [],
+        brand: [],
         priceRange: []
     });
+    const [dynamicFilters, setDynamicFilters] = useState(null);
 
     const navigate = useNavigate();
 
     // Sync URL params to State on load/change
     useEffect(() => {
-        const newFilters = {
-            gender: searchParams.getAll('gender'),
-            frameStyle: searchParams.getAll('frameStyle'),
-            frameShape: searchParams.getAll('frameShape'),
-            lensType: searchParams.getAll('lensType'),
-            frameMaterial: searchParams.getAll('frameMaterial'),
-            frameColor: searchParams.getAll('frameColor'),
-            frameSize: searchParams.getAll('frameSize'),
-            priceRange: searchParams.getAll('priceRange')
-        };
-        
-        // Handle single values (if they came as single params like in MegaMenu)
         const getParams = (key) => {
             const all = searchParams.getAll(key);
             const single = searchParams.get(key);
@@ -125,7 +84,6 @@ const ProductPage = () => {
             priceRange: getParams('priceRange')
         });
 
-        // Sync SortBy from URL
         const sortParam = searchParams.get('sort');
         if (sortParam) setSortBy(sortParam);
     }, [searchParams]);
@@ -133,8 +91,12 @@ const ProductPage = () => {
     useEffect(() => {
         const fetchCategoryData = async () => {
             if (category) {
-                const config = await getCategoryByName(category);
+                const [config, filters] = await Promise.all([
+                    getCategoryByName(category),
+                    getCategoryFilters(category)
+                ]);
                 setCategoryConfig(config);
+                setDynamicFilters(filters);
             }
         };
         fetchCategoryData();
@@ -143,43 +105,50 @@ const ProductPage = () => {
     useEffect(() => {
         const fetchProductsData = async () => {
             setLoading(true);
-            
-            // Build filters directly from the state (which is synced with searchParams)
             const activeFilters = {};
             Object.keys(selectedFilters).forEach(key => {
                 if (selectedFilters[key].length > 0) {
                     activeFilters[key] = selectedFilters[key];
                 }
             });
-
-            // Handle special cases from URL that might not be in state (like subcategory)
             const sub = searchParams.get('subcategory');
             if (sub) activeFilters.subcategory = sub;
 
-            const data = await getProducts(category, activeFilters, sortBy);
-            setFilteredProducts(data);
-            // Small delay for premium feel
+            const [data, categoryDiscounts] = await Promise.all([
+                getProducts(category, activeFilters, sortBy),
+                getCategoryDiscounts()
+            ]);
+
+            const mappedData = data.map(p => {
+                const discount = categoryDiscounts[p.category] || 0;
+                const base = parseInt(p.price?.toString().replace(/[^0-9]/g, '') || '0');
+                const final = discount > 0 ? (base - (base * (discount / 100))) : (parseInt(p.offerPrice || p.price || 0));
+
+                return {
+                    ...p,
+                    price: `₹${Math.round(final)}`,
+                    originalPrice: p.price ? (p.price.toString().startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
+                    discountLabel: discount > 0 ? `${discount}% OFF` : (p.discount || 'Special Offer')
+                };
+            });
+
+            setFilteredProducts(mappedData);
             setTimeout(() => setLoading(false), 500);
             window.scrollTo(0, 0);
         };
         fetchProductsData();
-    }, [category, selectedFilters, searchParams, sortBy]); // selectedFilters is updated by searchParams sync
+    }, [category, selectedFilters, searchParams, sortBy]);
 
     const handleFilterChange = (type, value) => {
-        // Update URL, which will trigger searchParams sync effect
         const newParams = new URLSearchParams(searchParams);
         const currentVals = newParams.getAll(type);
-        
         if (currentVals.includes(value)) {
-            // Remove
             const updated = currentVals.filter(v => v !== value);
             newParams.delete(type);
             updated.forEach(v => newParams.append(type, v));
         } else {
-            // Add
             newParams.append(type, value);
         }
-        
         navigate(`/products?${newParams.toString()}`);
     };
 
@@ -199,13 +168,14 @@ const ProductPage = () => {
     };
 
     const currentFilters = {
-        gender: categoryConfig?.gender || fallbackData[category]?.gender || ['Men', 'Women', 'Unisex', 'Kids'],
-        style: categoryConfig?.style || fallbackData[category]?.style || ['Full Rim', 'Half Rim', 'Rimless'],
-        shape: categoryConfig?.shape || fallbackData[category]?.shape || ['Rectangle', 'Round', 'Oval', 'Square', 'Wayfarer', 'Aviator', 'Cat Eye'],
-        lensType: categoryConfig?.lensType || fallbackData[category]?.lensType || ['Blue Cut', 'ARC', 'UV Protect', 'Polarized'],
-        material: categoryConfig?.material || fallbackData[category]?.material || ['Metal', 'Plastic', 'Acetate', 'Titanium', 'TR90'],
-        color: categoryConfig?.color || fallbackData[category]?.color || ['Black', 'Blue', 'Brown', 'Silver', 'Gold', 'Gunmetal'],
-        size: categoryConfig?.size || fallbackData[category]?.size || ['Small', 'Medium', 'Wide', 'Extra Wide']
+        gender: dynamicFilters?.gender || categoryConfig?.gender || [],
+        style: dynamicFilters?.frameType || categoryConfig?.style || categoryConfig?.frameType || [],
+        shape: dynamicFilters?.frameShape || categoryConfig?.shape || categoryConfig?.frameShape || [],
+        lensType: dynamicFilters?.lensType || categoryConfig?.lensType || [],
+        material: dynamicFilters?.frameMaterial || categoryConfig?.material || categoryConfig?.frameMaterial || [],
+        color: dynamicFilters?.frameColor || categoryConfig?.color || [],
+        size: dynamicFilters?.frameSize || categoryConfig?.size || [],
+        brand: dynamicFilters?.brand || []
     };
 
     const cardlist = filteredProducts.map(p => {
@@ -412,6 +382,52 @@ const ProductPage = () => {
                                                         type="checkbox" 
                                                         checked={selectedFilters.frameSize.includes(opt)}
                                                         onChange={() => handleFilterChange('frameSize', opt)}
+                                                    /> {opt}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Brand Filter */}
+                            {currentFilters.brand.length > 0 && (
+                                <div className="filter-group">
+                                    <div className="filter-title" onClick={() => toggleFilter('brand')}>
+                                        <span>Brand</span>
+                                        <span className={`arrow ${openFilters.brand ? 'open' : ''}`}>▾</span>
+                                    </div>
+                                    {openFilters.brand && (
+                                        <div className="filter-options">
+                                            {currentFilters.brand.map((opt, i) => (
+                                                <label key={i}>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={selectedFilters.brand.includes(opt)}
+                                                        onChange={() => handleFilterChange('brand', opt)}
+                                                    /> {opt}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Frame Color Filter */}
+                            {currentFilters.color.length > 0 && (
+                                <div className="filter-group">
+                                    <div className="filter-title" onClick={() => toggleFilter('frameColor')}>
+                                        <span>Frame Color</span>
+                                        <span className={`arrow ${openFilters.frameColor ? 'open' : ''}`}>▾</span>
+                                    </div>
+                                    {openFilters.frameColor && (
+                                        <div className="filter-options">
+                                            {currentFilters.color.map((opt, i) => (
+                                                <label key={i}>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={selectedFilters.frameColor.includes(opt)}
+                                                        onChange={() => handleFilterChange('frameColor', opt)}
                                                     /> {opt}
                                                 </label>
                                             ))}

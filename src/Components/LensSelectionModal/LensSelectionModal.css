@@ -229,6 +229,39 @@
     background-repeat: no-repeat;
 }
 
+/* No Enhancements Notice - Centered & Premium */
+.no-enhancements-notice {
+    grid-column: 1 / -1;
+    padding: 60px 20px;
+    background: #fcfdfe;
+    border: 2px dashed #cbd5e0;
+    border-radius: 24px;
+    text-align: center;
+    color: #475569;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 15px 0 40px;
+}
+
+.no-enhancements-notice::before {
+    content: '🔍';
+    font-size: 48px;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+    opacity: 0.7;
+}
+
+.no-enhancements-notice strong {
+    color: #001f54;
+    font-weight: 700;
+}
+
 /* Usage Grid - Better Circles */
 .usage-grid {
     display: grid;

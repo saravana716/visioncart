@@ -10,7 +10,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import "./Navbar.css"
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../../firebase.config';
-import { getCategories } from '../../services/firestoreService';
+import { getCategories, getCategoryFilters } from '../../services/firestoreService';
 import MegaMenu from './MegaMenu';
 import { useWishlist } from '../../context/WishlistContext';
 import SideDrawer from '../SideDrawer/SideDrawer';
@@ -20,6 +20,7 @@ const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
+  const [categoryFilters, setCategoryFilters] = useState({}); // Cache for product-based filters
   const [user, setUser] = useState(null);
   const [categories, setCategories] = useState([]);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -108,8 +109,24 @@ const Navbar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
-    const handleMouseEnter = (category) => {
-        setActiveCategory(category);
+    const handleMouseEnter = async (category) => {
+        const categoryName = category.name;
+        
+        // If we don't have filters cached for this category, fetch them
+        if (!categoryFilters[categoryName]) {
+            // First set the active category so the menu shows (maybe with loading)
+            setActiveCategory(category);
+            
+            // Then fetch the inventory-based filters
+            const filters = await getCategoryFilters(categoryName);
+            if (filters) {
+                setCategoryFilters(prev => ({ ...prev, [categoryName]: filters }));
+                setActiveCategory({ ...category, ...filters });
+            }
+        } else {
+            // Use cached filters
+            setActiveCategory({ ...category, ...categoryFilters[categoryName] });
+        }
     };
 
     const handleMouseLeave = () => {

@@ -5,7 +5,7 @@ import Navbar from '../Components/Navbar/Navbar';
 import Footers from '../Components/Footer/Footers';
 import OurBrands from '../Components/Ourbrands/OurBrands';
 import PropCard from '../Components/PropCard/PropCard';
-import { getProductById, getProducts, getLensEnhancements } from '../services/firestoreService';
+import { getProductById, getProducts, getLensEnhancements, getCategoryDiscounts } from '../services/firestoreService';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import ReviewsSection from '../Components/Reviews/ReviewsSection';
@@ -14,11 +14,11 @@ import Recommendations from '../Components/Recommendations/Recommendations';
 import rateimg from '../assets/star.png';
 import Loader from '../Components/Loader/Loader';
 import './ProductDetails.css';
-// import Product360Viewer from '../Components/Product360Viewer/Product360Viewer';
-import ImageZoom from '../Components/ImageZoom/ImageZoom';
-// import { MdOutline360 } from "react-icons/md";
+import { MdOutline360, MdPlayCircleOutline } from "react-icons/md";
 import LensSelectionModal from '../Components/LensSelectionModal/LensSelectionModal';
 import ReviewSummaryModal from '../Components/ReviewSummaryModal/ReviewSummaryModal';
+import Product360Viewer from '../Components/Product360Viewer/Product360Viewer';
+import ImageZoom from '../Components/ImageZoom/ImageZoom';
 import ReadingGlassesPowerSelector from '../Components/ReadingGlassesPowerSelector/ReadingGlassesPowerSelector';
 
 const categoryDescriptions = {
@@ -143,26 +143,41 @@ const ProductDetails = () => {
     const [reviewData, setReviewData] = useState(null);
     const [reviewAction, setReviewAction] = useState('cart'); // 'cart' or 'buy'
     const [selectedLensData, setSelectedLensData] = useState(null);
+    const [is360Open, setIs360Open] = useState(false);
+    const [isVideoOpen, setIsVideoOpen] = useState(false);
     
     const { addItemToCart, setCartOpen, setDrawerTab } = useCart();
 
     useEffect(() => {
         const fetchProductData = async () => {
             setLoading(true);
-            const data = await getProductById(id);
+            const [data, categoryDiscounts] = await Promise.all([
+                getProductById(id),
+                getCategoryDiscounts()
+            ]);
+
             if (data) {
-                // Map Firestore fields to local state
+                const categoryDiscount = categoryDiscounts[data.category] || 0;
+                
+                // Helper to calculate price based on category discount
+                const getDynamicPrice = (originalPrice, manualOffer) => {
+                    const base = parseInt(originalPrice?.toString().replace(/[^0-9]/g, '') || '0');
+                    if (categoryDiscount > 0) {
+                        const discounted = base - (base * (categoryDiscount / 100));
+                        return `₹${Math.round(discounted)}`;
+                    }
+                    return manualOffer ? (manualOffer.toString().startsWith('₹') ? manualOffer : `₹${manualOffer}`) : (originalPrice ? (originalPrice.toString().startsWith('₹') ? originalPrice : `₹${originalPrice}`) : '₹0');
+                };
+
                 const mappedProduct = {
                     ...data,
                     mainImage: (data.photos && data.photos.length > 0) ? data.photos[0] : (data.mainImage || 'https://via.placeholder.com/600?text=No+Image'),
                     thumbnails: (data.photos && data.photos.length > 0) ? data.photos : (data.mainImage ? [data.mainImage] : ['https://via.placeholder.com/600?text=No+Image']),
                     brand: data.brand || 'Visionkart',
                     title: data.name || data.model || 'Product Details',
-                    // PRICE SYNC: Prioritize offerPrice (discounted) as the main display price
-                    price: data.offerPrice ? (data.offerPrice.toString().startsWith('₹') ? data.offerPrice : `₹${data.offerPrice}`) : (data.price ? (data.price.toString().startsWith('₹') ? data.price : `₹${data.price}`) : '₹0'),
-                    // ORIGINAL PRICE: The base MRP price (strikethrough)
+                    price: getDynamicPrice(data.price, data.offerPrice),
                     originalPrice: data.price ? (data.price.toString().startsWith('₹') ? data.price : `₹${data.price}`) : (data.originalPrice || '₹0'),
-                    discount: data.discount || (data.offerPrice ? 'SPECIAL OFFER' : '50% OFF'),
+                    discount: categoryDiscount > 0 ? `${categoryDiscount}% OFF` : (data.discount || (data.offerPrice ? 'SPECIAL OFFER' : '50% OFF')),
                     rating: data.rating || '4.5',
                     ratingCount: data.ratingCount || '0',
                     size: data.size || 'Medium',
@@ -170,13 +185,17 @@ const ProductDetails = () => {
                     category: data.category || 'Spectacles',
                     userSegment: data.category === 'Kids Collection' ? 'Kids' : 'Adults',
                     stock: data.stock !== undefined ? data.stock : 10,
-                    technicalSpecs: data.technicalSpecs || [
-                        { label: 'Brand', value: data.brand || 'Visionkart' },
-                        { label: 'Model No.', value: data.sku || 'N/A' },
-                        { label: 'Frame Type', value: data.frameType || 'Full Rim' },
-                        { label: 'Frame Shape', value: data.frameShape || 'Rectangle' },
-                        { label: 'Frame Material', value: data.frameMaterial || 'Plastic' }
-                    ]
+                    technicalSpecs: [
+                        { label: 'Brand', value: data.brand || '' },
+                        { label: 'Model No.', value: data.model || '' },
+                        { label: 'Frame Type', value: data.frameType || '' },
+                        { label: 'Frame Shape', value: data.frameShape || '' },
+                        { label: 'Frame Material', value: data.frameMaterial || '' },
+                        { label: 'Gender', value: data.gender || '' }
+                    ],
+                    features: data.feature || data.features || [],
+                    productVideo: data.videoUrl || data.productVideo || data.video || null,
+                    threesixtyImage: data.view360Url || data.threesixtyImage || data.image360 || null
                 };
                 setProduct(mappedProduct);
                 setSelectedImg(mappedProduct.mainImage);
@@ -184,19 +203,24 @@ const ProductDetails = () => {
 
                 // Fetch similar products
                 const similar = await getProducts(data.category);
-                const similarMapped = similar.filter(p => p.id !== id).slice(0, 4).map(p => ({
-                    id: p.id,
-                    img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
-                    hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
-                    title: p.name || p.title || p.productName || p.brand || "Visionkart",
+                const similarMapped = similar.filter(p => p.id !== id).slice(0, 4).map(p => {
+                    const pDiscount = categoryDiscounts[p.category] || 0;
+                    const pBase = parseInt(p.price?.toString().replace(/[^0-9]/g, '') || '0');
+                    const pFinal = pDiscount > 0 ? (pBase - (pBase * (pDiscount / 100))) : (parseInt(p.offerPrice || p.price || 0));
 
-                    rating: rateimg,
-                    ratingcount: p.ratingCount || "0",
-                    price: p.price ? (p.price.startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
-                    mrpprice: p.originalPrice || `₹${parseInt(p.price || 0) * 1.5}`,
-                    color: "",
-                    colorcount: p.colors ? p.colors.length : "1"
-                }));
+                    return {
+                        id: p.id,
+                        img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
+                        hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
+                        title: p.name || p.title || p.productName || p.brand || "Visionkart",
+                        rating: rateimg,
+                        ratingcount: p.ratingCount || "0",
+                        price: `₹${Math.round(pFinal)}`,
+                        mrpprice: p.price ? (p.price.toString().startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
+                        color: "",
+                        colorcount: p.colors ? p.colors.length : "1"
+                    };
+                });
                 setSimilarProducts(similarMapped);
 
                 // Dynamic Theme Adaptation
@@ -395,13 +419,13 @@ const ProductDetails = () => {
     
     const renderTechnicalInfo = (viewType) => (
         <div className={`info-left-col ${viewType === 'desktop' ? 'hide-on-mobile' : 'hide-on-desktop'}`}>
-            {product.category !== 'Sunglasses' && (
+            {product.technicalSpecs && product.technicalSpecs.length > 0 && (
                 <div className="technical-info-section">
                     <h2>Technical Information</h2>
                     <table className="tech-table">
                         <tbody>
                             {product.technicalSpecs
-                                .filter(spec => spec.label !== 'Model No.')
+                                .filter(spec => spec.label !== 'Model No.' && spec.value && spec.value !== 'N/A')
                                 .map((spec, idx) => (
                                     <tr key={idx}>
                                         <td>{spec.label}</td>
@@ -410,6 +434,20 @@ const ProductDetails = () => {
                             ))}
                         </tbody>
                     </table>
+                </div>
+            )}
+            
+            {(product.features && (Array.isArray(product.features) ? product.features.length > 0 : product.features.length > 0)) && (
+                <div className="product-features-section">
+                    <h2>Product Features</h2>
+                    <div className="features-list-container">
+                        {(Array.isArray(product.features) ? product.features : product.features.split(/[.,]/)).filter(f => f.trim().length > 0).map((feature, idx) => (
+                            <div key={idx} className="feature-item-row">
+                                <span className="check-icon">✓</span>
+                                <p className="feature-text">{feature.trim()}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
 
@@ -468,6 +506,20 @@ const ProductDetails = () => {
                                 <button className="wishlist-btn-float" onClick={() => toggleWishlist(product)}>
                                     {isInWishlist(id) ? <FaHeart color="#ff4d4d" /> : <FaRegHeart />}
                                 </button>
+                                
+                                <div className="media-overlay-actions">
+                                    {product.threesixtyImage && (
+                                        <button className="media-btn-mini theme-360" onClick={() => setIs360Open(true)}>
+                                            <MdOutline360 /> 360° View
+                                        </button>
+                                    )}
+                                    {product.productVideo && (
+                                        <button className="media-btn-mini theme-video" onClick={() => setIsVideoOpen(true)}>
+                                            <MdPlayCircleOutline /> Video
+                                        </button>
+                                    )}
+                                </div>
+
                                 <ImageZoom 
                                     src={selectedImg} 
                                     className="zoom-container"
@@ -611,6 +663,9 @@ const ProductDetails = () => {
                             </div>
                             <p className="delivery-status available">Delivered in 4-6 days</p>
                         </div>
+
+                        {/* Mobile view technical info */}
+                        {renderTechnicalInfo('mobile')}
                     </div>
                 </div>
 
@@ -654,11 +709,32 @@ const ProductDetails = () => {
                 data={reviewData}
                 actionType={reviewAction}
             />
-            {/* <Product360Viewer 
+            <Product360Viewer 
                 images={product.thumbnails} 
                 isOpen={is360Open} 
                 onClose={() => setIs360Open(false)} 
-            /> */}
+            />
+
+            {isVideoOpen && (
+                <div className="video-modal-overlay" onClick={() => setIsVideoOpen(false)}>
+                    <div className="video-modal-content" onClick={e => e.stopPropagation()}>
+                        <button className="video-modal-close" onClick={() => setIsVideoOpen(false)}>&times;</button>
+                        <div className="video-player-wrapper">
+                            {product.productVideo.includes('youtube.com') || product.productVideo.includes('youtu.be') ? (
+                                <iframe 
+                                    src={product.productVideo.replace('watch?v=', 'embed/').split('&')[0]} 
+                                    title="Product Video"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                ></iframe>
+                            ) : (
+                                <video src={product.productVideo} controls autoPlay></video>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

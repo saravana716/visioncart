@@ -25,17 +25,20 @@ export const getProducts = async (categoryName = null, filters = {}, sortBy = 'l
 
     // Apply additional filters dynamically
     Object.keys(filters).forEach(key => {
-      const val = filters[key];
+      let val = filters[key];
+      let dbKey = key;
+
+      // MAP FRONTEND KEYS TO DATABASE KEYS
+      if (dbKey === 'frameStyle') dbKey = 'frameType';
+
       if (val) {
-        if (key === 'priceRange' && Array.isArray(val) && val.length > 0) {
+        if (dbKey === 'priceRange' && Array.isArray(val) && val.length > 0) {
             // Price filtering is best handled by creating a compound condition or local filtering
-            // For simplicity and correctness with multiple ranges, we'll map them
-            // Note: Firestore doesn't support multiple range inequalities on different values well, 
-            // but we can handle 'in' for discrete fields or just filter the price field.
+            // Note: Firestore doesn't support multiple range inequalities on different values well.
         } else if (Array.isArray(val) && val.length > 0) {
-          q = query(q, where(key, 'in', val));
+          q = query(q, where(dbKey, 'in', val));
         } else if (typeof val === 'string') {
-          q = query(q, where(key, '==', val));
+          q = query(q, where(dbKey, '==', val));
         }
       }
     });
@@ -173,6 +176,54 @@ export const getCategoryByName = async (name) => {
     return null;
   }
 };
+
+/**
+ * Aggregates unique filter values from products in a specific category.
+ * This powers the Self-Populating MegaMenu.
+ */
+export const getCategoryFilters = async (categoryName) => {
+  try {
+    const q = query(collection(db, 'products'), where('category', '==', categoryName));
+    const querySnapshot = await getDocs(q);
+    const products = querySnapshot.docs.map(doc => doc.data());
+
+    const filters = {
+      gender: new Set(),
+      frameType: new Set(),
+      frameShape: new Set(),
+      frameMaterial: new Set(),
+      lensType: new Set(),
+      brand: new Set(),
+      frameColor: new Set(),
+      frameSize: new Set()
+    };
+
+    products.forEach(p => {
+      if (p.gender) filters.gender.add(p.gender);
+      if (p.frameType) filters.frameType.add(p.frameType);
+      if (p.frameShape) filters.frameShape.add(p.frameShape);
+      if (p.frameMaterial) filters.frameMaterial.add(p.frameMaterial);
+      if (p.lensType) filters.lensType.add(p.lensType);
+      if (p.brand) filters.brand.add(p.brand);
+      if (p.frameColor) filters.frameColor.add(p.frameColor);
+      if (p.frameSize) filters.frameSize.add(p.frameSize);
+    });
+
+    return {
+      gender: Array.from(filters.gender).sort(),
+      frameType: Array.from(filters.frameType).sort(),
+      frameShape: Array.from(filters.frameShape).sort(),
+      frameMaterial: Array.from(filters.frameMaterial).sort(),
+      lensType: Array.from(filters.lensType).sort(),
+      brand: Array.from(filters.brand).sort(),
+      frameColor: Array.from(filters.frameColor).sort(),
+      frameSize: Array.from(filters.frameSize).sort()
+    };
+  } catch (error) {
+    console.error("Error aggregating category filters: ", error);
+    return null;
+  }
+};
 export const getLensEnhancements = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, 'lensEnhancements'));
@@ -184,6 +235,61 @@ export const getLensEnhancements = async () => {
     console.error("Error fetching lens enhancements: ", error);
     return [];
   }
+};
+
+export const getCategoryDiscounts = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'categoryDiscounts'));
+    const discounts = {};
+    querySnapshot.docs.forEach(doc => {
+      const data = doc.data();
+      if (data.categoryName) {
+        discounts[data.categoryName] = data.discountPercent;
+      }
+    });
+    return discounts;
+  } catch (error) {
+    console.error("Error fetching category discounts: ", error);
+    return {};
+  }
+};
+
+/**
+ * Applies global category discounts to a list of products.
+ * If a category has a discount defined, it overrides the product's manual offerPrice.
+ */
+export const applyCategoryDiscounts = (products, categoryDiscounts) => {
+  if (!products || !categoryDiscounts) return products;
+  
+  return products.map(p => {
+    const discountPercent = categoryDiscounts[p.category] || 0;
+    const basePrice = parseInt(p.price?.toString().replace(/[^0-9]/g, '') || '0');
+    
+    if (discountPercent > 0) {
+      const calculatedPrice = basePrice - (basePrice * (discountPercent / 100));
+      return {
+        ...p,
+        sellingPrice: Math.round(calculatedPrice),
+        displayPrice: `₹${Math.round(calculatedPrice)}`,
+        originalPrice: p.price ? (p.price.toString().startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
+        discountLabel: `${discountPercent}% OFF`,
+        hasCategoryDiscount: true
+      };
+    }
+    
+    // Fallback to manual offerPrice if no category discount
+    const manualOffer = parseInt(p.offerPrice?.toString().replace(/[^0-9]/g, '') || '0');
+    const finalPrice = manualOffer > 0 ? manualOffer : basePrice;
+
+    return {
+      ...p,
+      sellingPrice: finalPrice,
+      displayPrice: `₹${finalPrice}`,
+      originalPrice: p.price ? (p.price.toString().startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
+      discountLabel: p.discount || (manualOffer > 0 ? 'SPECIAL OFFER' : ''),
+      hasCategoryDiscount: false
+    };
+  });
 };
 
 export const addToCart = async (userId, cartData) => {

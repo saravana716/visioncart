@@ -3,7 +3,7 @@ import "./TrendyCollection.css"
 import PropCard from '../PropCard/PropCard'
 import rateimg from "../../assets/star.png"
 import colorimg from "../../assets/color.png"
-import { getTrendyProducts } from '../../services/firestoreService';
+import { getTrendyProducts, getCategoryDiscounts, applyCategoryDiscounts } from '../../services/firestoreService';
 import { useNavigate } from 'react-router-dom';
 import Skeleton from '../Skeleton/Skeleton';
 
@@ -14,9 +14,13 @@ const TrendyCollection = ({ title = "Premium Optical Frames", categoryName = nul
 
     useEffect(() => {
         const fetchTrending = async () => {
-            const data = await getTrendyProducts(categoryName);
-            // Just take first 10 for the home page sections
-            setTrendingProducts(data.slice(0, 10));
+            const [products, discounts] = await Promise.all([
+                getTrendyProducts(categoryName),
+                getCategoryDiscounts()
+            ]);
+            
+            const discountedProducts = applyCategoryDiscounts(products, discounts);
+            setTrendingProducts(discountedProducts.slice(0, 10));
             setLoading(false);
         };
         fetchTrending();
@@ -26,8 +30,8 @@ const TrendyCollection = ({ title = "Premium Optical Frames", categoryName = nul
         id: p.id,
         brand: p.brand || "Visionkart",
         title: p.name || p.title || p.productName || p.brand || "Visionkart",
-        price: (p.price && p.price.toString().startsWith('₹')) ? p.price : `₹${p.price}`,
-        mrpprice: p.originalPrice || (p.price ? (parseInt(p.price) * 1.5).toString() : "0"),
+        price: p.displayPrice,
+        mrpprice: p.originalPrice,
         img: p.photos ? p.photos[0] : (p.mainImage || ''),
         hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
         rating: rateimg,

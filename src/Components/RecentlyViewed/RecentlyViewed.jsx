@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getProductById } from '../../services/firestoreService';
+import { getProductById, getCategoryDiscounts, applyCategoryDiscounts } from '../../services/firestoreService';
 import PropCard from '../PropCard/PropCard';
 import Skeleton from '../Skeleton/Skeleton';
 import rateimg from "../../assets/star.png";
@@ -25,12 +25,16 @@ const RecentlyViewed = ({ excludeId }) => {
 
                 const productsToFetch = filteredIds.slice(0, 4);
                 const productPromises = productsToFetch.map(id => getProductById(id));
-                const fetchedProducts = await Promise.all(productPromises);
+                const [fetchedProducts, discounts] = await Promise.all([
+                    Promise.all(productPromises),
+                    getCategoryDiscounts()
+                ]);
 
                 const validProducts = fetchedProducts.filter(p => p !== null && p !== undefined);
+                const discountedProducts = applyCategoryDiscounts(validProducts, discounts);
                 
-                // Sort them back into the original order of filteredIds
-                const mappedProducts = validProducts
+                // Sort them back into the original order
+                const mappedProducts = discountedProducts
                     .sort((a, b) => productsToFetch.indexOf(a.id) - productsToFetch.indexOf(b.id));
                 
                 setViewedProducts(mappedProducts.map(p => ({
@@ -39,8 +43,8 @@ const RecentlyViewed = ({ excludeId }) => {
                     img: p.photos ? p.photos[0] : (p.mainImage || ''),
                     hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,
                     title: p.name || p.title || p.productName || p.brand || "Visionkart",
-                    price: (p.price && p.price.toString().startsWith('₹')) ? p.price : `₹${p.price}`,
-                    mrpprice: p.originalPrice || (p.price ? (parseInt(p.price) * 1.5).toString() : "0"),
+                    price: p.displayPrice,
+                    mrpprice: p.originalPrice,
                     ratingcount: p.ratingCount || "0",
                     rating: rateimg,
                     color: colorimg,

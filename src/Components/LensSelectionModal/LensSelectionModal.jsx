@@ -116,6 +116,17 @@ const LensSelectionModal = ({
         });
     };
 
+    // Auto-clear enhancements if Lens Type changes to avoid incompatible combinations
+    useEffect(() => {
+        setSelectedEnhancements([]);
+    }, [selectedLensType]);
+
+    // DERIVED STATE: Filter enhancements based on selected category from DB
+    const filteredEnhancements = (lensEnhancements || []).filter(enh => {
+        const cat = enh.lensCategory || 'Single Vision';
+        return cat === selectedLensType;
+    });
+
     const calculateTotalPrice = () => {
         if (!product) return '₹0';
         const basePriceInt = parseInt(product.price.toString().replace(/[^0-9]/g, '') || '0');
@@ -700,17 +711,23 @@ const LensSelectionModal = ({
                                 </>
                             ) : null}
 
-                            <h2 className="modal-title-small">Add Lens Enhancements</h2>
+                            <h2 className="modal-title-small">Add Lens Enhancements for {selectedLensType}</h2>
                             <div className="enhancements-grid">
-                                {lensEnhancements.map((enh) => (
-                                    <label key={enh.id} className={selectedEnhancements.find(e => e.id === enh.id) ? 'active' : ''}>
-                                        <input 
-                                            type="checkbox" 
-                                            checked={!!selectedEnhancements.find(e => e.id === enh.id)}
-                                            onChange={() => toggleEnhancement(enh)}
-                                        /> {enh.name} {enh.price > 0 && `(+₹${enh.price})`}
-                                    </label>
-                                ))}
+                                {filteredEnhancements.length > 0 ? (
+                                    filteredEnhancements.map((enh) => (
+                                        <label key={enh.id} className={selectedEnhancements.find(e => e.id === enh.id) ? 'active' : ''}>
+                                            <input 
+                                                type="checkbox" 
+                                                checked={!!selectedEnhancements.find(e => e.id === enh.id)}
+                                                onChange={() => toggleEnhancement(enh)}
+                                            /> {enh.name} {enh.price > 0 && `(+₹${enh.price})`}
+                                        </label>
+                                    ))
+                                ) : (
+                                    <div className="no-enhancements-notice">
+                                        <p>No specific enhancements available for <strong>{selectedLensType}</strong> in our inventory yet.</p>
+                                    </div>
+                                )}
                             </div>
 
                             {product.category === 'Reading Glasses' ? (
