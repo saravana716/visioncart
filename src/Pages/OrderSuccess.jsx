@@ -24,6 +24,11 @@ const OrderSuccess = () => {
         if (!orderId) return;
 
         const processFulfillment = async () => {
+            // WAKE UP PING: Force Render backend to wake up so the email listener starts
+            try {
+                fetch("https://visioncardbackend.onrender.com/email/smtp").catch(() => {});
+            } catch (e) {}
+
             try {
                 const orderData = await getOrderById(orderId);
                 if (!orderData) throw new Error("Order not found");
