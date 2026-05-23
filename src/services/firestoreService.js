@@ -352,14 +352,32 @@ export const removeFromCart = async (cartItemId) => {
 
 export const placeOrder = async (userId, orderData) => {
   try {
-    const ordersRef = collection(db, 'orders');
-    const docRef = await addDoc(ordersRef, {
+    // Generate Custom Order ID: VK-YYMMDD-XXX
+    const today = new Date();
+    const yy = String(today.getFullYear()).slice(-2);
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const datePrefix = `${dd}${mm}${yy}`; // e.g. 230526
+
+    // Get number of orders today for the sequence
+    const q = query(
+      collection(db, 'orders'),
+      where('orderIdPrefix', '==', datePrefix)
+    );
+    const snapshot = await getDocs(q);
+    const sequence = String(snapshot.size + 1).padStart(3, '0');
+    
+    const customOrderId = `VK-${datePrefix}-${sequence}`;
+
+    const orderRef = doc(db, 'orders', customOrderId);
+    await setDoc(orderRef, {
       userId,
       ...orderData,
+      orderIdPrefix: datePrefix, // Save for querying today's count
       status: 'Ordered',
       createdAt: serverTimestamp()
     });
-    return { id: docRef.id, success: true };
+    return { id: customOrderId, success: true };
   } catch (error) {
     console.error("Error placing order: ", error);
     return { success: false, error };

@@ -64,12 +64,14 @@
     font-size: var(--fs-3xl);
     margin-bottom: 8px;
     font-weight: 700;
+    color: #ffffff !important;
 }
 
 .hero-text p {
     font-size: 1.1rem;
-    opacity: 0.85;
+    opacity: 0.9;
     margin-bottom: 15px;
+    color: #ffffff !important;
 }
 
 .member-badge {
