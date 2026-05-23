@@ -58,7 +58,7 @@ const Footers = () => {
                     <li onClick={() => navigate('/')}>Home</li>
                     <li onClick={() => navigate('/about')}>About</li>
                     <li onClick={() => navigate('/products')}>Products</li>
-                    <li onClick={() => navigate('/blogs')}>Blogs</li>
+                    {/* <li onClick={() => navigate('/blogs')}>Blogs</li> */}
                     <li onClick={() => navigate('/contact')}>Contact</li>
                 </ul>
             </div>
