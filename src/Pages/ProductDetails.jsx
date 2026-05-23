@@ -157,6 +157,7 @@ const ProductDetails = () => {
             ]);
 
             if (data) {
+                console.log("Fetched raw product data from Firestore:", data);
                 // Use centralized discount service (pass single product in array)
                 const [discountedProduct] = applyCategoryDiscounts([data], categoryDiscounts);
                 
@@ -188,6 +189,7 @@ const ProductDetails = () => {
                     productVideo: data.videoUrl || data.productVideo || data.video || null,
                     threesixtyImage: data.view360Url || data.threesixtyImage || data.image360 || null
                 };
+                console.log("Mapped product details set to state:", mappedProduct);
                 setProduct(mappedProduct);
                 setSelectedImg(mappedProduct.mainImage);
                 setProductFor(mappedProduct.userSegment);

@@ -41,11 +41,38 @@ const LensSelectionModal = ({
     const [showPowerSelectorModal, setShowPowerSelectorModal] = useState(null);
     const [clPowerTab, setClPowerTab] = useState('negative');
 
-    const contactLensPacks = [
-        { id: '3-lens-box', name: 'Standard Pack', price: 299, oldPrice: 364, description: '3 lens/box', features: 'Daily Wear Comfort', color: '#001f54' },
-        { id: '6-lens-box', name: 'Value Pack', price: 549, oldPrice: 728, description: '6 lens/box', features: 'Maximum hydration', color: '#00d285' }
-    ];
-    const [selectedClPack, setSelectedClPack] = useState('3-lens-box');
+    const contactLensColors = ['#001f54', '#00d285', '#7b2cbf', '#ff007f'];
+    const isSolution = product && product.category === 'Contact Lenses' && Array.isArray(product.contactLensVariants) && product.contactLensVariants.length > 0;
+    const contactLensPacks = (product && product.category === 'Contact Lenses')
+        ? (isSolution
+            ? product.contactLensVariants.map((v, idx) => ({
+                id: v.id || v.title || `variant-${idx}`,
+                name: v.title || `${v.volumeMl || v.volume || ''}ml Bottle`,
+                price: parseInt(v.price || 0),
+                oldPrice: v.oldPrice ? parseInt(v.oldPrice) : null,
+                description: `Volume: ${v.volumeMl || v.volume || ''} ml`,
+                features: v.features || 'Sterile multi-purpose solution',
+                color: contactLensColors[idx % contactLensColors.length]
+              }))
+            : (Array.isArray(product.contactLensPacks) && product.contactLensPacks.length > 0
+                ? product.contactLensPacks.map((pkg, idx) => ({
+                    id: pkg.id || pkg.title || `pack-${idx}`,
+                    name: `${pkg.title || 'Standard'} Pack`,
+                    price: parseInt(pkg.price || 0),
+                    oldPrice: pkg.oldPrice ? parseInt(pkg.oldPrice) : null,
+                    description: pkg.quantity || '',
+                    features: pkg.features || (idx === 0 ? 'Daily Wear Comfort' : 'Maximum hydration'),
+                    color: contactLensColors[idx % contactLensColors.length]
+                  }))
+                : [
+                    { id: '3-lens-box', name: 'Standard Pack', price: 299, oldPrice: 364, description: '3 lens/box', features: 'Daily Wear Comfort', color: '#001f54' },
+                    { id: '6-lens-box', name: 'Value Pack', price: 549, oldPrice: 728, description: '6 lens/box', features: 'Maximum hydration', color: '#00d285' }
+                  ]
+              )
+          )
+        : [];
+
+    const [selectedClPack, setSelectedClPack] = useState(contactLensPacks[0]?.id || '');
     const [spectaclesPowerOption, setSpectaclesPowerOption] = useState('later');
     const [specRightSelected, setSpecRightSelected] = useState(true);
     const [specLeftSelected, setSpecLeftSelected] = useState(true);
@@ -57,7 +84,9 @@ const LensSelectionModal = ({
     };
 
     const getDynamicPackPrice = (pkgId) => {
-        const basePriceInt = parseInt(product.price.toString().replace(/[^0-9]/g, '') || '0');
+        const pack = contactLensPacks.find(p => p.id === pkgId);
+        if (pack) return pack.price;
+        const basePriceInt = parseInt(product?.price?.toString().replace(/[^0-9]/g, '') || '0');
         if (pkgId === '6-lens-box') return basePriceInt;
         if (pkgId === '3-lens-box') return Math.round(basePriceInt * 0.6);
         return basePriceInt;
@@ -70,6 +99,14 @@ const LensSelectionModal = ({
         window.addEventListener('close-all-modals', handleCloseAll);
         return () => window.removeEventListener('close-all-modals', handleCloseAll);
     }, [isOpen, onClose]);
+
+    useEffect(() => {
+        if (contactLensPacks && contactLensPacks.length > 0) {
+            if (!selectedClPack || !contactLensPacks.some(p => p.id === selectedClPack)) {
+                setSelectedClPack(contactLensPacks[0].id);
+            }
+        }
+    }, [product, contactLensPacks]);
 
     // Prescription Value Arrays
     const sphValues = [
@@ -151,7 +188,9 @@ const LensSelectionModal = ({
 
         if (product.category === 'Contact Lenses') {
             const packPrice = getDynamicPackPrice(selectedClPack);
-            const totalBoxes = (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0);
+            const totalBoxes = isSolution
+                ? clRightBoxes
+                : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0);
             subtotal = packPrice * totalBoxes;
             lensPrice = subtotal;
             framePrice = 0; // No frame for contact lenses
@@ -234,7 +273,7 @@ const LensSelectionModal = ({
             }
         }
 
-        if (isContactLens && contactLensPowerOption === 'manual') {
+        if (isContactLens && !isSolution && contactLensPowerOption === 'manual') {
             if (clRightEyeSelected && !clRightSph) {
                 const { default: toast } = await import('react-hot-toast');
                 toast.error('Please select Spherical power for Right eye');
@@ -257,12 +296,20 @@ const LensSelectionModal = ({
 
         if (isContactLens) {
             const pack = contactLensPacks.find(p => p.id === selectedClPack);
-            specifications.push(
-                { label: 'Lens Type', value: 'Contact Lens' },
-                { label: 'Box Qty (R)', value: clRightEyeSelected ? clRightBoxes.toString() : '0' },
-                { label: 'Box Qty (L)', value: clLeftEyeSelected ? clLeftBoxes.toString() : '0' },
-                { label: 'Pack Type', value: pack?.name || 'Standard' }
-            );
+            if (isSolution) {
+                specifications.push(
+                    { label: 'Product Type', value: 'Contact Lens Solution' },
+                    { label: 'Quantity', value: clRightBoxes.toString() },
+                    { label: 'Volume', value: pack?.description || '' }
+                );
+            } else {
+                specifications.push(
+                    { label: 'Lens Type', value: 'Contact Lens' },
+                    { label: 'Box Qty (R)', value: clRightEyeSelected ? clRightBoxes.toString() : '0' },
+                    { label: 'Box Qty (L)', value: clLeftEyeSelected ? clLeftBoxes.toString() : '0' },
+                    { label: 'Pack Type', value: pack?.name || 'Standard' }
+                );
+            }
         } else if (isReadingGlasses) {
             specifications.push(
                 { label: 'Lens', value: 'Reading Glass' },
@@ -323,13 +370,17 @@ const LensSelectionModal = ({
             enhancements: isReadingGlasses || isContactLens ? [] : selectedEnhancements,
             lensType: isContactLens ? 'Contact Lens' : (isReadingGlasses ? 'Reading Glass' : selectedLensType),
             usage: selectedUsage,
-            prescriptionType: isReadingGlasses ? 'Reading Glass Power' : (isContactLens ? (contactLensPowerOption === 'manual' ? 'Manual Contact Lens Power' : 'Submit Later') : (isSpectacles ? (spectaclesPowerOption === 'manual' ? 'Manual Prescription' : 'Submit Later') : prescriptionType)),
+            prescriptionType: isReadingGlasses ? 'Reading Glass Power' : (isContactLens ? (isSolution ? 'Not Applicable' : (contactLensPowerOption === 'manual' ? 'Manual Contact Lens Power' : 'Submit Later')) : (isSpectacles ? (spectaclesPowerOption === 'manual' ? 'Manual Prescription' : 'Submit Later') : prescriptionType)),
             patientDetails: (isSpectacles && spectaclesPowerOption === 'manual') ? {
                 name: userInfo.name,
                 phone: userInfo.phone,
                 prescriptionFile: prescriptionUrl || userInfo.previewUrl || userInfo.fileName
             } : null,
-            prescription: isContactLens ? {
+            prescription: isContactLens ? (isSolution ? {
+                isSolution: true,
+                quantity: clRightBoxes,
+                pack: contactLensPacks.find(p => p.id === selectedClPack)
+            } : {
                 rightSelected: clRightEyeSelected,
                 leftSelected: clLeftEyeSelected,
                 rightPower: clRightSph || null,
@@ -337,7 +388,7 @@ const LensSelectionModal = ({
                 rightBoxes: clRightBoxes,
                 leftBoxes: clLeftBoxes,
                 pack: contactLensPacks.find(p => p.id === selectedClPack)
-            } : (isReadingGlasses ? { readingPower } : (isSpectacles ? {
+            }) : (isReadingGlasses ? { readingPower } : (isSpectacles ? {
                 ...prescription,
                 userInfo: (spectaclesPowerOption === 'manual') ? {
                     name: userInfo.name,
@@ -424,7 +475,7 @@ const LensSelectionModal = ({
                 <div className="modal-content">
                     {product.category === 'Contact Lenses' ? (
                         <div className="contact-lenses-section">
-                            <h2 className="modal-title-small">Lenses per Pack</h2>
+                            <h2 className="modal-title-small">{isSolution ? "Select Volume / Option" : "Lenses per Pack"}</h2>
                             <div className="packages-grid cl-packages">
                                 {contactLensPacks.map(pkg => (
                                     <div 
@@ -450,114 +501,137 @@ const LensSelectionModal = ({
                                 ))}
                             </div>
 
-                            <div className="cl-power-type-container">
-                                <div className="cl-power-desc">
-                                    <span className="p-label">Power</span>
-                                    <span className="p-label">Type</span>
-                                </div>
-                                <button className="cl-power-btn active">With Power</button>
-                            </div>
-
-                            <div className="compact-power-flow main-selector cl-power-options">
-                                <div 
-                                    className={`power-option-card ${contactLensPowerOption === 'manual' ? 'active' : ''}`}
-                                    onClick={() => setContactLensPowerOption('manual')}
-                                >
-                                    <div className="power-radio"></div>
-                                    <div className="power-info">
-                                        <strong>Enter power Manually</strong>
-                                    </div>
-                                </div>
-                                <div 
-                                    className={`power-option-card ${contactLensPowerOption === 'later' ? 'active' : ''}`}
-                                    onClick={() => setContactLensPowerOption('later')}
-                                >
-                                    <div className="power-radio"></div>
-                                    <div className="power-info">
-                                        <strong>I will submit power later</strong>
-                                    </div>
-                                </div>
-
-                                {contactLensPowerOption === 'later' && (
-                                    <a href="tel:+919344116571" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
-                                        <div className="banner-left">
-                                            <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
-                                            <p>We will call you to get your power!</p>
+                            {isSolution ? (
+                                <div className="solution-qty-container animate-in">
+                                    <div className="cl-power-row solution-qty-row">
+                                        <div className="cl-row-label">
+                                            <span className="main-label">Quantity</span>
+                                            <span className="sub-label">Select number of bottles/packs</span>
                                         </div>
-                                        <div className="banner-right">
-                                            <div className="lens-graphic-pair">
-                                                <div className="lens-graphic positive">
-                                                    <span>+</span>
-                                                    <div className="lens-shape"></div>
+                                        <div className="cl-dropdown-col qty-select-col">
+                                            <select 
+                                                className="cl-select-premium cl-select" 
+                                                value={clRightBoxes} 
+                                                onChange={e => setClRightBoxes(parseInt(e.target.value))}
+                                                style={{ paddingRight: '2.5rem' }}
+                                            >
+                                                {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="cl-power-type-container">
+                                        <div className="cl-power-desc">
+                                            <span className="p-label">Power</span>
+                                            <span className="p-label">Type</span>
+                                        </div>
+                                        <button className="cl-power-btn active">With Power</button>
+                                    </div>
+
+                                    <div className="compact-power-flow main-selector cl-power-options">
+                                        <div 
+                                            className={`power-option-card ${contactLensPowerOption === 'manual' ? 'active' : ''}`}
+                                            onClick={() => setContactLensPowerOption('manual')}
+                                        >
+                                            <div className="power-radio"></div>
+                                            <div className="power-info">
+                                                <strong>Enter power Manually</strong>
+                                            </div>
+                                        </div>
+                                        <div 
+                                            className={`power-option-card ${contactLensPowerOption === 'later' ? 'active' : ''}`}
+                                            onClick={() => setContactLensPowerOption('later')}
+                                        >
+                                            <div className="power-radio"></div>
+                                            <div className="power-info">
+                                                <strong>I will submit power later</strong>
+                                            </div>
+                                        </div>
+
+                                        {contactLensPowerOption === 'later' && (
+                                            <a href="tel:+919344116571" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
+                                                <div className="banner-left">
+                                                    <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
+                                                    <p>We will call you to get your power!</p>
                                                 </div>
-                                                <div className="lens-graphic negative">
-                                                    <span>-</span>
-                                                    <div className="lens-shape"></div>
+                                                <div className="banner-right">
+                                                    <div className="lens-graphic-pair">
+                                                        <div className="lens-graphic positive">
+                                                            <span>+</span>
+                                                            <div className="lens-shape"></div>
+                                                        </div>
+                                                        <div className="lens-graphic negative">
+                                                            <span>-</span>
+                                                            <div className="lens-shape"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        )}
+
+                                        {contactLensPowerOption === 'manual' && (
+                                            <div className="cl-manual-power-grid animate-in">
+                                                <div className="eye-selection-row">
+                                                    <label className="cl-checkbox-label">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={clRightEyeSelected} 
+                                                            onChange={(e) => setClRightEyeSelected(e.target.checked)} 
+                                                        /> 
+                                                        <span className="custom-checkmark">✓</span>
+                                                        RIGHT (OD)
+                                                    </label>
+                                                    <label className="cl-checkbox-label">
+                                                        <input 
+                                                            type="checkbox" 
+                                                            checked={clLeftEyeSelected} 
+                                                            onChange={(e) => setClLeftEyeSelected(e.target.checked)} 
+                                                        /> 
+                                                        <span className="custom-checkmark">✓</span>
+                                                        LEFT (OS)
+                                                    </label>
+                                                </div>
+                                                
+                                                <div className="cl-power-row no-border">
+                                                    <div className="cl-row-label">
+                                                        <span className="main-label">Spherical</span>
+                                                        <span className="sub-label">SPH</span>
+                                                    </div>
+                                                    <div className="cl-dropdown-col">
+                                                        <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('right')} disabled={!clRightEyeSelected}>
+                                                            {clRightSph || 'Select'} <span className="arrow">▼</span>
+                                                        </button>
+                                                    </div>
+                                                    <div className="cl-dropdown-col">
+                                                        <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('left')} disabled={!clLeftEyeSelected}>
+                                                            {clLeftSph || 'Select'} <span className="arrow">▼</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div className="cl-power-row">
+                                                    <div className="cl-row-label">
+                                                        <span className="main-label">No. of Boxes</span>
+                                                        <span className="sub-label">3 lens / box</span>
+                                                    </div>
+                                                    <div className="cl-dropdown-col">
+                                                        <select className="cl-select-premium" disabled={!clRightEyeSelected} value={clRightBoxes} onChange={e => setClRightBoxes(parseInt(e.target.value))}>
+                                                            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                                                        </select>
+                                                    </div>
+                                                    <div className="cl-dropdown-col">
+                                                        <select className="cl-select-premium" disabled={!clLeftEyeSelected} value={clLeftBoxes} onChange={e => setClLeftBoxes(parseInt(e.target.value))}>
+                                                            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </a>
-                                )}
-
-                                {contactLensPowerOption === 'manual' && (
-                                    <div className="cl-manual-power-grid animate-in">
-                                        <div className="eye-selection-row">
-                                            <label className="cl-checkbox-label">
-                                                <input 
-                                                    type="checkbox" 
-                                                    checked={clRightEyeSelected} 
-                                                    onChange={(e) => setClRightEyeSelected(e.target.checked)} 
-                                                /> 
-                                                <span className="custom-checkmark">✓</span>
-                                                RIGHT (OD)
-                                            </label>
-                                            <label className="cl-checkbox-label">
-                                                <input 
-                                                    type="checkbox" 
-                                                    checked={clLeftEyeSelected} 
-                                                    onChange={(e) => setClLeftEyeSelected(e.target.checked)} 
-                                                /> 
-                                                <span className="custom-checkmark">✓</span>
-                                                LEFT (OS)
-                                            </label>
-                                        </div>
-                                        
-                                        <div className="cl-power-row no-border">
-                                            <div className="cl-row-label">
-                                                <span className="main-label">Spherical</span>
-                                                <span className="sub-label">SPH</span>
-                                            </div>
-                                            <div className="cl-dropdown-col">
-                                                <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('right')} disabled={!clRightEyeSelected}>
-                                                    {clRightSph || 'Select'} <span className="arrow">▼</span>
-                                                </button>
-                                            </div>
-                                            <div className="cl-dropdown-col">
-                                                <button className="cl-dropdown-btn" onClick={() => setShowPowerSelectorModal('left')} disabled={!clLeftEyeSelected}>
-                                                    {clLeftSph || 'Select'} <span className="arrow">▼</span>
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        <div className="cl-power-row">
-                                            <div className="cl-row-label">
-                                                <span className="main-label">No. of Boxes</span>
-                                                <span className="sub-label">3 lens / box</span>
-                                            </div>
-                                            <div className="cl-dropdown-col">
-                                                <select className="cl-select-premium" disabled={!clRightEyeSelected} value={clRightBoxes} onChange={e => setClRightBoxes(parseInt(e.target.value))}>
-                                                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                                                </select>
-                                            </div>
-                                            <div className="cl-dropdown-col">
-                                                <select className="cl-select-premium" disabled={!clLeftEyeSelected} value={clLeftBoxes} onChange={e => setClLeftBoxes(parseInt(e.target.value))}>
-                                                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
-                                                </select>
-                                            </div>
-                                        </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
+                                </>
+                            )}
                         </div>
                     ) : (
                         <>
@@ -905,7 +979,12 @@ const LensSelectionModal = ({
                         )}
 
                         {product.category === 'Contact Lenses' && (
-                            <div className="p-line"><span>{contactLensPacks.find(p => p.id === selectedClPack)?.name} ({(clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes):</span> <span>₹{calculatePriceDetails().subtotal}</span></div>
+                            <div className="p-line">
+                                <span>
+                                    {contactLensPacks.find(p => p.id === selectedClPack)?.name} ({isSolution ? `${clRightBoxes} Qty` : `${(clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes`}):
+                                </span>
+                                <span>₹{calculatePriceDetails().subtotal}</span>
+                            </div>
                         )}
                         
                         {product.category !== 'Contact Lenses' && selectedEnhancements.map(enh => (
