@@ -54,7 +54,7 @@ const Refund = () => {
             text: "For questions or concerns regarding this policy, please contact us at:",
             list: [
                 "Email: visionkart.onlinestore@gmail.com",
-                "Phone: +91 93441 16571",
+                "Phone: +91 78713 33302",
                 "Address: 19, Thiruthaangal Road, Near Senaithalaivar kalyana Mandapam, Sivakasi-626123"
             ]
         }

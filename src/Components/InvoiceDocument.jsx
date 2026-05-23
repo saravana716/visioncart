@@ -63,7 +63,7 @@ const InvoiceDocument = ({ order, id }) => {
                         <p className="org-name">VisionKart Optical</p>
                         <p>19,Thiruthangal Road, Near Senaithalaivar kalyana Mandapam</p>
                         <p>Sivakasi - 626123, Tamil Nadu</p>
-                        <p>Phone: +91 93441 16571</p>
+                        <p>Phone: +91 78713 33302</p>
                         <p>Email: visionkart.onlinestore@gmail.com</p>
                         <p><strong>GSTIN: 33CKRPK8245C1Z1</strong></p>
                     </div>

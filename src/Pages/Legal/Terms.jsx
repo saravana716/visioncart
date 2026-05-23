@@ -72,7 +72,7 @@ const Terms = () => {
             text: "If you have any questions or concerns about these Terms & Conditions, please contact us at:",
             list: [
                 "Email: visionkart.onlinestore@gmail.com",
-                "Phone: +91 93441 16571",
+                "Phone: +91 78713 33302",
                 "Address: 19, Thiruthaangal Road, Near Senaithalaivar kalyana Mandapam, Sivakasi-626123"
             ]
         }

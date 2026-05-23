@@ -56,7 +56,7 @@ const Privacy = () => {
             text: "In accordance with the Information Technology Act, 2000 and applicable rules, we are committed to addressing any concerns or feedback you may have regarding this Privacy Policy or the handling of your personal information. For any privacy-related questions, concerns, or feedback, please contact us at:",
             list: [
                 "Email: visionkart.onlinestore@gmail.com",
-                "Phone: +91 93441 16571",
+                "Phone: +91 78713 33302",
                 "Address: 19, Thiruthaangal Road, Near Senaithalaivar kalyana Mandapam, Sivakasi-626123"
             ]
         }
