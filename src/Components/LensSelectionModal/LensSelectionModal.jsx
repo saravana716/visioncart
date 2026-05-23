@@ -50,6 +50,19 @@ const LensSelectionModal = ({
     const [specRightSelected, setSpecRightSelected] = useState(true);
     const [specLeftSelected, setSpecLeftSelected] = useState(true);
 
+    const LENS_PRICE_MAPPING = {
+        'Single Vision': 0,
+        'Bifocal': 0,
+        'Progressive': 0
+    };
+
+    const getDynamicPackPrice = (pkgId) => {
+        const basePriceInt = parseInt(product.price.toString().replace(/[^0-9]/g, '') || '0');
+        if (pkgId === '6-lens-box') return basePriceInt;
+        if (pkgId === '3-lens-box') return Math.round(basePriceInt * 0.6);
+        return basePriceInt;
+    };
+
     useEffect(() => {
         const handleCloseAll = () => {
             if (isOpen) onClose();
@@ -127,23 +140,45 @@ const LensSelectionModal = ({
         return cat === selectedLensType;
     });
 
-    const calculateTotalPrice = () => {
-        if (!product) return '₹0';
+    const calculatePriceDetails = () => {
+        if (!product) return { subtotal: 0, tax: 0, total: 0, gstRate: 12, lensPrice: 0, framePrice: 0, addOns: 0 };
+        
         const basePriceInt = parseInt(product.price.toString().replace(/[^0-9]/g, '') || '0');
-        
+        let subtotal = 0;
+        let lensPrice = 0;
+        let addOns = 0;
+        let framePrice = basePriceInt;
+
         if (product.category === 'Contact Lenses') {
-            const packPrice = contactLensPacks.find(p => p.id === selectedClPack)?.price || basePriceInt;
+            const packPrice = getDynamicPackPrice(selectedClPack);
             const totalBoxes = (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0);
-            return `₹${packPrice * totalBoxes}`;
+            subtotal = packPrice * totalBoxes;
+            lensPrice = subtotal;
+            framePrice = 0; // No frame for contact lenses
+        } else {
+            lensPrice = LENS_PRICE_MAPPING[selectedLensType] || 0;
+            addOns = selectedEnhancements.reduce((sum, enh) => sum + (parseInt(enh.price || 0)), 0);
+            subtotal = framePrice + lensPrice + addOns;
         }
-        
-        const extras = selectedEnhancements.reduce((sum, enh) => sum + (parseInt(enh.price || 0)), 0);
-        
-        if (product.category === 'Spectacles') {
-            return `₹${basePriceInt + extras}`;
-        }
-        
-        return `₹${basePriceInt + extras}`;
+
+        const gstRate = (product.category === 'Sunglasses') ? 0.18 : 0.12;
+        const tax = Math.round(subtotal * gstRate);
+        const total = subtotal + tax;
+
+        return {
+            subtotal,
+            tax,
+            total,
+            gstRate: Math.round(gstRate * 100),
+            lensPrice,
+            framePrice,
+            addOns
+        };
+    };
+
+    const calculateTotalPrice = () => {
+        const { subtotal } = calculatePriceDetails();
+        return `₹${subtotal}`;
     };
 
     const handlePrescriptionTypeChange = (type) => {
@@ -281,6 +316,9 @@ const LensSelectionModal = ({
             category: product.category,
             specifications: specifications,
             totalPrice: calculateTotalPrice(),
+            framePrice: calculatePriceDetails().framePrice,
+            lensPrice: calculatePriceDetails().lensPrice,
+            addOns: calculatePriceDetails().addOns,
             sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || product.id,
             enhancements: isReadingGlasses || isContactLens ? [] : selectedEnhancements,
             lensType: isContactLens ? 'Contact Lens' : (isReadingGlasses ? 'Reading Glass' : selectedLensType),
@@ -855,15 +893,38 @@ const LensSelectionModal = ({
                     )}
 
                     <div className="price-summary-box">
-                        <div className="p-line"><span>Frame Price:</span> <span>{product.price}</span></div>
-                        {product.category === 'Spectacles' && (
-                            <div className="p-line"><span>{selectedLensType} Lens:</span> <span>₹0</span></div>
+                        {product.category !== 'Contact Lenses' && (
+                            <div className="p-line"><span>Frame Price:</span> <span>{product.price}</span></div>
                         )}
+                        
+                        {product.category !== 'Contact Lenses' && (
+                            <div className="p-line">
+                                <span>Select Lens Type: {selectedLensType}</span>
+                                <span>{calculatePriceDetails().lensPrice > 0 ? `₹${calculatePriceDetails().lensPrice}` : 'Included'}</span>
+                            </div>
+                        )}
+
                         {product.category === 'Contact Lenses' && (
-                            <div className="p-line"><span>{contactLensPacks.find(p => p.id === selectedClPack)?.name} ({(clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes):</span> <span>₹{contactLensPacks.find(p => p.id === selectedClPack)?.price} / box</span></div>
+                            <div className="p-line"><span>{contactLensPacks.find(p => p.id === selectedClPack)?.name} ({(clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes):</span> <span>₹{calculatePriceDetails().subtotal}</span></div>
                         )}
-                        <div className="p-line"><span>Add-ons:</span> <span>₹{selectedEnhancements.reduce((sum, e) => sum + (parseInt(e.price || 0)), 0)}</span></div>
-                        <div className="p-total-line"><span>Total Price:</span> <span>{calculateTotalPrice()}</span></div>
+                        
+                        {product.category !== 'Contact Lenses' && selectedEnhancements.map(enh => (
+                            <div className="p-line" key={enh.id}>
+                                <span>{enh.name}:</span>
+                                <span>₹{enh.price}</span>
+                            </div>
+                        ))}
+                        
+                        {/* GST and Total Price Details */}
+                        <div className="p-line gst-line">
+                            <span>GST ({calculatePriceDetails().gstRate}%):</span>
+                            <span>+ ₹{calculatePriceDetails().tax}</span>
+                        </div>
+                        
+                        <div className="p-total-line">
+                            <span>Total Price:</span> 
+                            <span>₹{calculatePriceDetails().total}</span>
+                        </div>
                     </div>
 
                     <div className="modal-footer-btns">

@@ -24,7 +24,7 @@ const MegaMenu = ({ category: categoryObj, onClose }) => {
 
     // FORCED DYNAMIC: Identify all array fields in the category document
     const dynamicColumns = {};
-    const keysToIgnore = ['id', 'name', 'photos', 'thumbnails', 'brands', 'subcategories', 'createdAt', 'image', 'icon', 'description', 'imageUrl', 'bannerImage'];
+    const keysToIgnore = ['id', 'name', 'photos', 'thumbnails', 'brands', 'subcategories', 'createdAt', 'image', 'icon', 'description', 'imageUrl', 'bannerImage', 'brand', 'frameShape', 'frameMaterial', 'shape', 'material'];
 
     // 1. Check if the category object has any arrays (including aggregated ones from products)
     Object.keys(categoryObj || {}).forEach(key => {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import "./Footer.css"
 import { FaInstagram, FaFacebookF, FaWhatsapp } from "react-icons/fa";
@@ -6,10 +6,28 @@ import logo from "../../assets/vision_cart_logo.png"
 
 const Footers = () => {
   const navigate = useNavigate();
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const openWhatsApp = () => {
     window.open("https://wa.me/919344116571", "_blank");
   };
+
+  const handleFloatingClick = (e) => {
+    e.stopPropagation();
+    setIsChatOpen(prev => !prev);
+  };
+
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      setIsChatOpen(false);
+    };
+    if (isChatOpen) {
+      window.addEventListener('click', handleOutsideClick);
+    }
+    return () => {
+      window.removeEventListener('click', handleOutsideClick);
+    };
+  }, [isChatOpen]);
 
   return (
     <footer className='footer-container'>
@@ -75,15 +93,53 @@ const Footers = () => {
                 <div className='social-icons'>
                     <div className='social-icon-wrapper'><FaInstagram /></div>
                     <div className='social-icon-wrapper'><FaFacebookF /></div>
-                    <div className='social-icon-wrapper' onClick={openWhatsApp}><FaWhatsapp /></div>
+                    <div className='social-icon-wrapper' onClick={(e) => {
+                        e.stopPropagation();
+                        setIsChatOpen(prev => !prev);
+                        const container = document.querySelector('.whatsapp-widget-container');
+                        if (container) {
+                            container.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                        }
+                    }}><FaWhatsapp /></div>
                 </div>
             </div>
         </div>
 
-        {/* Fixed Floating WhatsApp Button */}
-        <div className="fixed-whatsapp-btn" onClick={openWhatsApp} title="Chat with us on WhatsApp">
-            <FaWhatsapp />
-            <span className="tooltip-text">Chat with us</span>
+        {/* Fixed Floating WhatsApp Button with Chat Widget */}
+        <div className="whatsapp-widget-container" onClick={(e) => e.stopPropagation()}>
+            {isChatOpen && (
+                <div className="whatsapp-chat-popup">
+                    <div className="chat-header">
+                        <img src={logo} alt="VisionKart Support" className="chat-avatar" />
+                        <div className="chat-header-info">
+                            <h4>VisionKart Support</h4>
+                            <span className="online-status"><span className="dot"></span>Online</span>
+                        </div>
+                        <button className="chat-close-btn" onClick={(e) => { e.stopPropagation(); setIsChatOpen(false); }}>×</button>
+                    </div>
+                    <div className="chat-body">
+                        <p className="chat-msg">Hello there! 👋</p>
+                        <p className="chat-msg text-bold">How can we help you today? Chat with us on WhatsApp for instant assistance!</p>
+                    </div>
+                    <div className="chat-footer">
+                        <button className="chat-send-btn" onClick={() => { openWhatsApp(); setIsChatOpen(false); }}>
+                            <FaWhatsapp style={{ marginRight: '8px', fontSize: '18px' }} />
+                            Start Chat
+                        </button>
+                    </div>
+                </div>
+            )}
+            
+            <div className="whatsapp-button-row">
+                {!isChatOpen && (
+                    <div className="whatsapp-tooltip-pill" onClick={handleFloatingClick}>
+                        Chat with us
+                    </div>
+                )}
+                <div className={`fixed-whatsapp-btn ${isChatOpen ? 'active' : ''}`} onClick={handleFloatingClick} title="Chat with us on WhatsApp">
+                    <FaWhatsapp />
+                </div>
+            </div>
         </div>
 
         {/* Copyright Section */}

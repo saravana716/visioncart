@@ -27,7 +27,7 @@
     display: flex;
     padding: 20px 0;
     width: max-content;
-    animation: scroll-brands 100s linear infinite;
+    animation: scroll-brands 60s linear infinite;
     gap: 30px;
 }
 
@@ -45,6 +45,7 @@
 }
 
 .brand-card {
+    width: 220px;
     height: 100px;
     flex-shrink: 0;
     display: flex;

@@ -19,7 +19,7 @@
 
 .mega-menu-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     max-width: 1200px;
     margin: 0 auto;
     gap: 40px;

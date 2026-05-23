@@ -145,6 +145,27 @@ const ReviewSummaryModal = ({ isOpen, onClose, onConfirm, data, actionType }) =>
                                     <h4>Order Value Breakdown</h4>
                                 </div>
                                 <div className="price-breakdown-list">
+                                    {data.framePrice > 0 && (
+                                        <div className="price-row">
+                                            <span>Frame Price</span>
+                                            <p>₹{data.framePrice.toLocaleString()}</p>
+                                        </div>
+                                    )}
+                                    {data.lensPrice > 0 && (
+                                        <div className="price-row highlight-row">
+                                            <span>{data.lensType || 'Selected'} Lens</span>
+                                            <p>+ ₹{data.lensPrice.toLocaleString()}</p>
+                                        </div>
+                                    )}
+                                    {data.addOns > 0 && (
+                                        <div className="price-row">
+                                            <span>Selected Add-ons</span>
+                                            <p>+ ₹{data.addOns.toLocaleString()}</p>
+                                        </div>
+                                    )}
+                                    
+                                    <div className="price-divider"></div>
+                                    
                                     <div className="price-row">
                                         <span>Subtotal (Excl. Tax)</span>
                                         <p>₹{data.priceBreakdown.subtotal.toLocaleString()}</p>

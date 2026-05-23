@@ -141,7 +141,7 @@ const Navbar = () => {
                 <li onClick={() => navigate('/')} className={location.pathname === '/' ? 'active' : ''}>Home</li>
                 <li onClick={() => navigate('/about')} className={location.pathname === '/about' ? 'active' : ''}>About</li>
                 <li onClick={() => navigate('/products')} className={location.pathname === '/products' ? 'active' : ''}>Products</li>
-                <li onClick={() => navigate('/blogs')} className={location.pathname === '/blogs' ? 'active' : ''}>Blogs</li>
+                {/* <li onClick={() => navigate('/blogs')} className={location.pathname === '/blogs' ? 'active' : ''}>Blogs</li> */}
                 <li onClick={() => navigate('/contact')} className={location.pathname === '/contact' ? 'active' : ''}>Contact</li>
             </div>
             <div className='icons'>

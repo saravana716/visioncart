@@ -12,8 +12,11 @@ const OurBrands = () => {
         };
     });
 
-    // We only need a double set for a seamless CSS loop
-    const displayBrands = [...originalBrands, ...originalBrands];
+    // Duplicate the brands multiple times to ensure the track spans beyond the screen width
+    const displayBrands = [
+        ...originalBrands, ...originalBrands, ...originalBrands,
+        ...originalBrands, ...originalBrands, ...originalBrands
+    ];
 
     return (
         <div className='our-brands-section'>

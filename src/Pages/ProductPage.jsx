@@ -4,7 +4,7 @@ import Navbar from '../Components/Navbar/Navbar';
 import OurBrands from '../Components/Ourbrands/OurBrands';
 import Footers from '../Components/Footer/Footers';
 import PropCard from '../Components/PropCard/PropCard';
-import { getProducts, getCategoryByName, getCategoryDiscounts, getCategoryFilters } from '../services/firestoreService';
+import { getProducts, getCategoryByName, getCategoryDiscounts, getCategoryFilters, applyCategoryDiscounts } from '../services/firestoreService';
 import { IoIosSearch } from "react-icons/io";
 import rateimg from '../assets/star.png';
 import colorimg from '../assets/color.png';
@@ -120,18 +120,7 @@ const ProductPage = () => {
                 getCategoryDiscounts()
             ]);
 
-            const mappedData = data.map(p => {
-                const discount = categoryDiscounts[p.category] || 0;
-                const base = parseInt(p.price?.toString().replace(/[^0-9]/g, '') || '0');
-                const final = discount > 0 ? (base - (base * (discount / 100))) : (parseInt(p.offerPrice || p.price || 0));
-
-                return {
-                    ...p,
-                    price: `₹${Math.round(final)}`,
-                    originalPrice: p.price ? (p.price.toString().startsWith('₹') ? p.price : `₹${p.price}`) : '₹0',
-                    discountLabel: discount > 0 ? `${discount}% OFF` : (p.discount || 'Special Offer')
-                };
-            });
+            const mappedData = applyCategoryDiscounts(data, categoryDiscounts);
 
             setFilteredProducts(mappedData);
             setTimeout(() => setLoading(false), 500);
@@ -184,8 +173,8 @@ const ProductPage = () => {
             id: p.id,
             brand: p.brand,
             title: p.name || p.model || p.brand,
-            price: p.displayPrice || `₹${p.offerPrice || p.price || '0'}`,
-            mrpprice: p.originalPrice || `₹${p.price || '0'}`,
+            price: p.displayPrice,
+            mrpprice: p.originalPrice,
             discount: p.discountLabel,
             img: (p.photos && p.photos.length > 0) ? p.photos[0] : (p.mainImage || 'https://via.placeholder.com/400?text=No+Image'),
             hoverImg: (p.photos && p.photos.length > 1) ? p.photos[1] : null,

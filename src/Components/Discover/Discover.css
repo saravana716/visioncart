@@ -49,7 +49,7 @@
     min-width: 0; /* Important for nested flex containers to shrink properly */
     overflow: hidden; /* Hide scrollbar/overflow content */
     position: relative;
-    /* background-color: red; REMOVED */
+    /* background-color: red; */
 }
 
 .carousel-track {
@@ -85,6 +85,7 @@
     margin: 0 10px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     transition: transform 0.3s ease;
+    gap:10px
 }
 
 .discoverright .DiscoverCard:hover {
@@ -97,14 +98,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: white; /* Premium light blue-grey */
+    background-color: yellow; /* Premium light blue-grey */
     border-radius: 8px;
     overflow: hidden;
 }
 
 .cardimg img{
-    width: 85%; /* Slightly smaller for better padding */
-    height: 85%;
+    width: 100%; /* Slightly smaller for better padding */
+    height: 100%;
     object-fit: contain;
     transition: transform 0.4s ease;
 }

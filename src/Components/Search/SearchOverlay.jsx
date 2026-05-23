@@ -73,7 +73,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                                     <div className="result-info">
                                         <p className="res-brand">{p.brand}</p>
                                         <p className="res-name">{p.name}</p>
-                                        <p className="res-price">₹{p.price}</p>
+                                        <p className="res-price">{p.price}</p>
                                     </div>
                                     <FaArrowRight className="res-arrow" />
                                 </div>

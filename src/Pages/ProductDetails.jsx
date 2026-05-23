@@ -306,6 +306,9 @@ const ProductDetails = () => {
         };
 
         baseData.priceBreakdown = calculatePriceBreakdown(product.price);
+        baseData.framePrice = parseInt(product.price.toString().replace(/[^0-9]/g, '') || '0');
+        baseData.lensPrice = 0;
+        baseData.addOns = 0;
 
         // If user already selected a lens in the modal, merge that data
         if (selectedLensData) {
@@ -553,7 +556,7 @@ const ProductDetails = () => {
 
 
 
-                        <div className="virtual-tryon-banner-premium" onClick={() => window.open('/try-on', '_blank')}>
+                        <div className="virtual-tryon-banner-premium" onClick={() => navigate(`/virtual-try-on?id=${id}`)}>
                             <div className="tryon-content">
                                 <span className="tryon-badge">LIVE AR</span>
                                 <h3>3D Virtual Try-On</h3>
@@ -699,7 +702,7 @@ const ProductDetails = () => {
                 actionType={reviewAction}
             />
             <Product360Viewer 
-                images={product.thumbnails} 
+                images={[selectedImg]} 
                 isOpen={is360Open} 
                 onClose={() => setIs360Open(false)} 
             />

@@ -48,16 +48,18 @@
     align-items: center;
     gap: 15px;
     transition: transform 0.3s ease;
-    padding: 20px;
-    width: 250px; /* Fixed width for better control */
+    padding: 20px 8px; /* Reduced left/right padding to reduce gaps */
+    width: 220px; /* Adjusted width to pack cards tighter */
 }
 
 @media (max-width: 768px) {
     .usercard {
-        width: 180px; /* Smaller on mobile */
+        width: 160px; /* Smaller card width on mobile */
+        padding: 10px 5px; /* Reduced horizontal padding on mobile */
+        gap: 10px;
     }
     .userslider-section .carousel-track {
-        animation-duration: 80s; /* Slower on mobile too */
+        animation-duration: 80s;
     }
 }
 
@@ -107,7 +109,7 @@
     }
 
     .usercard {
-        padding: 10px;
+        padding: 10px 5px; /* Unified reduced padding */
         gap: 10px;
     }
 

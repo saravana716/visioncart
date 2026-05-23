@@ -10,7 +10,11 @@ const Product360Viewer = ({ images, isOpen, onClose }) => {
     const startPos = useRef({ x: 0, y: 0 });
     const lastRotation = useRef({ x: 0, y: 0 });
 
-    const mainImage = images?.[0] || '';
+    const imageCount = images?.length || 0;
+    // Calculate which image to show based on horizontal rotation
+    // We map the Y rotation (horizontal drag) to the image index
+    const currentImageIndex = imageCount > 0 ? (Math.abs(Math.floor(rotation.y / 10)) % imageCount) : 0;
+    const currentImage = images?.[currentImageIndex] || '';
 
     useEffect(() => {
         const appContainer = document.querySelector('.App');
@@ -50,7 +54,7 @@ const Product360Viewer = ({ images, isOpen, onClose }) => {
         const diffY = currentY - startPos.current.y;
         
         // sensitivity
-        const sensitivity = 0.5;
+        const sensitivity = 0.8; // Increased for better switching
         
         setRotation({
             y: lastRotation.current.y + diffX * sensitivity,
@@ -62,11 +66,11 @@ const Product360Viewer = ({ images, isOpen, onClose }) => {
         setIsDragging(false);
     };
 
-    if (!isOpen || !mainImage) return null;
+    if (!isOpen) return null;
 
     return ReactDOM.createPortal(
-        <div className="product-360-overlay">
-            <div className="product-360-modal reveal-in">
+        <div className="product-360-overlay" onClick={onClose}>
+            <div className="product-360-modal reveal-in" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <div className="title-area">
                         <MdOutline360 className="icon-360" />
@@ -96,7 +100,7 @@ const Product360Viewer = ({ images, isOpen, onClose }) => {
                             }}
                         >
                             <img 
-                                src={mainImage} 
+                                src={currentImage} 
                                 alt="Product 3D" 
                                 draggable="false"
                             />

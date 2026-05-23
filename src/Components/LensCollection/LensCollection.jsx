@@ -11,17 +11,17 @@ import lens6 from '../../assets/Lens/6.png';
 import lens7 from '../../assets/Lens/7.png';
 
 const lensData = [
-  { id: 1, image: lens1, name: 'Standard Single Vision', description: 'Clear vision for everyday use' },
-  { id: 2, image: lens2, name: 'Blue Cut Lenses', description: 'Protect eyes from digital screens' },
-  { id: 3, image: lens3, name: 'Anti-Glare Lenses', description: 'Reduce harsh reflections & glare' },
-  { id: 4, image: lens4, name: 'Bifocal Lenses', description: 'Seamless near & distant vision' },
-  { id: 5, image: lens5, name: 'Progressive Lenses', description: 'Smooth multi-distance clarity' },
-  { id: 6, image: lens6, name: 'Photochromic Lenses', description: 'Adapts intelligently to sunlight' },
-  { id: 7, image: lens7, name: 'Premium High-Index', description: 'Ultra-thin for high prescriptions' }
+  { id: 1, image: lens1, name: 'Standard Single Vision' },
+  { id: 2, image: lens2, name: 'Blue Cut Lenses' },
+  { id: 3, image: lens3, name: 'Anti-Glare Lenses' },
+  { id: 4, image: lens4, name: 'Bifocal Lenses' },
+  { id: 5, image: lens5, name: 'Progressive Lenses' },
+  { id: 6, image: lens6, name: 'Photochromic Lenses' },
+  { id: 7, image: lens7, name: 'Premium High-Index' }
 ];
 
 const LensCollection = () => {
-  // Doubling the array for a seamless loop scroll on mobile
+  // Doubling the array for a seamless loop scroll on mobile and desktop
   const displayLenses = [...lensData, ...lensData];
 
   return (
@@ -35,8 +35,19 @@ const LensCollection = () => {
         <div className="lens-grid carousel-track">
           {displayLenses.map((lens, index) => (
             <div key={`${lens.id}-${index}`} className={`lens-card ${index >= lensData.length ? 'duplicate' : ''}`}>
-              <div className="lens-image-wrapper">
-                <img src={lens.image} alt={lens.name} className="lens-image" />
+              <div className="lens-image-wrapper" style={{ width: '100%', height: '280px', padding: 0, margin: 0, overflow: 'hidden' }}>
+                <img 
+                  src={lens.image} 
+                  alt={lens.name} 
+                  className="lens-image" 
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover', 
+                    display: 'block',
+                    transform: 'scale(2.0)'
+                  }} 
+                />
               </div>
             </div>
           ))}
