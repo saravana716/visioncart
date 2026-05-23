@@ -551,7 +551,7 @@ const LensSelectionModal = ({
                                         </div>
 
                                         {contactLensPowerOption === 'later' && (
-                                            <a href="tel:+919344116571" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
+                                            <a href="https://wa.me/917871333302" target="_blank" rel="noopener noreferrer" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
                                                 <div className="banner-left">
                                                     <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
                                                     <p>We will call you to get your power!</p>
@@ -754,7 +754,7 @@ const LensSelectionModal = ({
                                                                 />
                                                             </div>
                                                             <div className="cant-find-power">
-                                                                <p>Can't find your power, Call <a href="tel:+919344116571">+91 93441 16571</a></p>
+                                                                <p>Can't find your power? Chat with us on <a href="https://wa.me/917871333302" target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
                                                             </div>
                                                             <div className="prescription-upload-area">
                                                                 <label className="upload-box">
@@ -799,7 +799,7 @@ const LensSelectionModal = ({
 
                                         {spectaclesPowerOption === 'later' && (
                                             <div className="spec-manual-power-entry animate-in">
-                                                <a href="tel:+919344116571" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
+                                                <a href="https://wa.me/917871333302" target="_blank" rel="noopener noreferrer" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
                                                     <div className="banner-left">
                                                         <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
                                                         <p>We will call you to get your power!</p>
@@ -919,7 +919,7 @@ const LensSelectionModal = ({
                                                                     />
                                                                 </div>
                                                                 <div className="cant-find-power">
-                                                                    <p>Can't find your power, Call <a href="tel:+919344116571">+91 93441 16571</a></p>
+                                                                    <p>Can't find your power? Chat with us on <a href="https://wa.me/917871333302" target="_blank" rel="noopener noreferrer">WhatsApp</a></p>
                                                                 </div>
                                                                 <div className="prescription-upload-area">
                                                                     <label className="upload-box">

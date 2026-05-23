@@ -37,7 +37,7 @@ const Checkout = () => {
     const [loading, setLoading] = useState(false);
     const [savedAddresses, setSavedAddresses] = useState([]);
     const [showSavedAddresses, setShowSavedAddresses] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState('upi_qr'); // Default to QR workaround
+    const [paymentMethod, setPaymentMethod] = useState('ccavenue'); // Default to CCAvenue
     const [couponInput, setCouponInput] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState(null);
     const [isFulfilling, setIsFulfilling] = useState(false);
@@ -721,56 +721,29 @@ const Checkout = () => {
                             <div className="checkout-section fade-in">
                                 <h2><FaCreditCard /> Select Payment Method</h2>
                                 <div className="payment-options">
-                                    <div 
-                                        className={`payment-method-card ${paymentMethod === 'upi_qr' ? 'active' : ''}`}
-                                        onClick={() => setPaymentMethod('upi_qr')}
-                                    >
-                                        <div className="card-selector">
-                                            <div className="radio-circle"></div>
-                                            <div className="card-info">
-                                                <span className="method-name">UPI PhonePe / GPay (Scan QR)</span>
-                                                <span className="method-desc">Fast & Secure via any UPI App</span>
-                                            </div>
-                                        </div>
-                                        <div className="method-icon">
-                                            <FaCheckCircle style={{color: '#673ab7'}} />
+                                {/* Only CCAvenue payment method */}
+                                <div 
+                                    className={`payment-method-card active`}
+                                    onClick={() => setPaymentMethod('ccavenue')}
+                                >
+                                    <div className="card-selector">
+                                        <div className="radio-circle active"></div>
+                                        <div className="card-info">
+                                            <span className="method-name">CCAvenue Secure Payment</span>
+                                            <span className="method-desc">Credit/Debit Cards, NetBanking, UPI & More</span>
                                         </div>
                                     </div>
-
-                                    <div 
-                                        className={`payment-method-card ${paymentMethod === 'ccavenue' ? 'active' : ''}`}
-                                        onClick={() => setPaymentMethod('ccavenue')}
-                                    >
-                                        <div className="card-selector">
-                                            <div className="radio-circle"></div>
-                                            <div className="card-info">
-                                                <span className="method-name">CCAvenue Secure Payment</span>
-                                                <span className="method-desc">Credit/Debit Cards, NetBanking</span>
-                                            </div>
-                                        </div>
-                                        <div className="method-icon">
-                                            <FaCreditCard />
-                                        </div>
+                                    <div className="method-icon">
+                                        <FaCreditCard />
                                     </div>
                                 </div>
+                                </div>
 
-                                {paymentMethod === 'upi_qr' && (
-                                    <div className="qr-payment-container fade-in">
-                                        <div className="qr-instructions">
-                                            <h3>Scan this QR to Pay ₹{total.toLocaleString()}</h3>
-                                            <p>Scan with PhonePe, Google Pay, PayTM or any UPI app</p>
-                                        </div>
-                                        <div className="qr-image-wrapper">
-                                            <img src={qrScannerImg} alt="Payment QR Code" className="payment-qr-image" />
-                                            <div className="qr-scan-badge">Scan & Pay</div>
-                                        </div>
-                                    </div>
-                                )}
 
                                 <div className="checkout-btns">
                                     <button className="checkout-back-btn" onClick={() => setStep(1)}>Back</button>
                                     <button className="checkout-place-btn" onClick={handlePlaceOrder} disabled={loading}>
-                                        {loading ? 'Processing...' : paymentMethod === 'upi_qr' ? 'Confirm Order' : `Pay ₹${total.toLocaleString()}`}
+                                        {loading ? 'Processing...' : `Pay ₹${total.toLocaleString()}`}
                                     </button>
                                 </div>
                             </div>

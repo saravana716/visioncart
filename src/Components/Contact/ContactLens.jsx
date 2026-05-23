@@ -35,14 +35,14 @@ const ContactLens = () => {
                         className='DiscoverCard' 
                         key={data.id || index} 
                         style={{cursor: 'pointer'}}
-                        onClick={() => navigate(`/products?category=${data.name}`)}
+                        onClick={() => navigate(`/products?category=Contact Lenses&subcategory=${encodeURIComponent(data.name)}`)}
                     >
                         <div className='cardimg'>
                             <img src={data.imageUrl} alt={data.name} />
                         </div>
                         <button onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/products?category=${data.name}`);
+                            navigate(`/products?category=Contact Lenses&subcategory=${encodeURIComponent(data.name)}`);
                         }}>{data.name}</button>
                     </div>
                 ))}

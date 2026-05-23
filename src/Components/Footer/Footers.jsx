@@ -9,7 +9,7 @@ const Footers = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const openWhatsApp = () => {
-    window.open("https://wa.me/919344116571", "_blank");
+    window.open("https://wa.me/917871333302", "_blank");
   };
 
   const handleFloatingClick = (e) => {
