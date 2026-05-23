@@ -19,14 +19,32 @@ const Cart = () => {
         const code = couponCode.toUpperCase();
         try {
             const couponData = await getCoupon(code);
+            console.log('🎟️ Coupon Response from Firestore:', couponData);
             if (couponData) {
-                let disc = 0;
-                if (couponData.type === 'flat') {
-                    disc = couponData.value;
-                } else if (couponData.type === 'percent') {
-                    disc = Math.round(total * (couponData.value / 100));
+                const today = new Date();
+                const expiry = new Date(couponData.expiryDate);
+                expiry.setHours(23, 59, 59, 999);
+
+                if (!couponData.active) {
+                    toast.error("This coupon is no longer active.");
+                    return;
                 }
-                
+                if (expiry < today) {
+                    toast.error("This coupon has expired.");
+                    return;
+                }
+                if (subtotal < (couponData.minOrderAmount || 0)) {
+                    toast.error(`Minimum order of ₹${couponData.minOrderAmount} required.`);
+                    return;
+                }
+
+                let disc = 0;
+                if (couponData.discountType === 'percentage') {
+                    disc = Math.round(subtotal * (couponData.discountValue / 100));
+                } else if (couponData.discountType === 'flat') {
+                    disc = couponData.discountValue;
+                }
+
                 setDiscount(disc);
                 setAppliedCoupon(code);
                 toast.success(`Coupon Applied! ₹${disc} Off`);
@@ -167,6 +185,12 @@ const Cart = () => {
                                 <span>Estimated GST (18%)</span>
                                 <span>₹{tax.toLocaleString()}</span>
                             </div>
+                            {discount > 0 && (
+                                <div className="summary-line" style={{ color: '#22c55e', fontWeight: '600' }}>
+                                    <span>Coupon Discount ({appliedCoupon})</span>
+                                    <span>- ₹{discount.toLocaleString()}</span>
+                                </div>
+                            )}
                             <div className="summary-line">
                                 <span>Shipping</span>
                                 <span className="free-shipping">FREE</span>
