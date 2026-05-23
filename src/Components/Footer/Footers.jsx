@@ -92,7 +92,7 @@ const Footers = () => {
                 <h3>Connect & Follow</h3>
                 <div className='social-icons'>
                     <div className='social-icon-wrapper' onClick={() => window.open('https://www.instagram.com/visionkart.onlinestore/', '_blank')} style={{ cursor: 'pointer' }}><FaInstagram /></div>
-                    <div className='social-icon-wrapper'><FaFacebookF /></div>
+                    <div className='social-icon-wrapper' onClick={() => window.open('https://www.facebook.com/profile.php?id=61570766005925', '_blank')} style={{ cursor: 'pointer' }}><FaFacebookF /></div>
                     <div className='social-icon-wrapper' onClick={(e) => {
                         e.stopPropagation();
                         setIsChatOpen(prev => !prev);
