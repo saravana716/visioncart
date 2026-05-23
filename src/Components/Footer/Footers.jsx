@@ -91,7 +91,7 @@ const Footers = () => {
             <div className='footer-column social-column'>
                 <h3>Connect & Follow</h3>
                 <div className='social-icons'>
-                    <div className='social-icon-wrapper'><FaInstagram /></div>
+                    <div className='social-icon-wrapper' onClick={() => window.open('https://www.instagram.com/visionkart.onlinestore/', '_blank')} style={{ cursor: 'pointer' }}><FaInstagram /></div>
                     <div className='social-icon-wrapper'><FaFacebookF /></div>
                     <div className='social-icon-wrapper' onClick={(e) => {
                         e.stopPropagation();
