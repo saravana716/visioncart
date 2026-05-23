@@ -313,7 +313,7 @@ section {
     background: #FAFAFA;
 }
 
-.lens-image img {
+.vision-image img {
     width: 100%;
     max-height: 600px;
     object-fit: cover;
@@ -561,7 +561,7 @@ section {
         max-width: 320px;
     }
     .lens-text { order: 1; }
-    .lens-image { order: 2; }
+    .vision-image { order: 2; }
     .vision-sub-desc { margin-top: 0; }
 }
 

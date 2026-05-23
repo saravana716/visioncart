@@ -149,7 +149,7 @@ const About = () => {
                             expanding our product offerings to meet evolving customer needs.
                         </p>
                         </div>
-                        <div className="lens-image scroll-reveal delay-1">
+                        <div className="vision-image scroll-reveal delay-1">
                             <img src={craftsmanshipImg} alt="VisionKart Future Vision" />
                         </div>
                     </div>

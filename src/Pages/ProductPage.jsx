@@ -17,6 +17,7 @@ import bannerReading from '../assets/categoryimage/3.png';
 import bannerComputer from '../assets/categoryimage/4.png';
 import bannerKids from '../assets/categoryimage/5.png';
 import bannerContact from '../assets/categoryimage/6.png';
+import productBanner from '../assets/productbanner.png';
 
 const categoryImages = {
     'Spectacles': bannerComputer,
@@ -91,14 +92,12 @@ const ProductPage = () => {
 
     useEffect(() => {
         const fetchCategoryData = async () => {
-            if (category) {
-                const [config, filters] = await Promise.all([
-                    getCategoryByName(category),
-                    getCategoryFilters(category)
-                ]);
-                setCategoryConfig(config);
-                setDynamicFilters(filters);
-            }
+            const [config, filters] = await Promise.all([
+                category ? getCategoryByName(category) : Promise.resolve(null),
+                getCategoryFilters(category)
+            ]);
+            setCategoryConfig(config);
+            setDynamicFilters(filters);
         };
         fetchCategoryData();
     }, [category]);
@@ -212,7 +211,7 @@ const ProductPage = () => {
             <div className="product-banner-wrapper">
                 <img 
                     className="product-banner" 
-                    src={categoryImages[category] || categoryConfig?.imageUrl || categoryConfig?.image || categoryConfig?.bannerImage || bannerSpectacles}
+                    src={categoryImages[category] || categoryConfig?.imageUrl || categoryConfig?.image || categoryConfig?.bannerImage || productBanner}
                     alt={`${category} Banner`}
                 />
             </div>
@@ -427,7 +426,7 @@ const ProductPage = () => {
                             )}
 
                             {/* Price Range */}
-                            <div className="filter-group">
+                            {/* <div className="filter-group">
                                 <div className="filter-title" onClick={() => toggleFilter('priceRange')}>
                                     <span>Price Range</span>
                                     <span className={`arrow ${openFilters.priceRange ? 'open' : ''}`}>▾</span>
@@ -450,7 +449,7 @@ const ProductPage = () => {
                                         ))}
                                     </div>
                                 )}
-                            </div>
+                            </div> */}
                         </div>
 
                         {/* Desktop Sidebar Footer */}

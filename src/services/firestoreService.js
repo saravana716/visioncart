@@ -30,6 +30,9 @@ export const getProducts = async (categoryName = null, filters = {}, sortBy = 'l
 
       // MAP FRONTEND KEYS TO DATABASE KEYS
       if (dbKey === 'frameStyle') dbKey = 'frameType';
+      if (dbKey === 'subcategory' && categoryName === 'Contact Lenses') {
+        dbKey = 'contactLensSubcategory';
+      }
 
       if (val) {
         if (dbKey === 'priceRange' && Array.isArray(val) && val.length > 0) {
@@ -183,7 +186,10 @@ export const getCategoryByName = async (name) => {
  */
 export const getCategoryFilters = async (categoryName) => {
   try {
-    const q = query(collection(db, 'products'), where('category', '==', categoryName));
+    let q = query(collection(db, 'products'));
+    if (categoryName) {
+      q = query(q, where('category', '==', categoryName));
+    }
     const querySnapshot = await getDocs(q);
     const products = querySnapshot.docs.map(doc => doc.data());
 
