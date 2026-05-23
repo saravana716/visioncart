@@ -635,29 +635,29 @@ const LensSelectionModal = ({
                         </div>
                     ) : (
                         <>
-                            <h2 className="modal-title-small">Select Lens Type</h2>
-                            <div className="lens-type-grid">
-                                <div className={`lens-type-item ${selectedLensType === 'Single Vision' ? 'active' : ''}`} onClick={() => setSelectedLensType('Single Vision')}>
-                                    <div className="icon">👁️</div>
-                                    <p>Single Vision</p>
-                                    <span>Distance | Near Vision</span>
-                                </div>
-                                <div className={`lens-type-item ${selectedLensType === 'Progressive' ? 'active' : ''}`} onClick={() => setSelectedLensType('Progressive')}>
-                                    <div className="icon">🔄</div>
-                                    <p>Progressive</p>
-                                    <span>Near & Far Vision</span>
-                                </div>
-                                <div className={`lens-type-item ${selectedLensType === 'Bifocal' ? 'active' : ''}`} onClick={() => setSelectedLensType('Bifocal')}>
-                                    <div className="icon">👓</div>
-                                    <p>Bifocal</p>
-                                    <span>Dual Vision</span>
-                                </div>
-                                 {/* <div className={`lens-type-item ${selectedLensType === 'Anti-Power' ? 'active' : ''}`} onClick={() => setSelectedLensType('Anti-Power')}>
-                                    <div className="icon">⚙️</div>
-                                    <p>Anti-Power</p>
-                                    <span>Fashion Lenses</span>
-                                </div> */}
-                            </div>
+                            {/* Hide lens type selector for Reading Glasses */}
+                            {product.category !== 'Reading Glasses' && (
+                                <>
+                                    <h2 className="modal-title-small">Select Lens Type</h2>
+                                    <div className="lens-type-grid">
+                                        <div className={`lens-type-item ${selectedLensType === 'Single Vision' ? 'active' : ''}`} onClick={() => setSelectedLensType('Single Vision')}>
+                                            <div className="icon">👁️</div>
+                                            <p>Single Vision</p>
+                                            <span>Distance | Near Vision</span>
+                                        </div>
+                                        <div className={`lens-type-item ${selectedLensType === 'Progressive' ? 'active' : ''}`} onClick={() => setSelectedLensType('Progressive')}>
+                                            <div className="icon">🔄</div>
+                                            <p>Progressive</p>
+                                            <span>Near & Far Vision</span>
+                                        </div>
+                                        <div className={`lens-type-item ${selectedLensType === 'Bifocal' ? 'active' : ''}`} onClick={() => setSelectedLensType('Bifocal')}>
+                                            <div className="icon">👓</div>
+                                            <p>Bifocal</p>
+                                            <span>Dual Vision</span>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
 
                             {(product.category === 'Spectacles' || product.category === 'Computer Glasses' || product.category === 'Kids Collection') ? (
                                 <>
@@ -823,24 +823,29 @@ const LensSelectionModal = ({
                                 </>
                             ) : null}
 
-                            <h2 className="modal-title-small">Add Lens Enhancements for {selectedLensType}</h2>
-                            <div className="enhancements-grid">
-                                {filteredEnhancements.length > 0 ? (
-                                    filteredEnhancements.map((enh) => (
-                                        <label key={enh.id} className={selectedEnhancements.find(e => e.id === enh.id) ? 'active' : ''}>
-                                            <input 
-                                                type="checkbox" 
-                                                checked={!!selectedEnhancements.find(e => e.id === enh.id)}
-                                                onChange={() => toggleEnhancement(enh)}
-                                            /> {enh.name} {enh.price > 0 && `(+₹${enh.price})`}
-                                        </label>
-                                    ))
-                                ) : (
-                                    <div className="no-enhancements-notice">
-                                        <p>No specific enhancements available for <strong>{selectedLensType}</strong> in our inventory yet.</p>
+                            {/* Hide enhancements section entirely for Reading Glasses */}
+                            {product.category !== 'Reading Glasses' && (
+                                <>
+                                    <h2 className="modal-title-small">Add Lens Enhancements for {selectedLensType}</h2>
+                                    <div className="enhancements-grid">
+                                        {filteredEnhancements.length > 0 ? (
+                                            filteredEnhancements.map((enh) => (
+                                                <label key={enh.id} className={selectedEnhancements.find(e => e.id === enh.id) ? 'active' : ''}>
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={!!selectedEnhancements.find(e => e.id === enh.id)}
+                                                        onChange={() => toggleEnhancement(enh)}
+                                                    /> {enh.name} {enh.price > 0 && `(+₹${enh.price})`}
+                                                </label>
+                                            ))
+                                        ) : (
+                                            <div className="no-enhancements-notice">
+                                                <p>No specific enhancements available for <strong>{selectedLensType}</strong> in our inventory yet.</p>
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
+                                </>
+                            )}
 
                             {product.category === 'Reading Glasses' ? (
                                 <div className="reading-modal-section">
