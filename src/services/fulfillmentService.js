@@ -107,7 +107,8 @@ export const fulfillOrderInvoicing = async (orderId, elementId) => {
         const orderRef = doc(db, "orders", orderId);
         await updateDoc(orderRef, {
             invoiceUrl: downloadURL,
-            fulfillmentStatus: 'Invoice Generated'
+            fulfillmentStatus: 'Invoice Generated',
+            confirmationEmailSent: false // UNBLOCK email listener now that invoice is ready
         });
 
         console.log("[Fulfillment] Success! Everything synced.");

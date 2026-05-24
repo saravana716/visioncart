@@ -64,16 +64,36 @@ const Cart = () => {
         toast.success("Coupon Removed");
     };
 
-    const calculateSubtotal = () => {
-        return cartItems.reduce((acc, item) => {
+    const calculateTotal = () => {
+        let rawSubtotal = 0;
+        let originalTax = 0;
+        cartItems.forEach(item => {
             const price = parseInt(item.totalPrice?.toString().replace(/[^0-9]/g, '') || '0');
-            return acc + price;
-        }, 0);
+            rawSubtotal += price;
+            const rate = (item.category === 'Sunglasses') ? 0.18 : 0.12;
+            originalTax += price * rate;
+        });
+
+        const discountedSubtotal = rawSubtotal - discount;
+        const discountFactor = rawSubtotal > 0 ? discountedSubtotal / rawSubtotal : 1;
+
+        let totalTax = 0;
+        cartItems.forEach(item => {
+            const originalPrice = parseInt(item.totalPrice?.toString().replace(/[^0-9]/g, '') || '0');
+            const discountedPrice = originalPrice * discountFactor;
+            const rate = (item.category === 'Sunglasses') ? 0.18 : 0.12;
+            totalTax += discountedPrice * rate;
+        });
+
+        return {
+            subtotal: Math.round(rawSubtotal),
+            tax: Math.round(totalTax),
+            originalTotal: Math.round(rawSubtotal + originalTax),
+            total: Math.round(discountedSubtotal + totalTax)
+        };
     };
 
-    const subtotal = calculateSubtotal();
-    const tax = Math.round(subtotal * 0.18); // 18% GST example
-    const total = subtotal + tax;
+    const { subtotal, tax, originalTotal, total } = calculateTotal();
 
     if (cartCount === 0) {
         return (
@@ -182,7 +202,7 @@ const Cart = () => {
                                 <span>₹{subtotal.toLocaleString()}</span>
                             </div>
                             <div className="summary-line">
-                                <span>Estimated GST (18%)</span>
+                                <span>Estimated GST</span>
                                 <span>₹{tax.toLocaleString()}</span>
                             </div>
                             {discount > 0 && (
@@ -198,8 +218,8 @@ const Cart = () => {
                             <div className="summary-total">
                                 <span>Total Amount</span>
                                 <div className="total-stack">
-                                    {discount > 0 && <span className="old-total">₹{total.toLocaleString()}</span>}
-                                    <span className="final-total">₹{(total - discount).toLocaleString()}</span>
+                                    {discount > 0 && <span className="old-total">₹{originalTotal.toLocaleString()}</span>}
+                                    <span className="final-total">₹{total.toLocaleString()}</span>
                                 </div>
                             </div>
                             

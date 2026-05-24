@@ -299,7 +299,8 @@ const Checkout = () => {
                 discountType: appliedCoupon.discountType
             } : null,
             userId: user.uid,
-            status: 'Awaiting Verification'
+            status: 'Awaiting Verification',
+            confirmationEmailSent: true // TEMPORARILY block backend email trigger
         };
 
         const result = await placeOrder(user.uid, orderData);
@@ -359,7 +360,8 @@ const Checkout = () => {
                     discountType: appliedCoupon.discountType
                 } : null,
                 userId: user.uid,
-                status: 'Awaiting Payment'
+                status: 'Awaiting Payment',
+                confirmationEmailSent: true // TEMPORARILY block backend email trigger
             };
 
             const result = await placeOrder(user.uid, orderData);
@@ -451,7 +453,8 @@ const Checkout = () => {
                 discountType: appliedCoupon.discountType
             } : null,
             userId: user.uid,
-            status: 'Ordered'
+            status: 'Ordered',
+            confirmationEmailSent: true // TEMPORARILY block backend email trigger
         };
 
         const result = await placeOrder(user.uid, orderData);
