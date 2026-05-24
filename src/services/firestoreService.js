@@ -330,10 +330,40 @@ export const getCartItems = async (userId) => {
   try {
     const q = query(collection(db, 'carts'), where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
+    const rawCartItems = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
+
+    const validCartItems = [];
+    const invalidCartItemIds = [];
+
+    // Verify each product exists
+    await Promise.all(rawCartItems.map(async (item) => {
+      if (item.productId) {
+        const productRef = doc(db, 'products', item.productId);
+        const productSnap = await getDoc(productRef);
+        if (productSnap.exists()) {
+          validCartItems.push(item);
+        } else {
+          invalidCartItemIds.push(item.id);
+        }
+      } else {
+        // Keeps old legacy cart items without productId just in case
+        validCartItems.push(item);
+      }
+    }));
+
+    // Clean up invalid cart items asynchronously
+    if (invalidCartItemIds.length > 0) {
+      const batch = writeBatch(db);
+      invalidCartItemIds.forEach(id => {
+        batch.delete(doc(db, 'carts', id));
+      });
+      batch.commit().catch(e => console.error("Error cleaning up invalid cart items: ", e));
+    }
+
+    return validCartItems;
   } catch (error) {
     console.error("Error fetching cart items: ", error);
     return [];
