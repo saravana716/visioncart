@@ -269,6 +269,23 @@ const ProductDetails = () => {
         return () => observer.disconnect();
     }, [loading]);
 
+    const calculatePriceBreakdown = (total) => {
+        const rawTotal = typeof total === 'number' ? total : parseInt(total?.toString().replace(/[^0-9]/g, '') || '0');
+        const gstRate = (product.category === 'Sunglasses') ? 0.18 : 0.12;
+        
+        // Exclusive GST: Price is Subtotal, GST is added on top
+        const subtotal = rawTotal;
+        const tax = Math.round(subtotal * gstRate);
+        const finalTotal = subtotal + tax;
+
+        return {
+            subtotal,
+            tax,
+            total: finalTotal,
+            gstRate: Math.round(gstRate * 100)
+        };
+    };
+
     const getPreparedCartData = () => {
         const baseData = {
             productId: id,
@@ -288,23 +305,6 @@ const ProductDetails = () => {
             ],
             sku: product.technicalSpecs?.find(s => s.label === 'SKU Code')?.value || id,
             allTechnicalSpecs: product.technicalSpecs || []
-        };
-
-        const calculatePriceBreakdown = (total) => {
-            const rawTotal = typeof total === 'number' ? total : parseInt(total?.toString().replace(/[^0-9]/g, '') || '0');
-            const gstRate = (product.category === 'Sunglasses') ? 0.18 : 0.12;
-            
-            // Exclusive GST: Price is Subtotal, GST is added on top
-            const subtotal = rawTotal;
-            const tax = Math.round(subtotal * gstRate);
-            const finalTotal = subtotal + tax;
-
-            return {
-                subtotal,
-                tax,
-                total: finalTotal,
-                gstRate: Math.round(gstRate * 100)
-            };
         };
 
         baseData.priceBreakdown = calculatePriceBreakdown(product.price);
