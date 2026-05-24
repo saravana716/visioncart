@@ -147,7 +147,7 @@ const ReviewSummaryModal = ({ isOpen, onClose, onConfirm, data, actionType }) =>
                                 <div className="price-breakdown-list">
                                     {data.framePrice > 0 && (
                                         <div className="price-row">
-                                            <span>Frame Price</span>
+                                            <span>{data.category === 'Contact Lenses' ? 'Base Product Price' : 'Frame Price'}</span>
                                             <p>₹{data.framePrice.toLocaleString()}</p>
                                         </div>
                                     )}

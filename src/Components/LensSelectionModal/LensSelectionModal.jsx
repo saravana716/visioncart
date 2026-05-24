@@ -191,9 +191,9 @@ const LensSelectionModal = ({
             const totalBoxes = isSolution
                 ? clRightBoxes
                 : (contactLensPowerOption === 'later' ? clRightBoxes : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0));
-            subtotal = packPrice * totalBoxes;
-            lensPrice = subtotal;
-            framePrice = 0; // No frame for contact lenses
+            lensPrice = packPrice * totalBoxes;
+            framePrice = basePriceInt * totalBoxes;
+            subtotal = framePrice + lensPrice;
         } else {
             lensPrice = LENS_PRICE_MAPPING[selectedLensType] || 0;
             addOns = selectedEnhancements.reduce((sum, enh) => sum + (parseInt(enh.price || 0)), 0);
@@ -1010,12 +1010,18 @@ const LensSelectionModal = ({
                         )}
 
                         {product.category === 'Contact Lenses' && (
-                            <div className="p-line">
-                                <span>
-                                    {contactLensPacks.find(p => p.id === selectedClPack)?.name} ({isSolution ? `${clRightBoxes} Qty` : `${contactLensPowerOption === 'later' ? clRightBoxes : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes`}):
-                                </span>
-                                <span>₹{calculatePriceDetails().subtotal}</span>
-                            </div>
+                            <>
+                                <div className="p-line">
+                                    <span>Base Product Price:</span> 
+                                    <span>₹{calculatePriceDetails().framePrice}</span>
+                                </div>
+                                <div className="p-line">
+                                    <span>
+                                        {contactLensPacks.find(p => p.id === selectedClPack)?.name} ({isSolution ? `${clRightBoxes} Qty` : `${contactLensPowerOption === 'later' ? clRightBoxes : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes`}):
+                                    </span>
+                                    <span>{calculatePriceDetails().lensPrice > 0 ? `₹${calculatePriceDetails().lensPrice}` : 'Included'}</span>
+                                </div>
+                            </>
                         )}
                         
                         {product.category !== 'Contact Lenses' && selectedEnhancements.map(enh => (
