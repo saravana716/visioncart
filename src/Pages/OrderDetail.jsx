@@ -189,25 +189,6 @@ const OrderDetail = () => {
                                 )}
                                 <div className="summary-divider"></div>
                                 
-                                {/* Professional Tax Breakdown */}
-                                {order.amounts?.taxDetails?.isIntraState ? (
-                                    <>
-                                        <div className="summary-row tax-minor">
-                                            <span>CGST (Central Tax)</span>
-                                            <span>₹{order.amounts?.taxDetails?.cgst?.toLocaleString()}</span>
-                                        </div>
-                                        <div className="summary-row tax-minor">
-                                            <span>SGST (State Tax)</span>
-                                            <span>₹{order.amounts?.taxDetails?.sgst?.toLocaleString()}</span>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="summary-row tax-minor">
-                                        <span>IGST (Interstate Tax)</span>
-                                        <span>₹{order.amounts?.taxDetails?.igst?.toLocaleString()}</span>
-                                    </div>
-                                )}
-                                
                                 <div className="summary-row total-tax-row">
                                     <span>Total Applicable GST</span>
                                     <span>₹{order.amounts?.tax?.toLocaleString()}</span>
