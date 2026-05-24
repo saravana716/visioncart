@@ -193,6 +193,7 @@
 .empty-state {
     text-align: center;
     padding: 60px 20px;
+    color: white;
 }
 
 .empty-icon {
@@ -202,7 +203,7 @@
 }
 
 .empty-state p {
-    color: #888;
+    color: white;
     margin-bottom: 24px;
 }
 
