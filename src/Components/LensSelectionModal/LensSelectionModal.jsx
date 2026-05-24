@@ -190,7 +190,7 @@ const LensSelectionModal = ({
             const packPrice = getDynamicPackPrice(selectedClPack);
             const totalBoxes = isSolution
                 ? clRightBoxes
-                : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0);
+                : (contactLensPowerOption === 'later' ? clRightBoxes : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0));
             subtotal = packPrice * totalBoxes;
             lensPrice = subtotal;
             framePrice = 0; // No frame for contact lenses
@@ -302,6 +302,12 @@ const LensSelectionModal = ({
                     { label: 'Quantity', value: clRightBoxes.toString() },
                     { label: 'Volume', value: pack?.description || '' }
                 );
+            } else if (contactLensPowerOption === 'later') {
+                specifications.push(
+                    { label: 'Lens Type', value: 'Contact Lens' },
+                    { label: 'Total Box Qty', value: clRightBoxes.toString() },
+                    { label: 'Pack Type', value: pack?.name || 'Standard' }
+                );
             } else {
                 specifications.push(
                     { label: 'Lens Type', value: 'Contact Lens' },
@@ -387,6 +393,7 @@ const LensSelectionModal = ({
                 leftPower: clLeftSph || null,
                 rightBoxes: clRightBoxes,
                 leftBoxes: clLeftBoxes,
+                totalBoxesLater: contactLensPowerOption === 'later' ? clRightBoxes : null,
                 pack: contactLensPacks.find(p => p.id === selectedClPack)
             }) : (isReadingGlasses ? { readingPower } : (isSpectacles ? {
                 ...prescription,
@@ -551,24 +558,43 @@ const LensSelectionModal = ({
                                         </div>
 
                                         {contactLensPowerOption === 'later' && (
-                                            <a href="https://wa.me/917871333302" target="_blank" rel="noopener noreferrer" className="cl-submit-later-banner spectacles-banner animate-in" style={{ textDecoration: 'none' }}>
-                                                <div className="banner-left">
-                                                    <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
-                                                    <p>We will call you to get your power!</p>
-                                                </div>
-                                                <div className="banner-right">
-                                                    <div className="lens-graphic-pair">
-                                                        <div className="lens-graphic positive">
-                                                            <span>+</span>
-                                                            <div className="lens-shape"></div>
-                                                        </div>
-                                                        <div className="lens-graphic negative">
-                                                            <span>-</span>
-                                                            <div className="lens-shape"></div>
+                                            <div className="animate-in">
+                                                <a href="https://wa.me/917871333302" target="_blank" rel="noopener noreferrer" className="cl-submit-later-banner spectacles-banner" style={{ textDecoration: 'none', marginBottom: '1rem' }}>
+                                                    <div className="banner-left">
+                                                        <h3>Don't worry! <FaPhoneAlt className="phone-icon-cl" /></h3>
+                                                        <p>We will call you to get your power!</p>
+                                                    </div>
+                                                    <div className="banner-right">
+                                                        <div className="lens-graphic-pair">
+                                                            <div className="lens-graphic positive">
+                                                                <span>+</span>
+                                                                <div className="lens-shape"></div>
+                                                            </div>
+                                                            <div className="lens-graphic negative">
+                                                                <span>-</span>
+                                                                <div className="lens-shape"></div>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                </a>
+                                                
+                                                <div className="cl-power-row no-border mt-3">
+                                                    <div className="cl-row-label">
+                                                        <span className="main-label">Quantity</span>
+                                                        <span className="sub-label">Select total boxes</span>
+                                                    </div>
+                                                    <div className="cl-dropdown-col qty-select-col">
+                                                        <select 
+                                                            className="cl-select-premium cl-select" 
+                                                            value={clRightBoxes} 
+                                                            onChange={e => setClRightBoxes(parseInt(e.target.value))}
+                                                            style={{ paddingRight: '2.5rem' }}
+                                                        >
+                                                            {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
+                                                        </select>
+                                                    </div>
                                                 </div>
-                                            </a>
+                                            </div>
                                         )}
 
                                         {contactLensPowerOption === 'manual' && (
@@ -986,7 +1012,7 @@ const LensSelectionModal = ({
                         {product.category === 'Contact Lenses' && (
                             <div className="p-line">
                                 <span>
-                                    {contactLensPacks.find(p => p.id === selectedClPack)?.name} ({isSolution ? `${clRightBoxes} Qty` : `${(clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes`}):
+                                    {contactLensPacks.find(p => p.id === selectedClPack)?.name} ({isSolution ? `${clRightBoxes} Qty` : `${contactLensPowerOption === 'later' ? clRightBoxes : (clRightEyeSelected ? clRightBoxes : 0) + (clLeftEyeSelected ? clLeftBoxes : 0)} Boxes`}):
                                 </span>
                                 <span>₹{calculatePriceDetails().subtotal}</span>
                             </div>
