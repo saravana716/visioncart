@@ -16,16 +16,16 @@ function App() {
   const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
+    if (config.isMaintenanceMode) {
+      setInitialLoading(false);
+      return;
+    }
     // Simulate site entrance or wait for initial assets
     const timer = setTimeout(() => {
       setInitialLoading(false);
     }, 2500);
     return () => clearTimeout(timer);
   }, []);
-
-  if (initialLoading) {
-    return <Loader fullPage={true} />;
-  }
 
   // If maintenance mode is on, only show Coming Soon page
   if (config.isMaintenanceMode) {
@@ -35,6 +35,10 @@ function App() {
         <ComingSoon />
       </>
     );
+  }
+
+  if (initialLoading) {
+    return <Loader fullPage={true} />;
   }
 
   return (

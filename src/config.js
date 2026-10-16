@@ -3,10 +3,10 @@
  */
 export const config = {
     // Set to true to show the Coming Soon page
-    isMaintenanceMode:false,
+    isMaintenanceMode: true,
     
     // Target launch date for the countdown timer (YYYY-MM-DD format)
-    launchDate: '2026-05-01',
+    launchDate: '2026-11-30',
     
     // Social links for the Coming Soon page
     socialLinks: {
